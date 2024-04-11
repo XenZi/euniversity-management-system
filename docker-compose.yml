@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  api-gateway:
+    build:
+      context: ./api-gateway/
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    hostname: api-gateway
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    logging:
+      driver: none
+    networks:
+      - network
+
+networks:
+  network:
+    driver: bridge
