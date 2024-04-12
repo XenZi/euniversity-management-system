@@ -9,12 +9,53 @@ services:
     hostname: api-gateway
     restart: on-failure
     ports:
-      - "8080:8080"
+      - "8000:8000"
     logging:
       driver: none
     networks:
       - network
+    depends_on:
+      - auth-service
 
+  auth-service:
+    build:
+      context: .
+      dockerfile: ./auth-service/Dockerfile
+    image: auth-service
+    container_name: auth-service
+    restart: always
+    hostname: "auth-server"
+    depends_on:
+      - auth-db
+    environment:
+      - PORT=${AUTH_SERVICE_PORT}
+      - AUTH_MONGO_URI=${AUTH_MONGO_URI}
+      - JWT_KEY=${JWT_KEY}
+    networks:
+      - network
+
+  auth-db:
+    image: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: pass
+      MONGO_INITDB_DATABASE: mongoDemo
+      ME_CONFIG_MONGODB_SERVER: mongo
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    volumes:
+      - auth-db_store:/data/db
+    networks:
+      - network
 networks:
   network:
     driver: bridge
+
+volumes:
+  auth-db_store:
