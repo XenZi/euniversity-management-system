@@ -36,3 +36,17 @@ func (ah AuthHandler) Register(rw http.ResponseWriter, h *http.Request) {
 	}
 	utils.WriteResp(response, 200, rw)
 }
+
+func (ah AuthHandler) Login(rw http.ResponseWriter, h *http.Request) {
+	var loginUser models.LoginCitizenDTO
+	if !utils.DecodeJSONFromRequest(h, rw, &loginUser) {
+		utils.WriteErrorResp("Error while casting data into structure", 500, "/api/auth/register", rw)
+		return
+	}
+	response, err := ah.AuthService.LoginUser(loginUser)
+	if err != nil {
+		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "api/auth/login", rw)
+		return
+	}
+	utils.WriteResp(response, 200, rw)
+}

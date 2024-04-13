@@ -4,7 +4,9 @@ import (
 	"auth/errors"
 	"auth/models"
 	"context"
+	"log"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -30,5 +32,18 @@ func (a AuthRepository) SaveUser(user models.Citizen) (*models.Citizen, *errors.
 		return nil, errors.NewError(err.Error(), status)
 	}
 	user.ID = insertedUser.InsertedID.(primitive.ObjectID)
+	return &user, nil
+}
+
+func (a AuthRepository) FindUserByEmail(email string) (*models.Citizen, *errors.ErrorStruct) {
+	userCollection := a.cli.Database("auth").Collection("user")
+	var user models.Citizen
+	err := userCollection.FindOne(context.TODO(), bson.M{"email": email}).Decode(&user)
+	if err != nil {
+		log.Println("auth-db", err.Error())
+		return nil, errors.NewError(
+			"Bad credentials",
+			401)
+	}
 	return &user, nil
 }

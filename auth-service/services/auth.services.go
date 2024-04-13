@@ -34,7 +34,25 @@ func (a AuthService) CreateUser(registerCitizen models.Citizen) (*models.Citizen
 	}
 	castedCitizen := a.convertCitizenToDTO(*newUser)
 	return &castedCitizen, nil
+}
 
+func (a AuthService) LoginUser(loginUser models.LoginCitizenDTO) (*models.SuccessfullyLoggedUser, *errors.ErrorStruct) {
+	user, err := a.AuthRepository.FindUserByEmail(loginUser.Email)
+	if err != nil {
+		return nil, err
+	}
+	isSamePassword := a.PasswordService.CheckPasswordHash(loginUser.Password, user.Password)
+	if !isSamePassword {
+		return nil, errors.NewError("Bad credentials", 401)
+	}
+	jwtToken, foundError := a.JwtService.CreateKey(user.Email, user.Roles, user.PersonalIdentificationNumber)
+	if foundError != nil {
+		return nil, errors.NewError(foundError.Error(), 500)
+	}
+	return &models.SuccessfullyLoggedUser{
+		Token: *jwtToken,
+		User:  a.convertCitizenToDTO(*user),
+	}, nil
 }
 
 func (as AuthService) convertCitizenToDTO(c models.Citizen) models.CitizenDTO {

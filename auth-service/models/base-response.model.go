@@ -15,3 +15,8 @@ type BaseErrorHttpResponse struct {
 type BaseMessageResponse struct {
 	Message string `json:"message"`
 }
+
+type SuccessfullyLoggedUser struct {
+	Token string     `json:"token"`
+	User  CitizenDTO `json:"user"`
+}

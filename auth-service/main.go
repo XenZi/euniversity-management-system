@@ -46,7 +46,7 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/ping", authHandler.Ping).Methods("GET")
 	router.HandleFunc("/register", authHandler.Register).Methods("POST")
-
+	router.HandleFunc("/login", authHandler.Login).Methods("POST")
 	// CORS
 	headersOk := gorillaHandlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
 	methodsOk := gorillaHandlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
