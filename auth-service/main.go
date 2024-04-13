@@ -24,6 +24,7 @@ func main() {
 	jwtKey := os.Getenv("JWT_KEY")
 	// MongoService initialization
 	jwtService := services.NewJWTService([]byte(jwtKey))
+	passwordService := services.NewPasswordService()
 	mongoService, err := services.NewMongoService(context.Background())
 	if err != nil {
 		log.Fatalln(err)
@@ -32,7 +33,7 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	authService, err := services.NewAuthService(authRepository, jwtService)
+	authService, err := services.NewAuthService(authRepository, jwtService, passwordService)
 	if err != nil {
 		log.Fatalln(err)
 	}

@@ -4,7 +4,6 @@ import (
 	"auth/models"
 	"auth/services"
 	"auth/utils"
-	"log"
 	"net/http"
 )
 
@@ -30,5 +29,10 @@ func (ah AuthHandler) Register(rw http.ResponseWriter, h *http.Request) {
 		utils.WriteErrorResp("Error while casting data into structure", 500, "/api/auth/register", rw)
 		return
 	}
-	log.Println(registerUser)
+	response, err := ah.AuthService.CreateUser(registerUser)
+	if err != nil {
+		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "api/auth/register", rw)
+		return
+	}
+	utils.WriteResp(response, 200, rw)
 }
