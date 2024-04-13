@@ -4,16 +4,19 @@ import (
 	"auth/models"
 	"auth/services"
 	"auth/utils"
+	"context"
 	"net/http"
 )
 
 type AuthHandler struct {
 	AuthService *services.AuthService
+	JwtService  *services.JwtService
 }
 
-func NewAuthHandler(authService *services.AuthService) (*AuthHandler, error) {
+func NewAuthHandler(authService *services.AuthService, jwtService *services.JwtService) (*AuthHandler, error) {
 	return &AuthHandler{
 		AuthService: authService,
+		JwtService:  jwtService,
 	}, nil
 }
 
@@ -48,5 +51,18 @@ func (ah AuthHandler) Login(rw http.ResponseWriter, h *http.Request) {
 		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "api/auth/login", rw)
 		return
 	}
+	utils.WriteResp(response, 200, rw)
+}
+
+func (ah AuthHandler) ValidateJWT(rw http.ResponseWriter, h *http.Request) {
+	// Questionable
+	tokenString := utils.ExtractToken(h.Header.Get("Authorization"))
+	response, err := ah.JwtService.ValidateToken(tokenString)
+	if err != nil {
+		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "api/auth/login", rw)
+		return
+	}
+	ctx := context.WithValue(h.Context(), "user", response)
+	h = h.WithContext(ctx)
 	utils.WriteResp(response, 200, rw)
 }

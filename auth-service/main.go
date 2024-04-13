@@ -37,7 +37,7 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	authHandler, err := handlers.NewAuthHandler(authService)
+	authHandler, err := handlers.NewAuthHandler(authService, jwtService)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -47,6 +47,7 @@ func main() {
 	router.HandleFunc("/ping", authHandler.Ping).Methods("GET")
 	router.HandleFunc("/register", authHandler.Register).Methods("POST")
 	router.HandleFunc("/login", authHandler.Login).Methods("POST")
+	router.HandleFunc("/validate-jwt", authHandler.ValidateJWT).Methods("POST")
 	// CORS
 	headersOk := gorillaHandlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
 	methodsOk := gorillaHandlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
