@@ -39,6 +39,18 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	admissionsRepository, err := repositories.NewAdmissionsRepository(mongoService.GetCLI())
+	if err != nil {
+		log.Fatalln(err)
+	}
+	admissionsService, err := services.NewAdmissionsServices(admissionsRepository)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	admissionsHandler, err := handlers.NewAdmissionsHandler(admissionsService)
+	if err != nil {
+		log.Fatalln(err)
+	}
 	// ROUTING
 	router := mux.NewRouter()
 	router.HandleFunc("/ping", dormHandler.Ping).Methods("POST")
@@ -46,6 +58,11 @@ func main() {
 	router.HandleFunc("/{id}", dormHandler.FindDormById).Methods("GET")
 	router.HandleFunc("/{id}", dormHandler.DeleteDormById).Methods("DELETE")
 	router.HandleFunc("/{id}", dormHandler.UpdateDormById).Methods("PUT")
+	router.HandleFunc("/admissions", admissionsHandler.CreateNewAdmission).Methods("POST")
+	router.HandleFunc("/admissions/{id}", admissionsHandler.GetAdmissionsByID).Methods("GET")
+	router.HandleFunc("/admissions/{id}", admissionsHandler.DeleteAdmissionById).Methods("GET")
+	router.HandleFunc("/admissions/dorm/{id}", admissionsHandler.GetAdmissionByDormId).Methods("GET")
+
 	// CORS
 	headersOk := gorillaHandlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
 	methodsOk := gorillaHandlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})

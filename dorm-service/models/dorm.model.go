@@ -10,19 +10,15 @@ type DormPriceByCategory struct {
 }
 
 type Dorm struct {
-	ID           primitive.ObjectID    `json:"id" bson:"_id,omitempty"`
-	Name         string                `json:"name" bson:"name"`
-	Location     string                `json:"location" bson:"location"`
-	Prices       []DormPriceByCategory `json:"prices" bson:"prices"`
-	RoomIDs      []primitive.ObjectID  `json:"room_ids" bson:"room_ids"`
-	AdmissionIDs []primitive.ObjectID  `json:"admission_ids" bson:"admission_ids"`
+	ID       primitive.ObjectID    `json:"id" bson:"_id,omitempty"`
+	Name     string                `json:"name" bson:"name"`
+	Location string                `json:"location" bson:"location"`
+	Prices   []DormPriceByCategory `json:"prices" bson:"prices"`
 }
 
 type DormDTO struct {
-	ID                  string                `json:"id"`
-	Name                string                `json:"name"`
-	Location            string                `json:"location"`
-	Prices              []DormPriceByCategory `json:"prices"`
-	Rooms               []Room                `json:"room"`
-	DormitoryAdmissions []DormitoryAdmissions `json:"admissions"`
+	ID       string                `json:"id"`
+	Name     string                `json:"name"`
+	Location string                `json:"location"`
+	Prices   []DormPriceByCategory `json:"prices"`
 }
