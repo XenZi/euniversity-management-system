@@ -58,7 +58,7 @@ func main() {
 	go func() {
 		err := server.ListenAndServe()
 		if err != nil {
-			log.Panicf("PANIC FROM AUTH-SERVICE ON LISTENING")
+			log.Panicf("PANIC FROM FOOD-SERVICE ON LISTENING")
 		}
 	}()
 	sigCh := make(chan os.Signal)
