@@ -16,6 +16,7 @@ services:
       - network
     depends_on:
       - auth-service
+      - healthcare-service
 
   auth-service:
     build:
@@ -89,6 +90,41 @@ services:
     networks:
       - network
 
+ healthcare-service:
+    build:
+      context: .
+      dockerfile: ./healthcare-service/Dockerfile
+    image: healthcare-service
+    container_name: healthcare-service
+    restart: always
+    hostname: "healthcare-server"
+    depends_on:
+      - healthcare-db
+    environment:
+      - PORT=${HEALTHCARE_SERVICE_PORT}
+      - HEALTHCARE_MONGO_URI=${HEALTHCARE_MONGO_URI}
+    networks:
+      - network
+
+  healthcare-db:
+    image: mongo
+    restart: always
+    ports:
+      - "27018:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: pass
+      MONGO_INITDB_DATABASE: mongoDemo
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    volumes:
+      - healthcare-db_store:/data/db
+    networks:
+      - network
+
 networks:
   network:
     driver: bridge
@@ -96,3 +132,4 @@ networks:
 volumes:
   auth-db_store:
   food-db_store:
+  healthcare-db_store:
