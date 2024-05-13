@@ -90,7 +90,7 @@ services:
     networks:
       - network
 
- healthcare-service:
+  healthcare-service:
     build:
       context: .
       dockerfile: ./healthcare-service/Dockerfile
