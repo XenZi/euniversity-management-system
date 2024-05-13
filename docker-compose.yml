@@ -53,9 +53,46 @@ services:
       - auth-db_store:/data/db
     networks:
       - network
+
+  food-service:
+    build:
+      context: .
+      dockerfile: ./food-service/Dockerfile
+    image: food-service
+    container_name: food-service
+    restart: always
+    hostname: "food-server"
+    depends_on:
+      - food-db
+    environment:
+      - PORT=${FOOD_SERVICE_PORT}
+      - FOOD_MONGO_URI=${FOOD_MONGO_URI}
+    networks:
+      - network
+
+  food-db:
+    image: mongo
+    restart: always
+    ports:
+      - "27019:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: pass
+      MONGO_INITDB_DATABASE: mongoDemo
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    volumes:
+      - food-db_store:/data/db
+    networks:
+      - network
+
 networks:
   network:
     driver: bridge
 
 volumes:
   auth-db_store:
+  food-db_store:
