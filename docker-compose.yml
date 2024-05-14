@@ -14,7 +14,7 @@ services:
       driver: none
     networks:
       - network
-      
+
   university-service:
     image: university-service
     build:
@@ -30,7 +30,7 @@ services:
       - network
     depends_on:
       - university-service-db
-      
+
   university-service-db:
     image: mongo
     restart: always
@@ -123,6 +123,44 @@ services:
       retries: 10
     volumes:
       - healthcare-db_store:/data/db
+    networks:
+      - network
+
+  dorm-db:
+    image: mongo
+    restart: always
+    ports:
+      - "27020:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: pass
+      MONGO_INITDB_DATABASE: mongoDemo
+      ME_CONFIG_MONGODB_SERVER: mongo
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    volumes:
+      - dorm-db_store:/data/db
+    networks:
+      - network
+
+  dorm-service:
+    build:
+      context: .
+      dockerfile: ./dorm-service/Dockerfile
+    image: dorm-service
+    container_name: dorm-service
+    restart: always
+    hostname: "dorm-server"
+    depends_on:
+      - dorm-db
+    environment:
+      - PORT=${DORM_PORT}
+      - DORM_MONGO_URI=${DORM_MONGO_URI}
+      - HEALTHCARE_SERVICE_URL=${HEALTHCARE_SERVICE_URL}
+      - HEALTHCARE_SERVICE_PORT=${HEALTHCARE_SERVICE_PORT}
     networks:
       - network
 networks:
