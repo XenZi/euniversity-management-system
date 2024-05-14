@@ -46,6 +46,7 @@ func main() {
 	router.HandleFunc("/ping", universityHandler.Ping).Methods("GET")
 	router.HandleFunc("/", universityHandler.CreateUniversity).Methods("POST")
 	router.HandleFunc("/student", universityHandler.CreateStudent).Methods("POST")
+	router.HandleFunc("/student/{id}", universityHandler.FindStudentById).Methods("GET")
 
 	// CORS
 	headersOk := gorillaHandlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})

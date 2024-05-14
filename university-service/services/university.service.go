@@ -32,3 +32,11 @@ func (u UniversityService) CreateStudent(student models.Student) (*models.Studen
 	}
 	return addedStud, nil
 }
+
+func (u UniversityService) FindStudentById(personalIdentificationNumber string) (*models.Student, *errors.ErrorStruct) {
+	student, err := u.UniversityRepository.FindStudentById(personalIdentificationNumber)
+	if err != nil {
+		return nil, err
+	}
+	return student, nil
+}

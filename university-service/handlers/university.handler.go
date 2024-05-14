@@ -5,6 +5,7 @@ import (
 	"fakultet-service/models"
 	"fakultet-service/services"
 	"fakultet-service/utils"
+	"github.com/gorilla/mux"
 	"net/http"
 )
 
@@ -53,4 +54,19 @@ func (uh UniversityHandler) CreateStudent(rw http.ResponseWriter, h *http.Reques
 		return
 	}
 	utils.WriteResp(newStudent, 200, rw)
+}
+
+func (uh UniversityHandler) FindStudentById(rw http.ResponseWriter, h *http.Request) {
+	vars := mux.Vars(h)
+	id := vars["id"]
+	if id == "" {
+		utils.WriteResp("Bad request", http.StatusNotFound, rw)
+		return
+	}
+	student, err := uh.UniversityService.FindStudentById(id)
+	if err != nil {
+		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "/student", rw)
+		return
+	}
+	utils.WriteResp(student, 200, rw)
 }
