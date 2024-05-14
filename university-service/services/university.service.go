@@ -40,3 +40,10 @@ func (u UniversityService) FindStudentById(personalIdentificationNumber string) 
 	}
 	return student, nil
 }
+func (u UniversityService) CheckBudget(personalIdentificationNumber string) (bool, *errors.ErrorStruct) {
+	student, err := u.UniversityRepository.FindStudentById(personalIdentificationNumber)
+	if err != nil {
+		return false, err
+	}
+	return student.BudgetStatus, nil
+}
