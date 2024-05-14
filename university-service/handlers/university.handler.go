@@ -38,3 +38,19 @@ func (uh UniversityHandler) CreateUniversity(rw http.ResponseWriter, h *http.Req
 	}
 	utils.WriteResp(newUni, 200, rw)
 }
+
+func (uh UniversityHandler) CreateStudent(rw http.ResponseWriter, h *http.Request) {
+	decoder := json.NewDecoder(h.Body)
+	decoder.DisallowUnknownFields()
+	var student models.Student
+	if err := decoder.Decode(&student); err != nil {
+		utils.WriteResp(err.Error(), http.StatusBadRequest, rw)
+		return
+	}
+	newStudent, err := uh.UniversityService.CreateStudent(student)
+	if err != nil {
+		utils.WriteResp(err.GetErrorMessage(), err.GetErrorStatus(), rw)
+		return
+	}
+	utils.WriteResp(newStudent, 200, rw)
+}

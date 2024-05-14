@@ -29,3 +29,13 @@ func (u UniversityRepository) SaveUniversity(university models.University) (*mod
 	return &university, nil
 
 }
+
+func (u UniversityRepository) SaveStudent(student models.Student) (*models.Student, *errors.ErrorStruct) {
+	studentCollection := u.cli.Database("university").Collection("student")
+	insertResult, err := studentCollection.InsertOne(context.TODO(), student)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	student.ID = insertResult.InsertedID.(primitive.ObjectID)
+	return &student, nil
+}
