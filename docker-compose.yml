@@ -55,43 +55,6 @@ services:
     networks:
       - network
 
-  dorm-service:
-    build:
-      context: .
-      dockerfile: ./dorm-service/Dockerfile
-    image: dorm-service
-    container_name: dorm-service
-    restart: always
-    hostname: "dorm-server"
-    depends_on:
-      - dorm-db
-    environment:
-      - PORT=${DORM_SERVICE_PORT}
-      - DORM_MONGO_URI=${DORM_MONGO_URI}
-      - JWT_KEY=${JWT_KEY}
-    networks:
-      - network
-
-  dorm-db:
-    image: mongo
-    restart: always
-    ports:
-      - "27020:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: pass
-      MONGO_INITDB_DATABASE: mongoDemo
-      ME_CONFIG_MONGODB_SERVER: mongo
-    healthcheck:
-      test: echo 'db.runCommand("ping").ok'
-      interval: 10s
-      timeout: 10s
-      retries: 10
-    volumes:
-      - dorm-db_store:/data/db
-    networks:
-      - network
-
   healthcare-service:
     build:
       context: .
@@ -117,14 +80,12 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: pass
       MONGO_INITDB_DATABASE: mongoDemo
-      ME_CONFIG_MONGODB_SERVER: mongo
     healthcheck:
       test: echo 'db.runCommand("ping").ok'
       interval: 10s
       timeout: 10s
       retries: 10
     volumes:
-      - dorm-db_store:/data/db
       - healthcare-db_store:/data/db
     networks:
       - network
@@ -134,5 +95,4 @@ networks:
 
 volumes:
   auth-db_store:
-  dorm-db_store:
   healthcare-db_store:
