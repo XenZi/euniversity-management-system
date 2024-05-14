@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
-
+import { axiosInstance } from "../../services/axios.service";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../redux/slices/user.slice";
 interface LoginFormData {
   email: string;
   password: string;
@@ -9,11 +11,23 @@ const LoginForm = () => {
     email: "",
     password: "",
   });
+  const dispatch = useDispatch();
 
   const onInputChange = (e: React.FormEvent<HTMLInputElement>, key: string) => {
     const copyOfFormData = { ...loginForm };
     copyOfFormData[key as keyof LoginFormData] = e.currentTarget.value;
     setLoginForm(copyOfFormData);
+  };
+
+  const sendRequestForLogin = async () => {
+    const sendData = await axiosInstance
+      .post("/auth/login", loginForm)
+      .then((resp) => {
+        dispatch(setUser({ ...resp.data.data.user }));
+      })
+      .catch((err) => {
+        console.log(err.response.data);
+      });
   };
 
   useEffect(() => {
@@ -42,7 +56,13 @@ const LoginForm = () => {
           onInputChange(e, "password");
         }}
       />
-      <button className="border bg-auburn-500 border-auburn-500 font-semibold py-2 px-4 rounded focus:border-auburn-700 text-white">
+      <button
+        className="border bg-auburn-500 border-auburn-500 font-semibold py-2 px-4 rounded focus:border-auburn-700 text-white"
+        onClick={(e) => {
+          e.preventDefault();
+          sendRequestForLogin();
+        }}
+      >
         Login
       </button>
     </form>
