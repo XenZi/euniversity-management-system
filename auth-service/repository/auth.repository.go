@@ -4,6 +4,7 @@ import (
 	"auth/errors"
 	"auth/models"
 	"context"
+	"fmt"
 	"log"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -46,4 +47,37 @@ func (a AuthRepository) FindUserByEmail(email string) (*models.Citizen, *errors.
 			401)
 	}
 	return &user, nil
+}
+
+func (a AuthRepository) FindUserByPIN(pin string) (*models.Citizen, *errors.ErrorStruct) {
+	userCollection := a.cli.Database("auth").Collection("user")
+	var user models.Citizen
+	err := userCollection.FindOne(context.TODO(), bson.M{"personalIdentificationNumber": pin}).Decode(&user)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 404)
+	}
+	return &user, nil
+}
+
+func (a AuthRepository) UpdateUserByPin(pin string, roles []string) (*models.Citizen, *errors.ErrorStruct) {
+	userCollection := a.cli.Database("auth").Collection("user")
+	user, err := a.FindUserByPIN(pin)
+	if err != nil {
+		return nil, err
+	}
+	for _, role := range roles {
+		user.Roles = append(user.Roles, role)
+	}
+	fmt.Println(user.Roles)
+	filter := bson.M{"personalIdentificationNumber": pin}
+	update := bson.D{
+		{"$set", bson.D{
+			{"roles", user.Roles},
+		}},
+	}
+	_, erro := userCollection.UpdateOne(context.TODO(), filter, update)
+	if erro != nil {
+		return nil, errors.NewError(erro.Error(), 500)
+	}
+	return user, nil
 }

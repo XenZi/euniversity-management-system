@@ -55,7 +55,25 @@ func (a AuthService) LoginUser(loginUser models.LoginCitizenDTO) (*models.Succes
 	}, nil
 }
 
-func (as AuthService) convertCitizenToDTO(c models.Citizen) models.CitizenDTO {
+func (a AuthService) GetUserByPIN(pin string) (*models.CitizenDTO, *errors.ErrorStruct) {
+	user, err := a.AuthRepository.FindUserByPIN(pin)
+	if err != nil {
+		return nil, err
+	}
+	ret := a.convertCitizenToDTO(*user)
+	return &ret, nil
+}
+
+func (a AuthService) UpdateUserByPIN(pin string, roles []string) (*models.CitizenDTO, *errors.ErrorStruct) {
+	user, err := a.AuthRepository.UpdateUserByPin(pin, roles)
+	if err != nil {
+		return nil, err
+	}
+	ret := a.convertCitizenToDTO(*user)
+	return &ret, nil
+}
+
+func (a AuthService) convertCitizenToDTO(c models.Citizen) models.CitizenDTO {
 	return models.CitizenDTO{
 		ID:                           c.ID.Hex(), // Convert ObjectID to string
 		FullName:                     c.FullName,

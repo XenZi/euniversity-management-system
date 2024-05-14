@@ -46,3 +46,8 @@ type LoginCitizenDTO struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
+
+type AddingRoles struct {
+	PersonalIdentificationNumber string   `json:"pin"`
+	Roles                        []string `json:"roles"`
+}
