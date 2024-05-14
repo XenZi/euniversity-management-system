@@ -22,7 +22,7 @@ func NewUnivesityClient(host, port string, client *http.Client) *UniversityClien
 }
 
 func (uc UniversityClient) CheckIfStudent(id string) (bool, *errors.ErrorStruct) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/checkIfStudent/%s", uc.address, id), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/student/%s", uc.address, id), nil)
 	if err != nil {
 		log.Fatalln(err.Error())
 		return false, errors.NewError(err.Error(), 500)

@@ -37,6 +37,10 @@ func (h HealthcareService) CreateRecordForUser(patientID string) (*models.Record
 }
 
 func (h HealthcareService) CreateCertificateForUser(r models.CompletionReport) (*models.CertificateDTO, *errors.ErrorStruct) {
+	_, err := h.universityClient.CheckIfStudent(r.PatientID)
+	if err != nil {
+		return nil, err
+	}
 	report := models.Report{
 		Title:   r.Title,
 		Content: r.Content,
