@@ -10,6 +10,10 @@ services:
     restart: on-failure
     ports:
       - "8000:8000"
+    depends_on:
+      - university-service
+      - dorm-service
+      - healthcare-service
     logging:
       driver: none
     networks:
@@ -171,3 +175,4 @@ volumes:
   university-service-db_store:
   auth-db_store:
   healthcare-db_store:
+  dorm-db_store:
