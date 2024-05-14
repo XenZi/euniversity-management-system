@@ -14,5 +14,3 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
-
-// jwt?
