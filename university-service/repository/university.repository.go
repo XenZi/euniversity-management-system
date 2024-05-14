@@ -4,6 +4,7 @@ import (
 	"context"
 	"fakultet-service/errors"
 	"fakultet-service/models"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -22,13 +23,9 @@ func (u UniversityRepository) SaveUniversity(university models.University) (*mod
 	universityCollection := u.cli.Database("university").Collection("university")
 	insertResult, err := universityCollection.InsertOne(context.TODO(), university)
 	if err != nil {
-		err, status := errors.HandleUniversityInsertError(err, university)
-		if status == -1 {
-			status = 500
-		}
-		return nil, errors.NewError(err.Error(), status)
+		return nil, errors.NewError(err.Error(), 500)
 	}
-	university.Id = insertResult.InsertedID.(primitive.ObjectID)
+	university.ID = insertResult.InsertedID.(primitive.ObjectID)
 	return &university, nil
 
 }

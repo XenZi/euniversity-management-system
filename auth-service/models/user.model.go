@@ -2,12 +2,6 @@ package models
 
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
-type University struct {
-	ID      primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-	Name    string             `json:"name" bson:"name"`
-	Address string             `json:"address" bson:"address"`
-}
-
 type Citizen struct {
 	ID                           primitive.ObjectID `json:"id" bson:"_id,omitempty"`
 	FullName                     string             `json:"fullName" bson:"username"`
@@ -48,34 +42,7 @@ type CitizenDTO struct {
 	Roles                        []string  `json:"roles"`
 }
 
-type Student struct {
-	Citizen
-	BudgetStatus string        `json:"budgetStatus" bson:"budgetStatus"`
-	Espb         int64         `json:"espb" bson:"espb"`
-	Status       StudentStatus `json:"status" bson:"status"`
-}
-
-type Professor struct {
-	Citizen
-	Status ProfessorStatus `json:"status" bson:"status"`
-}
-
-type Scholarship struct {
-	Student    Student    `json:"student" bson:"student"`
-	University University `json:"university" bson:"university"`
-}
-
-type StudyingConfirmation struct {
-	University University `json:"university" bson:"university"`
-	Student    Student    `json:"student" bson:"student"`
-}
-
-type StateExamApplication struct {
-	University University `json:"university" bson:"university"`
-	Student    Student    `json:"student" bson:"student"`
-}
-
-type EntranceExam struct {
-	DateAndTime string `json:"dateAndTime" bson:"dateAndTime"`
-	Address     string `json:"address" bson:"address"`
+type LoginCitizenDTO struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }

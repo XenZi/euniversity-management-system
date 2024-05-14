@@ -17,11 +17,7 @@ func NewUniversityService(universityRepository *repository.UniversityRepository)
 }
 
 func (u UniversityService) CreateUniversity(university models.University) (*models.University, *errors.ErrorStruct) {
-	newUni := models.University{
-		Name:    university.Name,
-		Address: university.Address,
-	}
-	addedUni, err := u.UniversityRepository.SaveUniversity(newUni)
+	addedUni, err := u.UniversityRepository.SaveUniversity(university)
 	if err != nil {
 		return nil, err
 	}

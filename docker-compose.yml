@@ -9,7 +9,7 @@ services:
     hostname: api-gateway
     restart: on-failure
     ports:
-      - "8080:8080"
+      - "8000:8000"
     logging:
       driver: none
     networks:
@@ -24,7 +24,8 @@ services:
     container_name: "university-service"
     hostname: "university-service"
     environment:
-      - PORT=8080
+      - PORT=${UNIVERSITY_SERVICE_PORT}
+      - UNIVERSITY_MONGO_URI=${UNIVERSITY_MONGO_URI}
     networks:
       - network
     depends_on:
@@ -34,7 +35,7 @@ services:
     image: mongo
     restart: always
     ports:
-      - "27018:27017"
+      - "27021:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: pass
@@ -49,10 +50,86 @@ services:
       - university-service-db_store:/data/db
     networks:
       - network
+    depends_on:
+      - auth-service
+      - healthcare-service
 
+  auth-service:
+    build:
+      context: .
+      dockerfile: ./auth-service/Dockerfile
+    image: auth-service
+    container_name: auth-service
+    restart: always
+    hostname: "auth-server"
+    depends_on:
+      - auth-db
+    environment:
+      - PORT=${AUTH_SERVICE_PORT}
+      - AUTH_MONGO_URI=${AUTH_MONGO_URI}
+      - JWT_KEY=${JWT_KEY}
+    networks:
+      - network
+
+  auth-db:
+    image: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: pass
+      MONGO_INITDB_DATABASE: mongoDemo
+      ME_CONFIG_MONGODB_SERVER: mongo
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    volumes:
+      - auth-db_store:/data/db
+    networks:
+      - network
+
+  healthcare-service:
+    build:
+      context: .
+      dockerfile: ./healthcare-service/Dockerfile
+    image: healthcare-service
+    container_name: healthcare-service
+    restart: always
+    hostname: "healthcare-server"
+    depends_on:
+      - healthcare-db
+    environment:
+      - PORT=${HEALTHCARE_SERVICE_PORT}
+      - HEALTHCARE_MONGO_URI=${HEALTHCARE_MONGO_URI}
+    networks:
+      - network
+
+  healthcare-db:
+    image: mongo
+    restart: always
+    ports:
+      - "27018:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: pass
+      MONGO_INITDB_DATABASE: mongoDemo
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    volumes:
+      - healthcare-db_store:/data/db
+    networks:
+      - network
 networks:
   network:
     driver: bridge
 
 volumes:
   university-service-db_store:
+  auth-db_store:
+  healthcare-db_store:

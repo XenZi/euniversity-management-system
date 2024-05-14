@@ -2,10 +2,10 @@ package main
 
 import (
 	"context"
-	"fakultet-service/config"
-	"fakultet-service/handlers"
-	"fakultet-service/repository"
-	"fakultet-service/services"
+	"healthcare/handlers"
+	"healthcare/repository"
+	"healthcare/services"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -13,7 +13,6 @@ import (
 
 	gorillaHandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	log "github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -27,24 +26,26 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	universityRepository, err := repository.NewUniversityRepository(mongoService.GetCLI())
+	healthcareRepository, err := repository.NewHealthcareRepository(mongoService.GetCLI())
 	if err != nil {
 		log.Fatalln(err)
 	}
-	universityService, err := services.NewUniversityService(universityRepository)
+	healthcareService, err := services.NewHealthcareService(healthcareRepository)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	universityHandler, err := handlers.NewUniversityHandler(universityService)
+	healthcareHandler, err := handlers.NewHealthcareHandler(healthcareService)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	logger := config.NewLogger("./logs/log.log")
+	// ROUTING
 	router := mux.NewRouter()
-
-	router.HandleFunc("/ping", universityHandler.Ping).Methods("GET")
-	router.HandleFunc("/", universityHandler.CreateUniversity).Methods("POST")
+	router.HandleFunc("/ping", healthcareHandler.Ping).Methods("GET")
+	router.HandleFunc("/createRecord/{id}", healthcareHandler.CreateRecordForUser).Methods("POST")
+	router.HandleFunc("/createCertificate", healthcareHandler.CreateCertificateForUser).Methods("POST")
+	router.HandleFunc("/getCertificate/{id}", healthcareHandler.GetCertificateForUser).Methods("GET")
+	router.HandleFunc("/getRecord/{id}", healthcareHandler.GetRecordForUser).Methods("GET")
 
 	// CORS
 	headersOk := gorillaHandlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
@@ -58,29 +59,23 @@ func main() {
 		WriteTimeout: 1 * time.Second,
 	}
 
-	logger.Println("Server listening on port", port)
-	//Distribute all the connections to goroutines
+	log.Println("Server listening on port", port)
 	go func() {
 		err := server.ListenAndServe()
 		if err != nil {
-			logger.Fatal("Error while server is listening and serving requests", log.Fields{
-				"module": "server-main",
-				"error":  err.Error(),
-			})
+			log.Panicf("PANIC FROM AUTH-SERVICE ON LISTENING")
 		}
 	}()
-
 	sigCh := make(chan os.Signal)
 	signal.Notify(sigCh, os.Interrupt)
 	signal.Notify(sigCh, os.Kill)
 
 	sig := <-sigCh
-	logger.Println("Received terminate, graceful shutdown", sig)
+	log.Println("Received terminate, graceful shutdown", sig)
+
 	//Try to shutdown gracefully
 	if server.Shutdown(timeoutContext) != nil {
-		logger.Fatal("Error during graceful shutdown", log.Fields{
-			"module": "server-main",
-		})
+		log.Fatalf("Cannot gracefully shutdown...")
 	}
-	logger.LogInfo("server-main", "Server shut down")
+	log.Println("Server stopped")
 }
