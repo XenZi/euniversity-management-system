@@ -49,15 +49,35 @@ type CitizenDTO struct {
 }
 
 type Student struct {
-	Citizen
-	BudgetStatus string        `json:"budgetStatus" bson:"budgetStatus"`
-	Espb         int64         `json:"espb" bson:"espb"`
-	Status       StudentStatus `json:"status" bson:"status"`
+	ID                           primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	FullName                     string             `json:"fullName" bson:"username"`
+	Gender                       string             `json:"gender" bson:"gender"`
+	IdentityCardNumber           string             `json:"identityCardNumber" bson:"identityCardNumber"`
+	Citizenship                  string             `json:"citizenship" bson:"citizenship"`
+	PersonalIdentificationNumber string             `json:"personalIdentificationNumber" bson:"personalIdentificationNumber"`
+	Residence                    Residence          `json:"residence" bson:"residence"`
+	BirthData                    BirthData          `json:"birthData" bson:"birthData"`
+	Email                        string             `json:"email" bson:"email"`
+	Password                     string             `json:"password" bson:"password"`
+	Roles                        []string           `json:"roles" bson:"roles"`
+	BudgetStatus                 bool               `json:"budgetStatus" bson:"budgetStatus"`
+	Espb                         int64              `json:"espb" bson:"espb"`
+	Status                       StudentStatus      `json:"status" bson:"status"`
 }
 
 type Professor struct {
-	Citizen
-	Status ProfessorStatus `json:"status" bson:"status"`
+	ID                           primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	FullName                     string             `json:"fullName" bson:"username"`
+	Gender                       string             `json:"gender" bson:"gender"`
+	IdentityCardNumber           string             `json:"identityCardNumber" bson:"identityCardNumber"`
+	Citizenship                  string             `json:"citizenship" bson:"citizenship"`
+	PersonalIdentificationNumber string             `json:"personalIdentificationNumber" bson:"personalIdentificationNumber"`
+	Residence                    Residence          `json:"residence" bson:"residence"`
+	BirthData                    BirthData          `json:"birthData" bson:"birthData"`
+	Email                        string             `json:"email" bson:"email"`
+	Password                     string             `json:"password" bson:"password"`
+	Roles                        []string           `json:"roles" bson:"roles"`
+	Status                       ProfessorStatus    `json:"status" bson:"status"`
 }
 
 type Scholarship struct {

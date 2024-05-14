@@ -4,6 +4,7 @@ import (
 	"context"
 	"fakultet-service/errors"
 	"fakultet-service/models"
+	"go.mongodb.org/mongo-driver/bson"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -28,4 +29,24 @@ func (u UniversityRepository) SaveUniversity(university models.University) (*mod
 	university.ID = insertResult.InsertedID.(primitive.ObjectID)
 	return &university, nil
 
+}
+
+func (u UniversityRepository) SaveStudent(student models.Student) (*models.Student, *errors.ErrorStruct) {
+	studentCollection := u.cli.Database("university").Collection("student")
+	insertResult, err := studentCollection.InsertOne(context.TODO(), student)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	student.ID = insertResult.InsertedID.(primitive.ObjectID)
+	return &student, nil
+}
+
+func (u UniversityRepository) FindStudentById(personalIdentificationNumber string) (*models.Student, *errors.ErrorStruct) {
+	studentCollection := u.cli.Database("university").Collection("student")
+	var student models.Student
+	err := studentCollection.FindOne(context.TODO(), bson.M{"personalIdentificationNumber": personalIdentificationNumber}).Decode(&student)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 400)
+	}
+	return &student, nil
 }

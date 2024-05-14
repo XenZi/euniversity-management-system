@@ -23,3 +23,20 @@ func (u UniversityService) CreateUniversity(university models.University) (*mode
 	}
 	return addedUni, nil
 }
+
+func (u UniversityService) CreateStudent(student models.Student) (*models.Student, *errors.ErrorStruct) {
+	student.Espb = 0
+	addedStud, err := u.UniversityRepository.SaveStudent(student)
+	if err != nil {
+		return nil, err
+	}
+	return addedStud, nil
+}
+
+func (u UniversityService) FindStudentById(personalIdentificationNumber string) (*models.Student, *errors.ErrorStruct) {
+	student, err := u.UniversityRepository.FindStudentById(personalIdentificationNumber)
+	if err != nil {
+		return nil, err
+	}
+	return student, nil
+}
