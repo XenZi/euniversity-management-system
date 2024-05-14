@@ -84,10 +84,10 @@ func main() {
 	// CORS
 	headersOk := gorillaHandlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
 	methodsOk := gorillaHandlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
-
+	originsOk := gorillaHandlers.AllowedOrigins([]string{"http://localhost:5173"})
 	server := http.Server{
 		Addr:         ":" + port,
-		Handler:      gorillaHandlers.CORS(headersOk, methodsOk)(router),
+		Handler:      gorillaHandlers.CORS(headersOk, methodsOk, originsOk)(router),
 		IdleTimeout:  120 * time.Second,
 		ReadTimeout:  1 * time.Second,
 		WriteTimeout: 1 * time.Second,
