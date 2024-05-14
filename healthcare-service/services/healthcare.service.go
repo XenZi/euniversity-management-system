@@ -1,6 +1,7 @@
 package services
 
 import (
+	"healthcare/clients"
 	"healthcare/errors"
 	"healthcare/models"
 	"healthcare/repository"
@@ -9,12 +10,14 @@ import (
 type HealthcareService struct {
 	HealthcareRepository *repository.HealthcareRepository
 	DtoServ              *DTOService
+	universityClient     *clients.UniversityClient
 }
 
-func NewHealthcareService(healthcareRepository *repository.HealthcareRepository) (*HealthcareService, error) {
+func NewHealthcareService(healthcareRepository *repository.HealthcareRepository, uniClient *clients.UniversityClient) (*HealthcareService, error) {
 	return &HealthcareService{
 		HealthcareRepository: healthcareRepository,
 		DtoServ:              NewDTOService(),
+		universityClient:     uniClient,
 	}, nil
 }
 
