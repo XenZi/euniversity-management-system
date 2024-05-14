@@ -15,7 +15,7 @@ services:
     networks:
       - network
       
-university-service:
+  university-service:
     image: university-service
     build:
       context: .
@@ -30,7 +30,7 @@ university-service:
     depends_on:
       - university-service-db
       
-university-service-db:
+  university-service-db:
     image: mongo
     restart: always
     ports:
@@ -53,3 +53,6 @@ university-service-db:
 networks:
   network:
     driver: bridge
+
+volumes:
+  university-service-db_store:

@@ -3,6 +3,10 @@ package main
 import (
 	"context"
 	"fakultet-service/config"
+	"fakultet-service/handlers"
+	"fakultet-service/repository"
+	"fakultet-service/services"
+	gorillaHandlers "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"net/http"
@@ -12,18 +16,42 @@ import (
 )
 
 func main() {
-	port := os.Getenv("PORT")
-	if len(port) == 0 {
-		port = "8080"
-	}
 	timeoutContext, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
+
+	// env
+	port := os.Getenv("PORT")
+	// MongoService initialization
+	mongoService, err := services.NewMongoService(context.Background())
+	if err != nil {
+		log.Fatalln(err)
+	}
+	universityRepository, err := repository.NewUniversityRepository(mongoService.GetCLI())
+	if err != nil {
+		log.Fatalln(err)
+	}
+	universityService, err := services.NewUniversityService(universityRepository)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	universityHandler, err := handlers.NewUniversityHandler(universityService)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	logger := config.NewLogger("./logs/log.log")
 	router := mux.NewRouter()
 
+	router.HandleFunc("/ping", universityHandler.Ping).Methods("GET")
+	router.HandleFunc("/createUniversity", universityHandler.CreateUniversity).Methods("POST")
+
+	// CORS
+	headersOk := gorillaHandlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
+	methodsOk := gorillaHandlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+
 	server := http.Server{
 		Addr:         ":" + port,
-		Handler:      router,
+		Handler:      gorillaHandlers.CORS(headersOk, methodsOk)(router),
 		IdleTimeout:  120 * time.Second,
 		ReadTimeout:  1 * time.Second,
 		WriteTimeout: 1 * time.Second,
