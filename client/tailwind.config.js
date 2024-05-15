@@ -58,6 +58,7 @@ export default {
         800: "#3f110f",
         900: "#200907",
       },
+      white: "#fff",
     },
   },
   plugins: [],

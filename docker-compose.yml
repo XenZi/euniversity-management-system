@@ -10,8 +10,48 @@ services:
     restart: on-failure
     ports:
       - "8000:8000"
+    depends_on:
+      - university-service
+      - dorm-service
+      - healthcare-service
     logging:
       driver: none
+    networks:
+      - network
+
+  university-service:
+    image: university-service
+    build:
+      context: .
+      dockerfile: university-service/Dockerfile
+    restart: always
+    container_name: "university-service"
+    hostname: "university-service"
+    environment:
+      - PORT=${UNIVERSITY_SERVICE_PORT}
+      - UNIVERSITY_MONGO_URI=${UNIVERSITY_MONGO_URI}
+    networks:
+      - network
+    depends_on:
+      - university-service-db
+
+  university-service-db:
+    image: mongo
+    restart: always
+    ports:
+      - "27021:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: pass
+      MONGO_INITDB_DATABASE: mongoDemo
+      # Docker healtcheck - checks if database is "alive"
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    volumes:
+      - university-service-db_store:/data/db
     networks:
       - network
     depends_on:
@@ -125,11 +165,50 @@ services:
     networks:
       - network
 
+  dorm-db:
+    image: mongo
+    restart: always
+    ports:
+      - "27020:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: pass
+      MONGO_INITDB_DATABASE: mongoDemo
+      ME_CONFIG_MONGODB_SERVER: mongo
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    volumes:
+      - dorm-db_store:/data/db
+    networks:
+      - network
+
+  dorm-service:
+    build:
+      context: .
+      dockerfile: ./dorm-service/Dockerfile
+    image: dorm-service
+    container_name: dorm-service
+    restart: always
+    hostname: "dorm-server"
+    depends_on:
+      - dorm-db
+    environment:
+      - PORT=${DORM_PORT}
+      - DORM_MONGO_URI=${DORM_MONGO_URI}
+      - HEALTHCARE_SERVICE_URL=${HEALTHCARE_SERVICE_URL}
+      - HEALTHCARE_SERVICE_PORT=${HEALTHCARE_SERVICE_PORT}
+    networks:
+      - network
 networks:
   network:
     driver: bridge
 
 volumes:
+  university-service-db_store:
   auth-db_store:
   food-db_store:
   healthcare-db_store:
+  dorm-db_store:
