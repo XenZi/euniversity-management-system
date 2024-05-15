@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { axiosInstance } from "../../services/axios.service";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/slices/user.slice";
+import { useNavigate } from "react-router-dom";
 interface LoginFormData {
   email: string;
   password: string;
@@ -12,7 +13,7 @@ const LoginForm = () => {
     password: "",
   });
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
   const onInputChange = (e: React.FormEvent<HTMLInputElement>, key: string) => {
     const copyOfFormData = { ...loginForm };
     copyOfFormData[key as keyof LoginFormData] = e.currentTarget.value;
@@ -24,6 +25,7 @@ const LoginForm = () => {
       .post("/auth/login", loginForm)
       .then((resp) => {
         dispatch(setUser({ ...resp.data.data.user }));
+        navigate("/home");
       })
       .catch((err) => {
         console.log(err.response.data);
