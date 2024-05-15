@@ -5,22 +5,31 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+type Student struct {
+	ID                           primitive.ObjectID `bson:"_id,omitempty"`
+	FullName                     string             `json:"full_name" bson:"full_name"`
+	Gender                       string             `json:"gender" bson:"gender"`
+	IdentityCardNumber           string             `json:"identity_card_number" bson:"identity_card_number"`
+	PersonalIdentificationNumber string             `json:"personal_id_number" bson:"personal_id_number"`
+	BirthDate                    string             `json:"birth_date" bson:"birth_date"`
+}
+
 type FoodCard struct {
 	ID         primitive.ObjectID `json:"id" bson:"_id,omitempty"`
 	StudentID  string             `json:"student_id" bson:"student_id"`
 	Expires    string             `json:"expires" bson:"expires"`
-	FoodPoints string             `json:"food_points" bson:"food_points"`
 	UsedPoint  []string           `json:"used_point" bson:"used_point"`
 	MassRoomID string             `json:"mass_room_id" bson:"mass_room_id"`
+	Balance    int                `json:"balance" bson:"balance"`
 }
 
-type PointPayment struct {
+type Payment struct {
 	ID               primitive.ObjectID `json:"id" bson:"_id,omitempty"`
 	FoodCardID       string             `json:"food_card_id" bson:"food_card_id"`
 	CreditCardNumber string             `json:"credit_card_number" bson:"credit_card_number"`
 	Name             string             `json:"name" bson:"name"`
 	CVV              string             `json:"cvv" bson:"cvv"`
-	Amount           string             `json:"amount" bson:"amount"`
+	Amount           int                `json:"amount" bson:"amount"`
 }
 type MessRoom struct {
 	ID            primitive.ObjectID `json:"id" bson:"_id,omitempty"`

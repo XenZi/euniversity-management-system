@@ -41,6 +41,10 @@ func main() {
 	// ROUTING
 	router := mux.NewRouter()
 	router.HandleFunc("/ping", foodHandler.Ping).Methods("GET")
+	router.HandleFunc("/createFoodCard", foodHandler.CreateFoodCard).Methods("POST")
+	router.HandleFunc("/allFoodCards", foodHandler.GetAllFoodCards).Methods("GET")
+	router.HandleFunc("/createPayment", foodHandler.CreatePayment).Methods("POST")
+	router.HandleFunc("/payForMeal/{id}", foodHandler.PayForMeal).Methods("POST")
 
 	// CORS
 	headersOk := gorillaHandlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
