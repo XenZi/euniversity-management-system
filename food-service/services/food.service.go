@@ -67,9 +67,11 @@ func (fs FoodService) PayForMeal(studentPIN string) (*models.FoodCard, *errors.E
 		log.Println(err.GetErrorMessage())
 	}
 	price := 4
+	log.Println("Dal je dobro pokupilo", isBudget)
 	if isBudget == true {
 		price = 2
 	}
+	log.Println("Podaci koje proslijedjujemo", studentPIN, price)
 	updatedCard, err := fs.FoodRepository.PayForMeal(studentPIN, price)
 	if err != nil {
 		return nil, err

@@ -108,6 +108,8 @@ services:
     environment:
       - PORT=${FOOD_SERVICE_PORT}
       - FOOD_MONGO_URI=${FOOD_MONGO_URI}
+      - UNIVERSITY_SERVICE_URL=${UNIVERSITY_SERVICE_URL}
+      - UNIVERSITY_SERVICE_PORT=${UNIVERSITY_SERVICE_PORT}
     networks:
       - network
 

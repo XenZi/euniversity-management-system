@@ -47,6 +47,12 @@ func (uc UniversityClient) GetStudentStatus(studentPIN string) (bool, *errors.Er
 	if err != nil {
 		return false, errors.NewError(err.Error(), 500)
 	}
+
 	log.Println(baseHttpResponse)
-	return true, nil
+	data, ok := baseHttpResponse.Data.(bool)
+	if !ok {
+		// Handle the case where data is not a boolean
+		return false, errors.NewError("Data is not a boolean", 500)
+	}
+	return data, nil
 }

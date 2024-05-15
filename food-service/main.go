@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"food/client"
 	"food/handlers"
 	"food/repository"
 	"food/services"
@@ -21,6 +22,15 @@ func main() {
 	// env
 	port := os.Getenv("PORT")
 	// MongoService initialization
+	universityServiceURL := os.Getenv("UNIVERSITY_SERVICE_URL")
+	universityServicePort := os.Getenv("UNIVERSITY_SERVICE_PORT")
+
+	log.Println("UNI SERVICE URL: " + universityServiceURL)
+	log.Println("UNI SERVICE PORT: " + universityServicePort)
+
+	//Client
+	customHttpClient := http.DefaultClient
+	universityClient := client.NewUniversityClient(universityServiceURL, universityServicePort, customHttpClient)
 	mongoService, err := services.NewMongoService(context.Background())
 	if err != nil {
 		log.Fatalln(err)
@@ -29,7 +39,7 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	foodService, err := services.NewFoodCardService(foodRepository)
+	foodService, err := services.NewFoodCardService(foodRepository, universityClient)
 	if err != nil {
 		log.Fatalln(err)
 	}

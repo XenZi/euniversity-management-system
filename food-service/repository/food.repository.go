@@ -75,20 +75,32 @@ func (f FoodRepository) SavePayment(payment models.Payment) (*models.Payment, *e
 
 }
 
-func (f FoodRepository) PayForMeal(studentID string, price int) (*models.FoodCard, *errors.ErrorStruct) {
+func (f FoodRepository) PayForMeal(studentPIN string, price int) (*models.FoodCard, *errors.ErrorStruct) {
 	// Get the collection
 	cardCollection := f.cli.Database("food-service").Collection("cards")
 
 	// Define the filter to find the card by studentID
-	filter := bson.M{"StudentID": studentID}
+	filter := bson.M{"student_pin": studentPIN}
+
+	// Fetch the existing card
+	existingCard := models.FoodCard{}
+	err := cardCollection.FindOne(context.TODO(), filter).Decode(&existingCard)
+	if err != nil {
+		return nil, errors.NewError("No food card found for the provided student PIN", 404)
+	}
+
+	// Check if the balance is sufficient
+	if existingCard.Balance < price {
+		return nil, errors.NewError("Insufficient balance in the food card", 400)
+	}
 
 	// Define the update operation to decrement the food_points by the price
 	update := bson.M{
-		"$inc": bson.M{"food_points": -price},
+		"$inc": bson.M{"balance": -price},
 	}
 
 	// Perform the update operation
-	_, err := cardCollection.UpdateOne(context.TODO(), filter, update)
+	_, err = cardCollection.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		return nil, errors.NewError(err.Error(), 500)
 	}
