@@ -30,9 +30,7 @@ const LoginForm = () => {
       });
   };
 
-  useEffect(() => {
-    console.log(loginForm);
-  }, [loginForm]);
+  useEffect(() => {}, [loginForm]);
 
   return (
     <form action="#" className="flex flex-col">
