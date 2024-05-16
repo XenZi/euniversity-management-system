@@ -10,7 +10,11 @@ export const BasicNavigation: NavigationObject[] = [
     name: "Home",
   },
   {
-    url: "/home",
+    url: "/dorm",
     name: "Dorm",
   },
+  {
+    url: "/healthcare",
+    name: "Healthcare",
+  }
 ];
