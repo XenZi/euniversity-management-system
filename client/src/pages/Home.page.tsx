@@ -1,9 +1,11 @@
 import { useNavigate } from "react-router-dom";
+import Navigation from "../components/navigation/navigation.component";
 
 const HomePage = () => {
   const navigate = useNavigate();
   return (
     <div className="h-screen bg-papaya-500">
+      <Navigation />
       <div className="max-w-7xl mx-auto w-100 h-full">
         <div className="flex h-full w-100 items-center justify-center">
           <button

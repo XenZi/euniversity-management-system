@@ -1,13 +1,20 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import LoginPage from "./pages/Login.page";
 import DormPage from "./pages/Dorm.page";
-import { Provider } from "react-redux";
+import { Provider, useDispatch } from "react-redux";
 import store from "./redux/store/user.store";
 import HomePage from "./pages/Home.page";
 import { useEffect } from "react";
 import PrivateRoute from "./components/routing/private-route.component";
+import useLocalStorage from "./hooks/local-storage.hook";
+import { setUser } from "./redux/slices/user.slice";
+import { User } from "./models/user.model";
 
 function App() {
+  const [userFromLocalStorage, setUserInLocalStorage] = useLocalStorage(
+    "user",
+    null
+  );
   const router = createBrowserRouter([
     {
       path: "/",
@@ -15,22 +22,22 @@ function App() {
     },
     {
       path: "/dorm",
-      element: <PrivateRoute Component={DormPage} requiredRole="Citizen" />,
+      element: <PrivateRoute Component={DormPage} />,
     },
     {
       path: "/home",
-      element: <HomePage />,
+      element: <PrivateRoute Component={HomePage} />,
     },
   ]);
-
+  const dispatch = useDispatch();
   useEffect(() => {
-    console.log("Example of reload gr");
+    if (userFromLocalStorage) {
+      dispatch(setUser({ ...(userFromLocalStorage as User) }));
+    }
   }, []);
   return (
     <>
-      <Provider store={store}>
-        <RouterProvider router={router} />
-      </Provider>
+      <RouterProvider router={router} />
     </>
   );
 }
