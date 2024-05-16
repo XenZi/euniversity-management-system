@@ -33,6 +33,7 @@ func (hc HealthCareClient) GetUserHealthStatusConfirmation(userID string) (bool,
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode >= 400 {
+		println("Nije nasao")
 		baseErrorResp := models.BaseErrorHttpResponse{}
 		err := json.NewDecoder(resp.Body).Decode(&baseErrorResp)
 		if err != nil {

@@ -5,7 +5,11 @@ import (
 	"auth/services"
 	"auth/utils"
 	"context"
+	"encoding/json"
+	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 type AuthHandler struct {
@@ -54,14 +58,42 @@ func (ah AuthHandler) Login(rw http.ResponseWriter, h *http.Request) {
 	utils.WriteResp(response, 200, rw)
 }
 
+func (ah AuthHandler) GetUserByPIN(rw http.ResponseWriter, h *http.Request) {
+	vars := mux.Vars(h)
+	id := vars["id"]
+	resp, err := ah.AuthService.GetUserByPIN(id)
+	if err != nil {
+		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "api/auth/findOne", rw)
+		return
+	}
+	utils.WriteResp(resp, 200, rw)
+}
+
+func (ah AuthHandler) AddRoles(rw http.ResponseWriter, h *http.Request) {
+	var addingRoles models.AddingRoles
+	decoder := json.NewDecoder(h.Body)
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(&addingRoles); err != nil {
+		utils.WriteErrorResp("error while casting data into structure", 500, "/api/auth/addRoles", rw)
+		return
+	}
+	response, err := ah.AuthService.UpdateUserByPIN(addingRoles.PersonalIdentificationNumber, addingRoles.Roles)
+	if err != nil {
+		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "api/auth/addRoles", rw)
+		return
+	}
+	utils.WriteResp(response, 200, rw)
+}
+
 func (ah AuthHandler) ValidateJWT(rw http.ResponseWriter, h *http.Request) {
-	// Questionable
 	tokenString := utils.ExtractToken(h.Header.Get("Authorization"))
+	log.Println(tokenString)
 	response, err := ah.JwtService.ValidateToken(tokenString)
 	if err != nil {
 		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "api/auth/login", rw)
 		return
 	}
+	log.Println(response)
 	ctx := context.WithValue(h.Context(), "user", response)
 	h = h.WithContext(ctx)
 	utils.WriteResp(response, 200, rw)

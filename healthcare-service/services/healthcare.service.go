@@ -1,6 +1,7 @@
 package services
 
 import (
+	"healthcare/clients"
 	"healthcare/errors"
 	"healthcare/models"
 	"healthcare/repository"
@@ -9,12 +10,14 @@ import (
 type HealthcareService struct {
 	HealthcareRepository *repository.HealthcareRepository
 	DtoServ              *DTOService
+	universityClient     *clients.UniversityClient
 }
 
-func NewHealthcareService(healthcareRepository *repository.HealthcareRepository) (*HealthcareService, error) {
+func NewHealthcareService(healthcareRepository *repository.HealthcareRepository, uniClient *clients.UniversityClient) (*HealthcareService, error) {
 	return &HealthcareService{
 		HealthcareRepository: healthcareRepository,
 		DtoServ:              NewDTOService(),
+		universityClient:     uniClient,
 	}, nil
 }
 
@@ -34,6 +37,10 @@ func (h HealthcareService) CreateRecordForUser(patientID string) (*models.Record
 }
 
 func (h HealthcareService) CreateCertificateForUser(r models.CompletionReport) (*models.CertificateDTO, *errors.ErrorStruct) {
+	_, err := h.universityClient.CheckIfStudent(r.PatientID)
+	if err != nil {
+		return nil, err
+	}
 	report := models.Report{
 		Title:   r.Title,
 		Content: r.Content,

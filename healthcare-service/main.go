@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"healthcare/clients"
 	"healthcare/handlers"
 	"healthcare/repository"
 	"healthcare/services"
@@ -21,6 +22,11 @@ func main() {
 
 	// env
 	port := os.Getenv("PORT")
+	universityHost := "university-service"
+	universityPort := "8000"
+	// client
+	customClient := http.DefaultClient
+	universityClient := clients.NewUnivesityClient(universityHost, universityPort, customClient)
 	// MongoService initialization
 	mongoService, err := services.NewMongoService(context.Background())
 	if err != nil {
@@ -30,7 +36,7 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	healthcareService, err := services.NewHealthcareService(healthcareRepository)
+	healthcareService, err := services.NewHealthcareService(healthcareRepository, universityClient)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -43,9 +49,9 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/ping", healthcareHandler.Ping).Methods("GET")
 	router.HandleFunc("/createRecord/{id}", healthcareHandler.CreateRecordForUser).Methods("POST")
+	router.HandleFunc("/getRecord/{id}", healthcareHandler.GetRecordForUser).Methods("GET")
 	router.HandleFunc("/createCertificate", healthcareHandler.CreateCertificateForUser).Methods("POST")
 	router.HandleFunc("/getCertificate/{id}", healthcareHandler.GetCertificateForUser).Methods("GET")
-	router.HandleFunc("/getRecord/{id}", healthcareHandler.GetRecordForUser).Methods("GET")
 
 	// CORS
 	headersOk := gorillaHandlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
