@@ -26,7 +26,9 @@ func (ah AdmissionsHandler) CreateNewAdmission(rw http.ResponseWriter, h *http.R
 		utils.WriteErrorResp("Error neki", 500, "path", rw)
 		return
 	}
-	log.Println(admissions)
+	ctx := h.Context()
+	val := ctx.Value("user")
+	log.Println(val)
 	data, err := ah.admissionsService.CreateNewAdmission(admissions)
 	if err != nil {
 		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "path", rw)

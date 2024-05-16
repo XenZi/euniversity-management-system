@@ -51,3 +51,14 @@ type AddingRoles struct {
 	PersonalIdentificationNumber string   `json:"pin"`
 	Roles                        []string `json:"roles"`
 }
+type PersonFromClaims struct {
+	Email string
+	Roles []string
+	PID   string
+}
+
+/*
+	"name":  email,
+	"roles": roles,
+	"pid":   pid,
+*/
