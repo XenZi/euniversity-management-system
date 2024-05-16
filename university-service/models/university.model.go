@@ -63,6 +63,8 @@ type Student struct {
 	BudgetStatus                 bool               `json:"budgetStatus" bson:"budgetStatus"`
 	Espb                         int64              `json:"espb" bson:"espb"`
 	Status                       StudentStatus      `json:"status" bson:"status"`
+	University                   University         `json:"university" bson:"university"`
+	Semester                     int64              `json:"semester" bson:"semester"`
 }
 
 type Professor struct {

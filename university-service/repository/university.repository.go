@@ -4,6 +4,7 @@ import (
 	"context"
 	"fakultet-service/errors"
 	"fakultet-service/models"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -21,7 +22,7 @@ func NewUniversityRepository(cli *mongo.Client) (*UniversityRepository, error) {
 }
 
 func (u UniversityRepository) SaveUniversity(university models.University) (*models.University, *errors.ErrorStruct) {
-	universityCollection := u.cli.Database("university").Collection("university")
+	universityCollection := u.cli.Database("university").Collection("university_collection")
 	insertResult, err := universityCollection.InsertOne(context.TODO(), university)
 	if err != nil {
 		return nil, errors.NewError(err.Error(), 500)
@@ -48,5 +49,34 @@ func (u UniversityRepository) FindStudentById(personalIdentificationNumber strin
 	if err != nil {
 		return nil, errors.NewError(err.Error(), 400)
 	}
+	fmt.Println(student)
 	return &student, nil
+}
+func (u UniversityRepository) UpdateStudent(student models.Student) (*models.Student, *errors.ErrorStruct) {
+	studentCollection := u.cli.Database("university").Collection("student")
+	filter := bson.M{"personalIdentificationNumber": student.PersonalIdentificationNumber}
+	update := bson.M{"$set": student}
+
+	updateResult, err := studentCollection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	if updateResult.ModifiedCount == 0 {
+		return nil, errors.NewError("No student was updated", 400)
+	}
+
+	return &student, nil
+}
+func (u UniversityRepository) DeleteStudent(personalIdentificationNumber string) (*models.Student, *errors.ErrorStruct) {
+	student, err := u.FindStudentById(personalIdentificationNumber)
+	if err != nil {
+		return nil, err
+	}
+	studentCollection := u.cli.Database("university").Collection("student")
+	filter := bson.M{"personalIdentificationNumber": personalIdentificationNumber}
+	_, errFromDelete := studentCollection.DeleteOne(context.TODO(), filter)
+	if errFromDelete != nil {
+		return nil, errors.NewError(errFromDelete.Error(), 500)
+	}
+	return student, nil
 }
