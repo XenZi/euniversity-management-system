@@ -46,3 +46,15 @@ type LoginCitizenDTO struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
+
+type PersonFromClaims struct {
+	Email string
+	Roles []string
+	PID   string
+}
+
+/*
+	"name":  email,
+	"roles": roles,
+	"pid":   pid,
+*/

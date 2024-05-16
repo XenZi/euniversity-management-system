@@ -5,6 +5,7 @@ import (
 	"auth/services"
 	"auth/utils"
 	"context"
+	"log"
 	"net/http"
 )
 
@@ -55,13 +56,14 @@ func (ah AuthHandler) Login(rw http.ResponseWriter, h *http.Request) {
 }
 
 func (ah AuthHandler) ValidateJWT(rw http.ResponseWriter, h *http.Request) {
-	// Questionable
 	tokenString := utils.ExtractToken(h.Header.Get("Authorization"))
+	log.Println(tokenString)
 	response, err := ah.JwtService.ValidateToken(tokenString)
 	if err != nil {
 		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "api/auth/login", rw)
 		return
 	}
+	log.Println(response)
 	ctx := context.WithValue(h.Context(), "user", response)
 	h = h.WithContext(ctx)
 	utils.WriteResp(response, 200, rw)
