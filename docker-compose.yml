@@ -30,6 +30,8 @@ services:
     environment:
       - PORT=${UNIVERSITY_SERVICE_PORT}
       - UNIVERSITY_MONGO_URI=${UNIVERSITY_MONGO_URI}
+      - HEALTHCARE_SERVICE_PORT=${HEALTHCARE_SERVICE_PORT}
+      - HEALTHCARE_SERVICE_URL=${HEALTHCARE_SERVICE_URL}
     networks:
       - network
     depends_on:

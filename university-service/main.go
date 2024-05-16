@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fakultet-service/client"
 	"fakultet-service/config"
 	"fakultet-service/handlers"
 	"fakultet-service/repository"
@@ -22,6 +23,13 @@ func main() {
 
 	// env
 	port := os.Getenv("PORT")
+
+	healthCareServiceURL := os.Getenv("HEALTHCARE_SERVICE_URL")
+	healthCareServicePort := os.Getenv("HEALTHCARE_SERVICE_PORT")
+
+	// client
+	customHttpClient := http.DefaultClient
+	healthCareClient := client.NewHealthCareClient(healthCareServiceURL, healthCareServicePort, customHttpClient)
 	// MongoService initialization
 	mongoService, err := services.NewMongoService(context.Background())
 	if err != nil {
@@ -31,7 +39,7 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	universityService, err := services.NewUniversityService(universityRepository)
+	universityService, err := services.NewUniversityService(universityRepository, healthCareClient)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -48,7 +56,7 @@ func main() {
 	router.HandleFunc("/student", universityHandler.CreateStudent).Methods("POST")
 	router.HandleFunc("/student/{id}", universityHandler.FindStudentById).Methods("GET")
 	router.HandleFunc("/student/budget/{id}", universityHandler.CheckBudget).Methods("GET")
-
+	router.HandleFunc("/student/status/{id}", universityHandler.ExtendStatus).Methods("PUT")
 	// CORS
 	headersOk := gorillaHandlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
 	methodsOk := gorillaHandlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})

@@ -84,3 +84,17 @@ func (uh UniversityHandler) CheckBudget(rw http.ResponseWriter, h *http.Request)
 	}
 	utils.WriteResp(resp, 200, rw)
 }
+func (uh UniversityHandler) ExtendStatus(rw http.ResponseWriter, h *http.Request) {
+	vars := mux.Vars(h)
+	id := vars["id"]
+	if id == "" {
+		utils.WriteResp("Bad request", http.StatusNotFound, rw)
+		return
+	}
+	resp, err := uh.UniversityService.ExtendStatus(id)
+	if err != nil {
+		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "/student/status", rw)
+		return
+	}
+	utils.WriteResp(resp, 200, rw)
+}
