@@ -74,3 +74,10 @@ func (u UniversityService) ExtendStatus(personalIdentificationNumber string) (*m
 
 	return updatedStudent, nil
 }
+func (u UniversityService) DeleteStudent(personalIdentificationNumber string) (*models.Student, *errors.ErrorStruct) {
+	student, err := u.UniversityRepository.DeleteStudent(personalIdentificationNumber)
+	if err != nil {
+		return nil, err
+	}
+	return student, nil
+}

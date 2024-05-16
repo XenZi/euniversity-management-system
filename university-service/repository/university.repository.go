@@ -67,3 +67,16 @@ func (u UniversityRepository) UpdateStudent(student models.Student) (*models.Stu
 
 	return &student, nil
 }
+func (u UniversityRepository) DeleteStudent(personalIdentificationNumber string) (*models.Student, *errors.ErrorStruct) {
+	student, err := u.FindStudentById(personalIdentificationNumber)
+	if err != nil {
+		return nil, err
+	}
+	studentCollection := u.cli.Database("university").Collection("student")
+	filter := bson.M{"personalIdentificationNumber": personalIdentificationNumber}
+	_, errFromDelete := studentCollection.DeleteOne(context.TODO(), filter)
+	if errFromDelete != nil {
+		return nil, errors.NewError(errFromDelete.Error(), 500)
+	}
+	return student, nil
+}
