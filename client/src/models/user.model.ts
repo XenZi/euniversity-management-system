@@ -6,6 +6,7 @@ export interface User {
   personalIdentificationNumber: string;
   residence: string;
   email: string;
+  roles: string[];
 }
 
 export interface Residence {

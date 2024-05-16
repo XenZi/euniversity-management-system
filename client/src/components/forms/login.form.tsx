@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { axiosInstance } from "../../services/axios.service";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/slices/user.slice";
+import { useNavigate } from "react-router-dom";
+import useLocalStorage from "../../hooks/local-storage.hook";
 interface LoginFormData {
   email: string;
   password: string;
@@ -11,8 +13,12 @@ const LoginForm = () => {
     email: "",
     password: "",
   });
+  const [userFromLocalStorage, setUserInLocalStorage] = useLocalStorage(
+    "user",
+    {}
+  );
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
   const onInputChange = (e: React.FormEvent<HTMLInputElement>, key: string) => {
     const copyOfFormData = { ...loginForm };
     copyOfFormData[key as keyof LoginFormData] = e.currentTarget.value;
@@ -24,15 +30,15 @@ const LoginForm = () => {
       .post("/auth/login", loginForm)
       .then((resp) => {
         dispatch(setUser({ ...resp.data.data.user }));
+        navigate("/home");
+        setUserInLocalStorage(resp.data.data.user);
       })
       .catch((err) => {
         console.log(err.response.data);
       });
   };
 
-  useEffect(() => {
-    console.log(loginForm);
-  }, [loginForm]);
+  useEffect(() => {}, [loginForm]);
 
   return (
     <form action="#" className="flex flex-col">
