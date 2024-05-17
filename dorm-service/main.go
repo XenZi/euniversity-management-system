@@ -79,7 +79,7 @@ func main() {
 	router.HandleFunc("/{id}", dormHandler.DeleteDormById).Methods("DELETE")
 	router.HandleFunc("/{id}", dormHandler.UpdateDormById).Methods("PUT")
 	router.HandleFunc("/admissions", middleware.ValidateJWT(middleware.ValidateRole(admissionsHandler.CreateNewAdmission, "Citizen"), authServiceURL)).Methods("POST")
-	router.HandleFunc("/admissions/{id}", admissionsHandler.GetAdmissionsByID).Methods("GET")
+	router.HandleFunc("/admissions/{id}", admissionsHandler.GetAdmissionByID).Methods("GET")
 	router.HandleFunc("/admissions/{id}", admissionsHandler.DeleteAdmissionById).Methods("GET")
 	router.HandleFunc("/admissions/dorm/{id}", admissionsHandler.GetAdmissionByDormId).Methods("GET")
 	router.HandleFunc("/applications", applicationsHandler.CreateNewApplication).Methods("POST")

@@ -37,7 +37,7 @@ func (ah AdmissionsHandler) CreateNewAdmission(rw http.ResponseWriter, h *http.R
 	utils.WriteResp(data, 201, rw)
 }
 
-func (ah AdmissionsHandler) GetAdmissionsByID(rw http.ResponseWriter, h *http.Request) {
+func (ah AdmissionsHandler) GetAdmissionByID(rw http.ResponseWriter, h *http.Request) {
 	vars := mux.Vars(h)
 	id := vars["id"]
 	if id == "" {

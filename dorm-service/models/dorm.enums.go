@@ -52,3 +52,18 @@ const (
 	Denied
 	Pending
 )
+
+func (a ApplicationStatus) String() string {
+	switch a {
+	case Review:
+		return "Review"
+	case Accepted:
+		return "Accepted"
+	case Denied:
+		return "Denied"
+	case Pending:
+		return "Pending"
+	default:
+		return "Unkown"
+	}
+}

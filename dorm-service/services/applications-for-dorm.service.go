@@ -32,5 +32,4 @@ func (as ApplicationsService) CreateNewApplication(application models.Applicatio
 		return nil, err
 	}
 	return createdApplication, nil
-
 }

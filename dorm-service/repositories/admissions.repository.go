@@ -77,3 +77,25 @@ func (ar AdmissionsRepository) FindAdmissionByDormID(id string) (*models.Dormito
 	}
 	return &dorm, nil
 }
+
+func (ar AdmissionsRepository) FindAdmissionsByDormID(id string) (*[]models.DormitoryAdmissions, *errors.ErrorStruct) {
+	collection := ar.cli.Database("yourdatabase").Collection("dormitory_admissions")
+	filter := bson.M{"dormID": id}
+	var results []models.DormitoryAdmissions
+	cursor, err := collection.Find(context.TODO(), filter)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	defer cursor.Close(context.TODO())
+	for cursor.Next(context.TODO()) {
+		var admission models.DormitoryAdmissions
+		if err := cursor.Decode(&admission); err != nil {
+			return nil, errors.NewError(err.Error(), 500)
+		}
+		results = append(results, admission)
+	}
+	if err := cursor.Err(); err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	return &results, nil
+}
