@@ -120,6 +120,16 @@ func (h HealthcareRepository) GetRecordByPatientID(patientID string) (*models.Re
 			status = 500
 			fmt.Println(err.Error())
 		}
+		if status == 404 {
+			newRec := models.Record{
+				PatientID: patientID,
+			}
+			inserted, erro := h.SaveRecord(newRec)
+			if erro != nil {
+				return nil, erro
+			}
+			return inserted, nil
+		}
 		return nil, errors.NewError(err.Error(), status)
 	}
 	return record, nil

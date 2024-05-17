@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"healthcare/clients"
 	"healthcare/handlers"
+	"healthcare/middleware"
 	"healthcare/repository"
 	"healthcare/services"
 	"log"
@@ -24,6 +26,7 @@ func main() {
 	port := os.Getenv("PORT")
 	universityHost := "university-service"
 	universityPort := "8000"
+	authServiceURL := fmt.Sprintf("http://%s:%s", os.Getenv("AUTH_SERVICE_URL"), os.Getenv("AUTH_SERVICE_PORT"))
 	// client
 	customClient := http.DefaultClient
 	universityClient := clients.NewUnivesityClient(universityHost, universityPort, customClient)
@@ -48,7 +51,8 @@ func main() {
 	// ROUTING
 	router := mux.NewRouter()
 	router.HandleFunc("/ping", healthcareHandler.Ping).Methods("GET")
-	router.HandleFunc("/createRecord/{id}", healthcareHandler.CreateRecordForUser).Methods("POST")
+	router.HandleFunc("/createRecord/{id}", middleware.ValidateJWT(middleware.ValidateRole(healthcareHandler.CreateRecordForUser, "Doctor"), authServiceURL)).Methods("POST")
+	router.HandleFunc("/createRecords/{id}", healthcareHandler.CreateRecordForUser).Methods("POST")
 	router.HandleFunc("/getRecord/{id}", healthcareHandler.GetRecordForUser).Methods("GET")
 	router.HandleFunc("/createCertificate", healthcareHandler.CreateCertificateForUser).Methods("POST")
 	router.HandleFunc("/getCertificate/{id}", healthcareHandler.GetCertificateForUser).Methods("GET")

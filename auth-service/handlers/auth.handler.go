@@ -85,6 +85,19 @@ func (ah AuthHandler) AddRoles(rw http.ResponseWriter, h *http.Request) {
 	utils.WriteResp(response, 200, rw)
 }
 
+func (ah AuthHandler) SwitchRole(rw http.ResponseWriter, h *http.Request) {
+	vars := mux.Vars(h)
+	pin := vars["id"]
+	role := vars["role"]
+
+	response, err := ah.AuthService.SwitchRoles(pin, role)
+	if err != nil {
+		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "api/auth/login", rw)
+		return
+	}
+	utils.WriteResp(response, 200, rw)
+}
+
 func (ah AuthHandler) ValidateJWT(rw http.ResponseWriter, h *http.Request) {
 	tokenString := utils.ExtractToken(h.Header.Get("Authorization"))
 	log.Println(tokenString)

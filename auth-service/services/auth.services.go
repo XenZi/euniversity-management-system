@@ -55,6 +55,27 @@ func (a AuthService) LoginUser(loginUser models.LoginCitizenDTO) (*models.Succes
 	}, nil
 }
 
+func (a AuthService) SwitchRoles(pin, desiredRole string) (*models.SuccessfullyLoggedUser, *errors.ErrorStruct) {
+	user, err := a.AuthRepository.FindUserByPIN(pin)
+	if err != nil {
+		return nil, err
+	}
+	for index, role := range user.Roles {
+		if role == desiredRole {
+			user.Roles[index], user.Roles[0] = user.Roles[0], user.Roles[index]
+			break
+		}
+	}
+	jwtToken, foundError := a.JwtService.CreateKey(user.Email, user.Roles, user.PersonalIdentificationNumber)
+	if foundError != nil {
+		return nil, errors.NewError(foundError.Error(), 500)
+	}
+	return &models.SuccessfullyLoggedUser{
+		Token: *jwtToken,
+		User:  a.convertCitizenToDTO(*user),
+	}, nil
+}
+
 func (a AuthService) GetUserByPIN(pin string) (*models.CitizenDTO, *errors.ErrorStruct) {
 	user, err := a.AuthRepository.FindUserByPIN(pin)
 	if err != nil {

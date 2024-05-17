@@ -16,6 +16,30 @@ const HomePage = () => {
           >
             Go to Dorm Page
           </button>
+          <button
+            className="border bg-auburn-500 border-auburn-500 font-semibold py-2 px-4 rounded focus:border-auburn-700 text-white"
+            onClick={() => {
+              navigate("/healthcare");
+            }}
+          >
+            Go to Healthcare Page
+          </button>
+          <button
+            className="border bg-auburn-500 border-auburn-500 font-semibold py-2 px-4 rounded focus:border-auburn-700 text-white"
+            onClick={() => {
+              navigate("/university");
+            }}
+          >
+            Go to University Page
+          </button>
+          <button
+            className="border bg-auburn-500 border-auburn-500 font-semibold py-2 px-4 rounded focus:border-auburn-700 text-white"
+            onClick={() => {
+              navigate("/food");
+            }}
+          >
+            Go to Food Page
+          </button>
         </div>
       </div>
     </div>
