@@ -1,7 +1,8 @@
-import { useEffect, useState, Dispatch, SetStateAction } from "react";
+import { useState, useEffect } from "react";
 
-type SetValue<T> = Dispatch<SetStateAction<T>>;
-type UseLocalStorageReturn<T> = [T, SetValue<T>];
+type SetValue<T> = (value: T | ((val: T) => T)) => void;
+type RemoveValue = () => void;
+type UseLocalStorageReturn<T> = [T, SetValue<T>, RemoveValue];
 
 const useLocalStorage = <T>(
   key: string,
@@ -18,6 +19,11 @@ const useLocalStorage = <T>(
     localStorage.setItem(key, JSON.stringify(valueToStore));
   };
 
+  const removeValue: RemoveValue = () => {
+    localStorage.removeItem(key);
+    setStoredValue(initialValue);
+  };
+
   useEffect(() => {
     const handleStorageChange = () => {
       const item = localStorage.getItem(key);
@@ -31,7 +37,7 @@ const useLocalStorage = <T>(
     };
   }, [initialValue, key]);
 
-  return [storedValue, setValue];
+  return [storedValue, setValue, removeValue];
 };
 
 export default useLocalStorage;

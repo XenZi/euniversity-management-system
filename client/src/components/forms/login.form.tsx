@@ -19,6 +19,8 @@ const LoginForm = () => {
   );
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [, setTokenInLocalStorage] = useLocalStorage("token", null);
+
   const onInputChange = (e: React.FormEvent<HTMLInputElement>, key: string) => {
     const copyOfFormData = { ...loginForm };
     copyOfFormData[key as keyof LoginFormData] = e.currentTarget.value;
@@ -32,6 +34,7 @@ const LoginForm = () => {
         dispatch(setUser({ ...resp.data.data.user }));
         navigate("/home");
         setUserInLocalStorage(resp.data.data.user);
+        setTokenInLocalStorage(resp.data.data.token);
       })
       .catch((err) => {
         console.log(err.response.data);

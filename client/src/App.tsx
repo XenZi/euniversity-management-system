@@ -11,8 +11,7 @@ import { setUser } from "./redux/slices/user.slice";
 import { User } from "./models/user.model";
 import HealthcarePage from "./pages/Healthcare.page";
 import UniversityPage from "./pages/University.page";
-import FoodPage from "./pages/Food.page"
-
+import FoodPage from "./pages/Food.page";
 
 function App() {
   const [userFromLocalStorage, setUserInLocalStorage] = useLocalStorage(
