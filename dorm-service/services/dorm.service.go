@@ -4,6 +4,7 @@ import (
 	"dorm-service/errors"
 	"dorm-service/models"
 	"dorm-service/repositories"
+	"log"
 )
 
 type DormService struct {
@@ -47,4 +48,13 @@ func (ds DormService) UpdateDormById(id, name, location string) (*models.Dorm, *
 		return nil, err
 	}
 	return dorm, nil
+}
+
+func (ds DormService) GetAllDorms() ([]*models.Dorm, *errors.ErrorStruct) {
+	dorms, err := ds.dormRepository.FindAllDorms()
+	log.Println(dorms)
+	if err != nil {
+		return nil, err
+	}
+	return dorms, nil
 }

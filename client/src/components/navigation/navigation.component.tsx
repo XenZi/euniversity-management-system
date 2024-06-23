@@ -2,10 +2,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import useLocalStorage from "../../hooks/local-storage.hook";
 import { removeUser, setUser } from "../../redux/slices/user.slice";
-import { RootState } from "../../redux/store/user.store";
+import { RootState } from "../../redux/store/store";
 import { useState } from "react";
 import { axiosInstance } from "../../services/axios.service";
-import { RemoveQuotationMarksFromString } from "../../utils/converter.utils";
 
 const Navigation = () => {
   const navigate = useNavigate();
@@ -66,7 +65,9 @@ const Navigation = () => {
     <div className="bg-papaya-500 w-full p-3">
       <div className="max-w-7xl mx-auto px-8 relative">
         <div className="flex items-center justify-between h-16 ">
-          <Link to={"/"}>EUniversity</Link>
+          <Link to={"/"} className="m-0 p-0">
+            EUniversity
+          </Link>
           <div className="flex space-x-4">
             {navLinks.map((link, i) => {
               return (

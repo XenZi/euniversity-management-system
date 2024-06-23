@@ -95,3 +95,28 @@ func (dr DormRepository) UpdateDorm(id, name, location string) (*models.Dorm, *e
 	}
 	return dorm, nil
 }
+
+func (dr DormRepository) FindAllDorms() ([]*models.Dorm, *errors.ErrorStruct) {
+	dormCollection := dr.cli.Database("dorm").Collection("dorm")
+	var dorms []*models.Dorm
+	cursor, err := dormCollection.Find(context.TODO(), bson.D{})
+	if err != nil {
+		log.Println("OVDE ERR ", err)
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	defer cursor.Close(context.TODO())
+	for cursor.Next(context.TODO()) {
+		var dorm models.Dorm
+		if err := cursor.Decode(&dorm); err != nil {
+			return nil, errors.NewError(err.Error(), 500)
+		}
+		log.Println(dorm)
+		dorms = append(dorms, &dorm)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+
+	return dorms, nil
+}

@@ -88,3 +88,12 @@ func (ah DormHandler) UpdateDormById(rw http.ResponseWriter, h *http.Request) {
 	}
 	utils.WriteResp(dorm, 200, rw)
 }
+
+func (ah DormHandler) GetAllDorms(rw http.ResponseWriter, h *http.Request) {
+	dorm, err := ah.dormService.GetAllDorms()
+	if err != nil {
+		utils.WriteResp(err.GetErrorMessage(), err.GetErrorStatus(), rw)
+		return
+	}
+	utils.WriteResp(dorm, 200, rw)
+}

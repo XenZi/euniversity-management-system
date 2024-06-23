@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { RootState } from "../redux/store/user.store";
+import { RootState } from "../redux/store/store";
 import Navigation from "../components/navigation/navigation.component";
 
 const HealthcarePage = () => {

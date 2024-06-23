@@ -71,10 +71,17 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	roomRepository := repositories.NewRoomRepository(mongoService.GetCLI())
+	roomService := services.NewRoomService(roomRepository)
+	roomHandler, err := handlers.NewRoomHandler(roomService)
+	if err != nil {
+		log.Fatalln(err)
+	}
 	// ROUTING
 	router := mux.NewRouter()
 	router.HandleFunc("/ping", dormHandler.Ping).Methods("POST")
 	router.HandleFunc("/", dormHandler.CreateNewDorm).Methods("POST")
+	router.HandleFunc("/all", dormHandler.GetAllDorms).Methods("GET")
 	router.HandleFunc("/{id}", dormHandler.FindDormById).Methods("GET")
 	router.HandleFunc("/{id}", dormHandler.DeleteDormById).Methods("DELETE")
 	router.HandleFunc("/{id}", dormHandler.UpdateDormById).Methods("PUT")
@@ -83,13 +90,18 @@ func main() {
 	router.HandleFunc("/admissions/{id}", admissionsHandler.DeleteAdmissionById).Methods("GET")
 	router.HandleFunc("/admissions/dorm/{id}", admissionsHandler.GetAdmissionByDormId).Methods("GET")
 	router.HandleFunc("/applications", applicationsHandler.CreateNewApplication).Methods("POST")
+	router.HandleFunc("/room", roomHandler.CreateRoom).Methods("POST")
+	router.HandleFunc("/{id}/rooms", roomHandler.GetAllRoomsByDormID).Methods("GET")
+	router.HandleFunc("/room/{id}", roomHandler.GetRoomByID).Methods("GET")
+	router.HandleFunc("/room/{id}", roomHandler.DeleteRoom).Methods("DELETE")
+	router.HandleFunc("/room/{id}", roomHandler.UpdateRoom).Methods("PUT")
 	// CORS
 	headersOk := gorillaHandlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
 	methodsOk := gorillaHandlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
-	originsOk := gorillaHandlers.AllowedOrigins([]string{"http://localhost:5173"})
+	// originsOk := gorillaHandlers.AllowedOrigins([]string{"http://localhost:5173"})
 	server := http.Server{
 		Addr:         ":" + port,
-		Handler:      gorillaHandlers.CORS(headersOk, methodsOk, originsOk)(router),
+		Handler:      gorillaHandlers.CORS(headersOk, methodsOk)(router),
 		IdleTimeout:  120 * time.Second,
 		ReadTimeout:  1 * time.Second,
 		WriteTimeout: 1 * time.Second,
