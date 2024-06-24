@@ -56,6 +56,22 @@ func (uh UniversityHandler) CreateStudent(rw http.ResponseWriter, h *http.Reques
 	utils.WriteResp(newStudent, 200, rw)
 }
 
+func (uh UniversityHandler) CreateProfessor(rw http.ResponseWriter, h *http.Request) {
+	decoder := json.NewDecoder(h.Body)
+	decoder.DisallowUnknownFields()
+	var professor models.Professor
+	if err := decoder.Decode(&professor); err != nil {
+		utils.WriteResp(err.Error(), http.StatusBadRequest, rw)
+		return
+	}
+	newProfessor, err := uh.UniversityService.CreateProfessor(professor)
+	if err != nil {
+		utils.WriteResp(err.GetErrorMessage(), err.GetErrorStatus(), rw)
+		return
+	}
+	utils.WriteResp(newProfessor, 200, rw)
+}
+
 func (uh UniversityHandler) FindStudentById(rw http.ResponseWriter, h *http.Request) {
 	vars := mux.Vars(h)
 	id := vars["id"]
@@ -70,6 +86,23 @@ func (uh UniversityHandler) FindStudentById(rw http.ResponseWriter, h *http.Requ
 	}
 	utils.WriteResp(student, 200, rw)
 }
+
+func (uh UniversityHandler) FindProfessorById(rw http.ResponseWriter, h *http.Request) {
+	vars := mux.Vars(h)
+	id := vars["id"]
+	if id == "" {
+		utils.WriteResp("Bad request", http.StatusNotFound, rw)
+		return
+	}
+	professor, err := uh.UniversityService.FindProfessorById(id)
+	if err != nil {
+		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "/professor", rw)
+		return
+	}
+	utils.WriteResp(professor, 200, rw)
+
+}
+
 func (uh UniversityHandler) CheckBudget(rw http.ResponseWriter, h *http.Request) {
 	vars := mux.Vars(h)
 	id := vars["id"]
@@ -108,6 +141,21 @@ func (uh UniversityHandler) DeleteStudent(rw http.ResponseWriter, h *http.Reques
 	resp, err := uh.UniversityService.DeleteStudent(id)
 	if err != nil {
 		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "/student", rw)
+		return
+	}
+	utils.WriteResp(resp, 200, rw)
+}
+
+func (uh UniversityHandler) DeleteProfessor(rw http.ResponseWriter, h *http.Request) {
+	vars := mux.Vars(h)
+	id := vars["id"]
+	if id == "" {
+		utils.WriteResp("Bad request", http.StatusNotFound, rw)
+		return
+	}
+	resp, err := uh.UniversityService.DeleteProfessor(id)
+	if err != nil {
+		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "/professor", rw)
 		return
 	}
 	utils.WriteResp(resp, 200, rw)

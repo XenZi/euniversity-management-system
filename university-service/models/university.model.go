@@ -80,6 +80,7 @@ type Professor struct {
 	Password                     string             `json:"password" bson:"password"`
 	Roles                        []string           `json:"roles" bson:"roles"`
 	Status                       ProfessorStatus    `json:"status" bson:"status"`
+	University                   University         `json:"university" bson:"university"`
 }
 
 type Scholarship struct {

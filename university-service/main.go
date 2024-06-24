@@ -5,8 +5,10 @@ import (
 	"fakultet-service/client"
 	"fakultet-service/config"
 	"fakultet-service/handlers"
+	"fakultet-service/middleware"
 	"fakultet-service/repository"
 	"fakultet-service/services"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -26,6 +28,7 @@ func main() {
 
 	healthCareServiceURL := os.Getenv("HEALTHCARE_SERVICE_URL")
 	healthCareServicePort := os.Getenv("HEALTHCARE_SERVICE_PORT")
+	authServiceURL := fmt.Sprintf("http://%s:%s", os.Getenv("AUTH_SERVICE_URL"), os.Getenv("AUTH_SERVICE_PORT"))
 
 	// client
 	customHttpClient := http.DefaultClient
@@ -56,7 +59,12 @@ func main() {
 	router.HandleFunc("/student", universityHandler.CreateStudent).Methods("POST")
 	router.HandleFunc("/student/{id}", universityHandler.FindStudentById).Methods("GET")
 	router.HandleFunc("/student/budget/{id}", universityHandler.CheckBudget).Methods("GET")
-	router.HandleFunc("/student/status/{id}", universityHandler.ExtendStatus).Methods("PUT")
+	router.HandleFunc("/student/status/{id}", middleware.ValidateJWT(middleware.ValidateRole(universityHandler.ExtendStatus, "Student"), authServiceURL)).Methods("PUT")
+	router.HandleFunc("/student/status1/{id}", universityHandler.ExtendStatus).Methods("PUT")
+	router.HandleFunc("/professor", universityHandler.CreateProfessor).Methods("POST")
+	router.HandleFunc("/professor/{id}", universityHandler.FindProfessorById).Methods("GET")
+
+	router.HandleFunc("/professor/{id}", universityHandler.DeleteProfessor).Methods("DELETE")
 	router.HandleFunc("/student/{id}", universityHandler.DeleteStudent).Methods("DELETE")
 	// CORS
 	headersOk := gorillaHandlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
