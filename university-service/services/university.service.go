@@ -45,6 +45,14 @@ func (u UniversityService) CreateProfessor(professor models.Professor) (*models.
 	return addedProf, nil
 }
 
+func (u UniversityService) CreateScholarship(scholarship models.Scholarship) (*models.Scholarship, *errors.ErrorStruct) {
+	addedScholarship, err := u.UniversityRepository.SaveScholarship(scholarship)
+	if err != nil {
+		return nil, err
+	}
+	return addedScholarship, nil
+}
+
 func (u UniversityService) FindStudentById(personalIdentificationNumber string) (*models.Student, *errors.ErrorStruct) {
 	student, err := u.UniversityRepository.FindStudentById(personalIdentificationNumber)
 	if err != nil {

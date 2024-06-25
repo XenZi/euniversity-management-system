@@ -63,7 +63,7 @@ func main() {
 	router.HandleFunc("/student/status1/{id}", universityHandler.ExtendStatus).Methods("PUT")
 	router.HandleFunc("/professor", universityHandler.CreateProfessor).Methods("POST")
 	router.HandleFunc("/professor/{id}", universityHandler.FindProfessorById).Methods("GET")
-
+	router.HandleFunc("/scholarship", universityHandler.CreateScholarship).Methods("POST")
 	router.HandleFunc("/professor/{id}", universityHandler.DeleteProfessor).Methods("DELETE")
 	router.HandleFunc("/student/{id}", universityHandler.DeleteStudent).Methods("DELETE")
 	// CORS

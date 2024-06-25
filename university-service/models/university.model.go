@@ -84,8 +84,9 @@ type Professor struct {
 }
 
 type Scholarship struct {
-	Student    Student    `json:"student" bson:"student"`
-	University University `json:"university" bson:"university"`
+	ID         primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Student    Student            `json:"student" bson:"student"`
+	University University         `json:"university" bson:"university"`
 }
 
 type StudyingConfirmation struct {
