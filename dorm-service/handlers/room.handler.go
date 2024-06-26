@@ -4,7 +4,6 @@ import (
 	"dorm-service/models"
 	"dorm-service/services"
 	"dorm-service/utils"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -70,7 +69,6 @@ func (rh RoomHandler) UpdateRoom(rw http.ResponseWriter, h *http.Request) {
 		utils.WriteErrorResp("Error neki", 500, "path", rw)
 		return
 	}
-	log.Println(room)
 	updatedRoom, err := rh.RoomsService.UpdateRoom(room)
 	if err != nil {
 		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "api/dorm/room/{id}", rw)

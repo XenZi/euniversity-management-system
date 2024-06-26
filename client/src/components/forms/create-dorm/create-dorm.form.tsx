@@ -49,7 +49,6 @@ const CreateDormForm = () => {
   };
 
   const submitForm = async () => {
-    console.log(createFormData);
     await axiosInstance
       .post("/dorm/", createFormData)
       .then((resp) => {

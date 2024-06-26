@@ -1,22 +1,21 @@
-import React, { FC, useRef } from "react";
+import { useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../redux/store/store";
 import { closeModal } from "../../redux/slices/modal.slice";
 import useOutsideClick from "../../hooks/outside-click.hook";
+import { useModalContext } from "../../context/modal.context";
 
-interface ModalProps {
-  children: React.ReactNode;
-}
-
-const Modal: FC<ModalProps> = ({ children }) => {
+const Modal = () => {
   const modal = useSelector((state: RootState) => state.modal);
   const dispatch = useDispatch();
   const modalRef = useRef<HTMLDivElement>(null);
+  const { content } = useModalContext();
 
   const callCloseModalFunction = () => {
     dispatch(closeModal());
   };
 
+  console.log(modal.isVisible);
   useOutsideClick(modalRef, callCloseModalFunction, modal.isVisible);
   return (
     <div
@@ -25,7 +24,7 @@ const Modal: FC<ModalProps> = ({ children }) => {
       }`}
     >
       <div
-        className="relative bg-white p-10 rounded-lg shadow-lg max-w-md w-full"
+        className="relative bg-white p-10 rounded-lg shadow-lg max-w-5xl w-full"
         ref={modalRef}
       >
         <button
@@ -36,7 +35,7 @@ const Modal: FC<ModalProps> = ({ children }) => {
         >
           X
         </button>
-        {children}
+        {content}
       </div>
     </div>
   );

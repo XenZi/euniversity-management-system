@@ -66,7 +66,8 @@ func (dr DormRepository) DeleteDormById(id string) (*models.Dorm, *errors.ErrorS
 	return dorm, nil
 }
 
-func (dr DormRepository) UpdateDorm(id, name, location string) (*models.Dorm, *errors.ErrorStruct) {
+func (dr DormRepository) UpdateDorm(id, name, location string, prices []models.DormPriceByCategory) (*models.Dorm, *errors.ErrorStruct) {
+	log.Println("IDD ", id)
 	dormCollection := dr.cli.Database("dorm").Collection("dorm")
 	objectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -77,15 +78,12 @@ func (dr DormRepository) UpdateDorm(id, name, location string) (*models.Dorm, *e
 		{Key: "$set", Value: bson.D{
 			{Key: "name", Value: name},
 			{Key: "location", Value: location},
+			{Key: "prices", Value: prices},
 		}},
 	}
-	updateResult, err := dormCollection.UpdateOne(context.Background(), filter, update)
+	_, err = dormCollection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		return nil, errors.NewError(err.Error(), 500)
-	}
-
-	if updateResult.ModifiedCount == 0 {
-		return nil, errors.NewError("Dorm not found", 404)
 	}
 
 	dorm, errFromDormFinding := dr.FindDormById(id)

@@ -5,10 +5,10 @@ import "fmt"
 type ApplicationType int
 
 const (
-	Budget ApplicationType = iota
-	SelfFinancing
-	Disability
-	SensitiveGroups
+	Budget          ApplicationType = 1
+	SelfFinancing                   = 2
+	Disability                      = 3
+	SensitiveGroups                 = 4
 )
 
 func (t ApplicationType) String() string {

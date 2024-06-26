@@ -4,10 +4,8 @@ import (
 	"context"
 	"dorm-service/client"
 	"dorm-service/handlers"
-	"dorm-service/middleware"
 	"dorm-service/repositories"
 	"dorm-service/services"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -26,7 +24,7 @@ func main() {
 	port := os.Getenv("PORT")
 	healthCareServiceURL := os.Getenv("HEALTHCARE_SERVICE_URL")
 	healthCareServicePort := os.Getenv("HEALTHCARE_SERVICE_PORT")
-	authServiceURL := fmt.Sprintf("http://%s:%s", os.Getenv("AUTH_SERVICE_URL"), os.Getenv("AUTH_SERVICE_PORT"))
+	// authServiceURL := fmt.Sprintf("http://%s:%s", os.Getenv("AUTH_SERVICE_URL"), os.Getenv("AUTH_SERVICE_PORT"))
 	// client
 	customHttpClient := http.DefaultClient
 	healthCareClient := client.NewHealthCareClient(healthCareServiceURL, healthCareServicePort, customHttpClient)
@@ -82,10 +80,11 @@ func main() {
 	router.HandleFunc("/ping", dormHandler.Ping).Methods("POST")
 	router.HandleFunc("/", dormHandler.CreateNewDorm).Methods("POST")
 	router.HandleFunc("/all", dormHandler.GetAllDorms).Methods("GET")
-	router.HandleFunc("/{id}", dormHandler.FindDormById).Methods("GET")
 	router.HandleFunc("/{id}", dormHandler.DeleteDormById).Methods("DELETE")
+	router.HandleFunc("/{id}", dormHandler.FindDormById).Methods("GET")
 	router.HandleFunc("/{id}", dormHandler.UpdateDormById).Methods("PUT")
-	router.HandleFunc("/admissions", middleware.ValidateJWT(middleware.ValidateRole(admissionsHandler.CreateNewAdmission, "Citizen"), authServiceURL)).Methods("POST")
+	// router.HandleFunc("/admissions", middleware.ValidateJWT(middleware.ValidateRole(admissionsHandler.CreateNewAdmission, "Citizen"), authServiceURL)).Methods("POST")
+	router.HandleFunc("/admissions", admissionsHandler.CreateNewAdmission).Methods("POST")
 	router.HandleFunc("/admissions/{id}", admissionsHandler.GetAdmissionsByID).Methods("GET")
 	router.HandleFunc("/admissions/{id}", admissionsHandler.DeleteAdmissionById).Methods("GET")
 	router.HandleFunc("/admissions/dorm/{id}", admissionsHandler.GetAdmissionByDormId).Methods("GET")
@@ -97,11 +96,11 @@ func main() {
 	router.HandleFunc("/room/{id}", roomHandler.UpdateRoom).Methods("PUT")
 	// CORS
 	headersOk := gorillaHandlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
-	methodsOk := gorillaHandlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
-	// originsOk := gorillaHandlers.AllowedOrigins([]string{"http://localhost:5173"})
+	methodsOk := gorillaHandlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS"})
+	originsOk := gorillaHandlers.AllowedOrigins([]string{"http://localhost:5173"})
 	server := http.Server{
 		Addr:         ":" + port,
-		Handler:      gorillaHandlers.CORS(headersOk, methodsOk)(router),
+		Handler:      gorillaHandlers.CORS(headersOk, methodsOk, originsOk)(router),
 		IdleTimeout:  120 * time.Second,
 		ReadTimeout:  1 * time.Second,
 		WriteTimeout: 1 * time.Second,

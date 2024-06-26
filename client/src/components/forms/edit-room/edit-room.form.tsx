@@ -1,48 +1,29 @@
-import { useEffect, useState } from "react";
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useForm, SubmitHandler } from "react-hook-form";
 import { axiosInstance } from "../../../services/axios.service";
 import { Room, ToaletType } from "../../../models/room.model";
-import { Dorm } from "../../../models/dorm.model";
 
-const CreateRoomForm = () => {
-  const { register, handleSubmit } = useForm<Room>();
-  const [dormData, setDormData] = useState<Dorm[]>();
+const EditRoomForm: React.FC<{ room: Room }> = ({ room }) => {
+  const { control, handleSubmit, register } = useForm<Room>({
+    defaultValues: {
+      squareFoot: room.squareFoot,
+      numberOfBeds: room.numberOfBeds,
+      toalet: room.toalet,
+    },
+  });
   const onSubmit: SubmitHandler<Room> = (data) => {
+    data.id = room.id;
     axiosInstance
-      .post("/dorm/room", { ...data })
-      .then((data) => console.log(data.data.data))
+      .put(`/dorm/room/${room.id}`, { ...data })
+      .then((data) => console.log(data))
       .catch((err) => console.log(err.response.data));
   };
 
-  useEffect(() => {
-    loadData();
-  }, []);
-  const loadData = async () => {
-    await axiosInstance.get(`/dorm/all`).then((data) => {
-      setDormData(data.data.data);
-    });
-  };
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
       <h2 className="text-center text-3xl font-semibold mb-3">
-        Create new room for dorm
+        Edit dorm room
       </h2>
-      <div className="w-full">
-        <label>Choose dorm</label>
-        <select
-          id="color-select"
-          className="mb-3 p-3 border-2 border-battleship-500 w-full"
-          {...register("dormID", {
-            required: true,
-          })}
-        >
-          {dormData?.map((dorm) => (
-            <option value={dorm.id} key={dorm.id}>
-              {dorm.name} - {dorm.name}
-            </option>
-          ))}
-        </select>
-      </div>
       <input
         type="number"
         id="squareFoot"
@@ -92,11 +73,11 @@ const CreateRoomForm = () => {
           className="border bg-auburn-500 border-auburn-500 font-semibold py-2 px-4 rounded focus:border-auburn-700 text-white w-full"
           type="submit"
         >
-          Create Form
+          Edit Room
         </button>
       </div>
     </form>
   );
 };
 
-export default CreateRoomForm;
+export default EditRoomForm;
