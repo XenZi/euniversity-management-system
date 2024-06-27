@@ -10,6 +10,7 @@ import CreateRoomForm from "../../components/forms/create-room/create-room.form"
 import DormTable from "../../components/dorms-table/dorms-table.component";
 import RoomsTable from "../../components/rooms-table/rooms-table.component";
 import Admissions from "../../components/forms/admissions/admissions.form";
+import AdmissionsTable from "../../components/admissions-table/admissions-table.component";
 
 const DormPage = () => {
   const user = useSelector((state: RootState) => state.user.user);
@@ -52,6 +53,13 @@ const DormPage = () => {
       onClick={() => {
         openModal();
         setContent(<Admissions />);
+      }}
+    />,
+    <PanelBox
+      panelBoxDescription="List all admissions"
+      onClick={() => {
+        openModal();
+        setContent(<AdmissionsTable />);
       }}
     />,
   ];

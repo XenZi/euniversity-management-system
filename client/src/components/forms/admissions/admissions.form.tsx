@@ -23,7 +23,30 @@ const Admissions: React.FC<{ admission?: Admission }> = ({ admission }) => {
   const startDate = watch("start");
 
   const onSubmit: SubmitHandler<Admission> = (data) => {
-    console.log(data);
+    if (admission == null || admission == undefined) {
+      axiosInstance
+        .post("/dorm/admissions", {
+          ...data,
+        })
+        .then((data) => {
+          console.log(data.data.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      return;
+    }
+
+    axiosInstance
+      .put(`/dorm/admissions/${data.id}`, {
+        ...data,
+      })
+      .then((data) => {
+        console.log(data.data.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   useEffect(() => {
@@ -40,7 +63,7 @@ const Admissions: React.FC<{ admission?: Admission }> = ({ admission }) => {
     <>
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
         <h2 className="text-center text-3xl font-semibold mb-3">
-          Edit dorm data
+          {admission ? "Edit admission" : "Create admission"}
         </h2>
         <div className="w-full">
           <label>Choose dorm</label>
@@ -50,6 +73,7 @@ const Admissions: React.FC<{ admission?: Admission }> = ({ admission }) => {
             {...register("dormID", {
               required: true,
             })}
+            disabled={admission ? true : false}
           >
             <option value="" disabled selected>
               Select an option
@@ -93,7 +117,7 @@ const Admissions: React.FC<{ admission?: Admission }> = ({ admission }) => {
           className="border bg-auburn-500 border-auburn-500 font-semibold py-2 px-4 rounded focus:border-auburn-700 text-white"
           type="submit"
         >
-          Edit dorm
+          {admission ? "Edit admission" : "Create admission"}
         </button>
       </form>
     </>

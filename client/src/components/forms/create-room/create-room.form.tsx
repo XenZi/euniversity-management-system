@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { axiosInstance } from "../../../services/axios.service";
-import { Room, ToaletType } from "../../../models/room.model";
+import { Room } from "../../../models/room.model";
 import { Dorm } from "../../../models/dorm.model";
+import { ToaletType } from "../../../models/enum";
 
 const CreateRoomForm = () => {
   const { register, handleSubmit } = useForm<Room>();

@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useForm, SubmitHandler } from "react-hook-form";
 import { axiosInstance } from "../../../services/axios.service";
-import { Room, ToaletType } from "../../../models/room.model";
+import { Room } from "../../../models/room.model";
+import { ToaletType } from "../../../models/enum";
 
 const EditRoomForm: React.FC<{ room: Room }> = ({ room }) => {
   const { control, handleSubmit, register } = useForm<Room>({

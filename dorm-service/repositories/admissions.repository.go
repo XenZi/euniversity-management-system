@@ -77,3 +77,50 @@ func (ar AdmissionsRepository) FindAdmissionByDormID(id string) (*models.Dormito
 	}
 	return &dorm, nil
 }
+
+func (ar AdmissionsRepository) FindAdmissions() ([]*models.DormitoryAdmissions, *errors.ErrorStruct) {
+	admissionsCollection := ar.cli.Database("dorm").Collection("admissions")
+	var admissions []*models.DormitoryAdmissions
+	cursor, err := admissionsCollection.Find(context.TODO(), bson.M{})
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	defer cursor.Close(context.TODO())
+
+	for cursor.Next(context.TODO()) {
+		var admission models.DormitoryAdmissions
+		if err := cursor.Decode(&admission); err != nil {
+			return nil, errors.NewError(err.Error(), 500)
+		}
+		admissions = append(admissions, &admission)
+	}
+
+	if err != nil {
+		return nil, errors.NewError(
+			"Not found with following ID",
+			401)
+	}
+	return admissions, nil
+}
+
+func (ar AdmissionsRepository) UpdateAdmission(admissions models.DormitoryAdmissions) (*models.DormitoryAdmissions, *errors.ErrorStruct) {
+	admissionsCollection := ar.cli.Database("dorm").Collection("admissions")
+	filter := bson.D{{Key: "_id", Value: admissions.ID}}
+	update := bson.D{
+		{
+			Key: "$set", Value: bson.D{
+				{Key: "start", Value: admissions.Start},
+				{Key: "end", Value: admissions.End},
+			},
+		},
+	}
+	_, err := admissionsCollection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	admission, errFromDormission := ar.FindAdmissionById(admissions.ID.Hex())
+	if errFromDormission != nil {
+		return nil, errFromDormission
+	}
+	return admission, nil
+}
