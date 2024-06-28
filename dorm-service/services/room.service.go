@@ -57,3 +57,19 @@ func (rs *RoomService) DeleteRoom(id string) (*models.Room, *errors.ErrorStruct)
 	}
 	return deletedRoom, nil
 }
+
+func (rs *RoomService) AppendStudentToRoom(roomID string, newStudent models.Student) (*models.Room, *errors.ErrorStruct) {
+	updatedRoom, err := rs.RoomRepository.AppendStudentToRoom(roomID, newStudent)
+	if err != nil {
+		return nil, err
+	}
+	return updatedRoom, err
+}
+
+func (rs *RoomService) FindRoomStudentByPersonalIdentificationNumber(pin string) (*models.Room, *errors.ErrorStruct) {
+	foundRoom, err := rs.RoomRepository.FindRoomByStudent(pin)
+	if err != nil {
+		return nil, err
+	}
+	return foundRoom, nil
+}

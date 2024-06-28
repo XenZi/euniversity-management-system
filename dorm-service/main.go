@@ -96,6 +96,8 @@ func main() {
 	router.HandleFunc("/room/{id}", roomHandler.GetRoomByID).Methods("GET")
 	router.HandleFunc("/room/{id}", roomHandler.DeleteRoom).Methods("DELETE")
 	router.HandleFunc("/room/{id}", roomHandler.UpdateRoom).Methods("PUT")
+	router.HandleFunc("/room/append-student", roomHandler.AppendStudentToRoom).Methods("POST")
+	router.HandleFunc("/room/student/{pin}", roomHandler.FindRoomByStudent).Methods("GET")
 	// CORS
 	headersOk := gorillaHandlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
 	methodsOk := gorillaHandlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS"})

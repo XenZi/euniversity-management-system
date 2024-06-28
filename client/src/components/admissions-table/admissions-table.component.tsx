@@ -6,6 +6,7 @@ import { useModalContext } from "../../context/modal.context";
 import { Admission } from "../../models/admission.model";
 import { closeModal, setModalOpen } from "../../redux/slices/modal.slice";
 import Admissions from "../forms/admissions/admissions.form";
+import DeleteDialog from "../dialogs/delete-dialog/delete-dialog.component";
 
 const AdmissionsTable = () => {
   const [loadedAdmissions, setLoadedAdmissions] = useState<Admission[]>();
@@ -17,6 +18,29 @@ const AdmissionsTable = () => {
     dispatch(closeModal());
     dispatch(setModalOpen());
     setContent(<Admissions admission={admission} />);
+  };
+
+  const openDialogForDelete = (admissionID: string) => {
+    dispatch(closeModal());
+    dispatch(setModalOpen());
+    setContent(
+      <DeleteDialog
+        functionToProceedOnDelete={() => {
+          deleteAdmission(admissionID);
+        }}
+      />
+    );
+  };
+  const deleteAdmission = (admissionID: string) => {
+    axiosInstance
+      .delete(`/dorm/admissions/${admissionID}`)
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    dispatch(closeModal());
   };
 
   useEffect(() => {
@@ -94,6 +118,7 @@ const AdmissionsTable = () => {
                         className="border bg-auburn-500 border-auburn-500 font-semibold py-1 px-2 rounded focus:border-auburn-700 text-white"
                         onClick={(e) => {
                           e.preventDefault();
+                          openDialogForDelete(admission.id);
                         }}
                       >
                         Delete admission
@@ -118,7 +143,7 @@ const AdmissionsTable = () => {
                   colSpan={3}
                   className="py-2 px-4 border-b border-gray-300 text-sm text-center"
                 >
-                  No rooms available
+                  No admissions available
                 </td>
               </tr>
             )}

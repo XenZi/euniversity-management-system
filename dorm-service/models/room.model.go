@@ -8,4 +8,5 @@ type Room struct {
 	SquareFoot   float32            `json:"squareFoot" bson:"squareFoot"`
 	Toalet       ToaletType         `json:"toalet" bson:"toalet"`
 	NumberOfBeds int16              `json:"numberOfBeds" bson:"numberOfBeds"`
+	Students     []Student          `json:"students" bson:"students"`
 }

@@ -22,6 +22,7 @@ func NewRoomRepository(cli *mongo.Client) *RoomRepository {
 
 func (rr RoomRepository) SaveNewRoom(room models.Room) (*models.Room, *errors.ErrorStruct) {
 	roomsCollection := rr.cli.Database("dorm").Collection("rooms")
+	room.Students = make([]models.Student, 0)
 	insertedRoom, err := roomsCollection.InsertOne(context.TODO(), room)
 	if err != nil {
 		return nil, errors.NewError(err.Error(), 500)
@@ -116,4 +117,40 @@ func (rr RoomRepository) DeleteRoom(roomID string) (*models.Room, *errors.ErrorS
 		return nil, errors.NewError(errFromDelete.Error(), 500)
 	}
 	return room, nil
+}
+
+func (rr RoomRepository) AppendStudentToRoom(roomID string, newStudent models.Student) (*models.Room, *errors.ErrorStruct) {
+	roomsCollection := rr.cli.Database("dorm").Collection("rooms")
+	objectID, err := primitive.ObjectIDFromHex(roomID)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	filter := bson.M{"_id": objectID}
+	update := bson.M{"$push": bson.M{"students": newStudent}}
+	_, err = roomsCollection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	room, errFromFinding := rr.FindOneRoomByID(roomID)
+	if errFromFinding != nil {
+		return nil, errFromFinding
+	}
+	return room, nil
+}
+
+func (rr RoomRepository) FindRoomByStudent(pin string) (*models.Room, *errors.ErrorStruct) {
+	roomsCollection := rr.cli.Database("dorm").Collection("rooms")
+	filter := bson.M{
+		"students.personalIdentificationNumber": pin,
+	}
+
+	var room models.Room
+	err := roomsCollection.FindOne(context.TODO(), filter).Decode(&room)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, errors.NewError(err.Error(), 500)
+		}
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	return &room, nil
 }

@@ -91,3 +91,32 @@ func (rh RoomHandler) DeleteRoom(rw http.ResponseWriter, h *http.Request) {
 	}
 	utils.WriteResp(deletedRoom, 200, rw)
 }
+
+func (rh RoomHandler) AppendStudentToRoom(rw http.ResponseWriter, h *http.Request) {
+	var room models.AppendStudentToDorm
+	if !utils.DecodeJSONFromRequest(h, rw, &room) {
+		utils.WriteErrorResp("Error neki", 500, "path", rw)
+		return
+	}
+	updatedRoom, err := rh.RoomsService.AppendStudentToRoom(room.RoomID, room.Student)
+	if err != nil {
+		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "api/dorm/room/{id}", rw)
+		return
+	}
+	utils.WriteResp(updatedRoom, 200, rw)
+}
+
+func (rh RoomHandler) FindRoomByStudent(rw http.ResponseWriter, h *http.Request) {
+	vars := mux.Vars(h)
+	pin := vars["pin"]
+	if pin == "" {
+		utils.WriteErrorResp("Bad request", 400, "api/dorm/dddd", rw)
+		return
+	}
+	room, err := rh.RoomsService.FindRoomStudentByPersonalIdentificationNumber(pin)
+	if err != nil {
+		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "api/dorm/room/{id}", rw)
+		return
+	}
+	utils.WriteResp(room, 200, rw)
+}

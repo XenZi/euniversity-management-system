@@ -11,9 +11,16 @@ import DormTable from "../../components/dorms-table/dorms-table.component";
 import RoomsTable from "../../components/rooms-table/rooms-table.component";
 import Admissions from "../../components/forms/admissions/admissions.form";
 import AdmissionsTable from "../../components/admissions-table/admissions-table.component";
+import { useEffect, useState } from "react";
+import { Room } from "../../models/room.model";
+import { axiosInstance } from "../../services/axios.service";
+import { Dorm } from "../../models/dorm.model";
+import StudentDormPanel from "../../components/student-dorm-panel/student-dorm-panel";
 
 const DormPage = () => {
   const user = useSelector((state: RootState) => state.user.user);
+  const [userRoom, setUserRoom] = useState<Room>();
+  const [dormDetails, setDormDetails] = useState<Dorm>();
   const dispatch = useDispatch();
   const { setContent } = useModalContext();
   const openModal = () => {
@@ -64,16 +71,53 @@ const DormPage = () => {
     />,
   ];
 
+  useEffect(() => {
+    if (user?.roles[0] === "Citizen") {
+      axiosInstance
+        .get(`/dorm/room/student/${user.personalIdentificationNumber}`)
+        .then((data) => {
+          setUserRoom(data.data.data);
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (!userRoom) return;
+    axiosInstance
+      .get(`/dorm/${userRoom?.dormID}`)
+      .then((data) => {
+        setDormDetails(data.data.data);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, [userRoom]);
+
+  useEffect(() => {
+    console.log("User Room:", userRoom);
+    console.log("Dorm Details:", dormDetails);
+  }, [userRoom, dormDetails]);
+
   return (
     <div className="h-screen bg-papaya-500 w-full p-3">
       <Navigation />
-      <div className="max-w-7xl mx-auto w-100 flex ">
-        {user?.roles[0] == "Admin" ? (
-          <>
-            <AdminComponent children={dormAdminComponents} />
-          </>
+      <div className="max-w-7xl mx-auto w-100 flex">
+        {user?.roles[0] === "Admin" ? (
+          <AdminComponent children={dormAdminComponents} />
         ) : (
-          "Student"
+          <>
+            {userRoom && dormDetails ? (
+              <StudentDormPanel
+                room={userRoom as Room}
+                dorm={dormDetails as Dorm}
+              />
+            ) : (
+              <p>Loading...</p>
+            )}
+          </>
         )}
       </div>
     </div>
