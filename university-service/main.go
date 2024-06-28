@@ -66,6 +66,7 @@ func main() {
 	router.HandleFunc("/scholarship", universityHandler.CreateScholarship).Methods("POST")
 	router.HandleFunc("/professor/{id}", universityHandler.DeleteProfessor).Methods("DELETE")
 	router.HandleFunc("/student/{id}", universityHandler.DeleteStudent).Methods("DELETE")
+	router.HandleFunc("scholarship/{id}", universityHandler.DeleteScholarship).Methods("DELETE")
 	// CORS
 	headersOk := gorillaHandlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
 	methodsOk := gorillaHandlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})

@@ -6,6 +6,7 @@ import (
 	"fakultet-service/models"
 	"fakultet-service/repository"
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type UniversityService struct {
@@ -112,4 +113,12 @@ func (u UniversityService) DeleteProfessor(personalIdentificationNumber string) 
 		return nil, err
 	}
 	return professor, nil
+}
+
+func (u UniversityService) DeleteScholarship(id primitive.ObjectID) (*models.Scholarship, *errors.ErrorStruct) {
+	scholarship, err := u.UniversityRepository.DeleteScholarship(id)
+	if err != nil {
+		return nil, err
+	}
+	return scholarship, nil
 }

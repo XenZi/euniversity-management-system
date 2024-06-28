@@ -6,6 +6,7 @@ import (
 	"fakultet-service/services"
 	"fakultet-service/utils"
 	"github.com/gorilla/mux"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 )
 
@@ -171,8 +172,31 @@ func (uh UniversityHandler) DeleteProfessor(rw http.ResponseWriter, h *http.Requ
 	}
 	resp, err := uh.UniversityService.DeleteProfessor(id)
 	if err != nil {
-		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "/professor", rw)
+		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "/scholarship", rw)
 		return
 	}
 	utils.WriteResp(resp, 200, rw)
+}
+
+func (uh UniversityHandler) DeleteScholarship(rw http.ResponseWriter, h *http.Request) {
+	vars := mux.Vars(h)
+	id := vars["id"]
+	if id == "" {
+		utils.WriteResp("Bad request", http.StatusBadRequest, rw)
+		return
+	}
+
+	// Convert the id string to a primitive.ObjectID
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		utils.WriteResp("Invalid ID format", http.StatusBadRequest, rw)
+		return
+	}
+
+	resp, appErr := uh.UniversityService.DeleteScholarship(objID)
+	if appErr != nil {
+		utils.WriteErrorResp(appErr.GetErrorMessage(), appErr.GetErrorStatus(), "/scholarship", rw)
+		return
+	}
+	utils.WriteResp(resp, http.StatusOK, rw)
 }

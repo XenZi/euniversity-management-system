@@ -84,6 +84,17 @@ func (u UniversityRepository) FindProfessor(personalIdentificationNumber string)
 
 }
 
+func (u UniversityRepository) FindScholarship(id primitive.ObjectID) (*models.Scholarship, *errors.ErrorStruct) {
+	scholarshipCollection := u.cli.Database("university").Collection("scholarship")
+	var scholarship models.Scholarship
+	err := scholarshipCollection.FindOne(context.TODO(), bson.M{"_id": id}).Decode(&scholarship)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	fmt.Println(scholarship)
+	return &scholarship, nil
+}
+
 func (u UniversityRepository) UpdateStudent(student models.Student) (*models.Student, *errors.ErrorStruct) {
 	studentCollection := u.cli.Database("university").Collection("student")
 	filter := bson.M{"personalIdentificationNumber": student.PersonalIdentificationNumber}
@@ -142,4 +153,18 @@ func (u UniversityRepository) DeleteProfessor(personalIdentificationNumber strin
 		return nil, errors.NewError(errFromDelete.Error(), 500)
 	}
 	return professor, nil
+}
+
+func (u UniversityRepository) DeleteScholarship(id primitive.ObjectID) (*models.Scholarship, *errors.ErrorStruct) {
+	scholarship, err := u.FindScholarship(id)
+	if err != nil {
+		return nil, err
+	}
+	scholarshipCollection := u.cli.Database("university").Collection("scholarship")
+	filter := bson.M{"_id": id}
+	_, errFromDelete := scholarshipCollection.DeleteOne(context.TODO(), filter)
+	if errFromDelete != nil {
+		return nil, errors.NewError(errFromDelete.Error(), 500)
+	}
+	return scholarship, nil
 }
