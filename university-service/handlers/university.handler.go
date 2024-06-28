@@ -89,6 +89,22 @@ func (uh UniversityHandler) CreateScholarship(rw http.ResponseWriter, h *http.Re
 	utils.WriteResp(newScholarship, 200, rw)
 }
 
+func (uh UniversityHandler) CreateStateExamApplication(rw http.ResponseWriter, h *http.Request) {
+	decoder := json.NewDecoder(h.Body)
+	decoder.DisallowUnknownFields()
+	var stateExamApplication models.StateExamApplication
+	if err := decoder.Decode(&stateExamApplication); err != nil {
+		utils.WriteResp(err.Error(), http.StatusBadRequest, rw)
+		return
+	}
+	newApplication, err := uh.UniversityService.CreateApplicationForStateExam(stateExamApplication)
+	if err != nil {
+		utils.WriteResp(err.GetErrorMessage(), err.GetErrorStatus(), rw)
+		return
+	}
+	utils.WriteResp(newApplication, 200, rw)
+}
+
 func (uh UniversityHandler) FindStudentById(rw http.ResponseWriter, h *http.Request) {
 	vars := mux.Vars(h)
 	id := vars["id"]

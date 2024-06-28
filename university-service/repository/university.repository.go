@@ -61,6 +61,16 @@ func (u UniversityRepository) SaveScholarship(scholarship models.Scholarship) (*
 	return &scholarship, nil
 }
 
+func (u UniversityRepository) SaveStateExamApplication(application models.StateExamApplication) (*models.StateExamApplication, *errors.ErrorStruct) {
+	applicationCollection := u.cli.Database("university").Collection("state_exam_application")
+	insertResult, err := applicationCollection.InsertOne(context.TODO(), application)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	application.ID = insertResult.InsertedID.(primitive.ObjectID)
+	return &application, nil
+}
+
 func (u UniversityRepository) FindStudentById(personalIdentificationNumber string) (*models.Student, *errors.ErrorStruct) {
 	studentCollection := u.cli.Database("university").Collection("student")
 	var student models.Student

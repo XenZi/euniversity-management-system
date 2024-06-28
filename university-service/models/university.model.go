@@ -90,13 +90,17 @@ type Scholarship struct {
 }
 
 type StudyingConfirmation struct {
-	University University `json:"university" bson:"university"`
-	Student    Student    `json:"student" bson:"student"`
+	ID           primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	University   University         `json:"university" bson:"university"`
+	Student      Student            `json:"student" bson:"student"`
+	BudgetStatus bool               `json:"budgetStatus" bson:"budgetStatus"`
+	Semester     int64              `json:"semester" bson:"semester"`
 }
 
 type StateExamApplication struct {
-	University University `json:"university" bson:"university"`
-	Student    Student    `json:"student" bson:"student"`
+	ID         primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	University University         `json:"university" bson:"university"`
+	Student    Student            `json:"student" bson:"student"`
 }
 
 type EntranceExam struct {
