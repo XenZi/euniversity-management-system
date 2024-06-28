@@ -4,6 +4,7 @@ import (
 	"context"
 	"fakultet-service/errors"
 	"fakultet-service/models"
+	"fakultet-service/utils"
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 
@@ -69,6 +70,17 @@ func (u UniversityRepository) SaveStateExamApplication(application models.StateE
 	}
 	application.ID = insertResult.InsertedID.(primitive.ObjectID)
 	return &application, nil
+}
+
+func (u UniversityRepository) SaveEntranceExam(exam models.EntranceExam) (*models.EntranceExam, *errors.ErrorStruct) {
+	examCollection := u.cli.Database("university").Collection("exam")
+	insertResult, err := examCollection.InsertOne(context.TODO(), exam)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	exam.ID = insertResult.InsertedID.(primitive.ObjectID)
+	exam.DateAndTime = utils.GenerateRandomTime()
+	return &exam, nil
 }
 
 func (u UniversityRepository) FindStudentById(personalIdentificationNumber string) (*models.Student, *errors.ErrorStruct) {

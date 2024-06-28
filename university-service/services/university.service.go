@@ -62,6 +62,14 @@ func (u UniversityService) CreateApplicationForStateExam(application models.Stat
 	return addedApplication, nil
 }
 
+func (u UniversityService) CreateRandomEntranceExam(exam models.EntranceExam) (*models.EntranceExam, *errors.ErrorStruct) {
+	addedExam, err := u.UniversityRepository.SaveEntranceExam(exam)
+	if err != nil {
+		return nil, err
+	}
+	return addedExam, nil
+}
+
 func (u UniversityService) FindStudentById(personalIdentificationNumber string) (*models.Student, *errors.ErrorStruct) {
 	student, err := u.UniversityRepository.FindStudentById(personalIdentificationNumber)
 	if err != nil {

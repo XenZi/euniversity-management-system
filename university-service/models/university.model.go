@@ -1,6 +1,8 @@
 package models
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type University struct {
 	ID      primitive.ObjectID `json:"id" bson:"_id,omitempty"`
@@ -104,6 +106,7 @@ type StateExamApplication struct {
 }
 
 type EntranceExam struct {
-	DateAndTime string `json:"dateAndTime" bson:"dateAndTime"`
-	Address     string `json:"address" bson:"address"`
+	ID          primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	DateAndTime string             `json:"dateAndTime" bson:"dateAndTime"`
+	Address     string             `json:"address" bson:"address"`
 }

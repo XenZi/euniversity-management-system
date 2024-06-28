@@ -105,6 +105,23 @@ func (uh UniversityHandler) CreateStateExamApplication(rw http.ResponseWriter, h
 	utils.WriteResp(newApplication, 200, rw)
 }
 
+func (uh UniversityHandler) CreateEntranceExam(rw http.ResponseWriter, h *http.Request) {
+	decoder := json.NewDecoder(h.Body)
+	decoder.DisallowUnknownFields()
+	var entranceExam models.EntranceExam
+	if err := decoder.Decode(&entranceExam); err != nil {
+		utils.WriteResp(err.Error(), http.StatusBadRequest, rw)
+		return
+	}
+	newApplication, err := uh.UniversityService.CreateRandomEntranceExam(entranceExam)
+	if err != nil {
+		utils.WriteResp(err.GetErrorMessage(), err.GetErrorStatus(), rw)
+		return
+	}
+	utils.WriteResp(newApplication, 200, rw)
+
+}
+
 func (uh UniversityHandler) FindStudentById(rw http.ResponseWriter, h *http.Request) {
 	vars := mux.Vars(h)
 	id := vars["id"]
