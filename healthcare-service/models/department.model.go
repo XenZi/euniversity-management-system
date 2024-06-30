@@ -25,3 +25,9 @@ type Slot struct {
 	DoctorID  string `json:"doctorID" bson:"doctorID"`
 	PatientID string `json:"patientID" bson:"patientID"`
 }
+
+type SlotFill struct {
+	ID      string `json:"id"`
+	Time    string `json:"time"`
+	AppType string `json:"appType"`
+}

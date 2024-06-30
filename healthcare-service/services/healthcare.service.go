@@ -44,6 +44,18 @@ func (h HealthcareService) GetRecordForUser(id string) (*models.RecordDTO, *erro
 	return h.DtoServ.RecToRecDTO(*record), nil
 }
 
+func (h HealthcareService) GetAllRecords() ([]*models.RecordDTO, *errors.ErrorStruct) {
+	recs, err := h.HealthcareRepository.GetAllRecords()
+	if err != nil {
+		return nil, err
+	}
+	var ret []*models.RecordDTO
+	for _, ent := range recs {
+		ret = append(ret, h.DtoServ.RecToRecDTO(*ent))
+	}
+	return ret, nil
+}
+
 // CERTIFICATES
 
 func (h HealthcareService) CreateCertificate(r models.CompletionReport) (*models.CertificateDTO, *errors.ErrorStruct) {

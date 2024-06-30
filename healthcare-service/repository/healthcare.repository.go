@@ -95,6 +95,27 @@ func (h HealthcareRepository) GetRecordByPatientID(patientID string) (*models.Re
 	return record, nil
 }
 
+func (h HealthcareRepository) GetAllRecords() ([]*models.Record, *errors.ErrorStruct) {
+	recordCollection := h.cli.Database(h1).Collection(rec)
+	var recs []*models.Record
+	cursor, err := recordCollection.Find(context.TODO(), nil)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	defer cursor.Close(context.TODO())
+	for cursor.Next(context.TODO()) {
+		var reco models.Record
+		if err := cursor.Decode(&reco); err != nil {
+			return nil, errors.NewError(err.Error(), 500)
+		}
+		recs = append(recs, &reco)
+	}
+	if err := cursor.Err(); err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	return recs, nil
+}
+
 // CERTIFICATES
 
 func (h HealthcareRepository) SaveCertificate(certificate models.Certificate) (*models.Certificate, *errors.ErrorStruct) {
