@@ -49,3 +49,19 @@ func (as AdmissionsService) FindAdmissionByDormID(id string) (*models.DormitoryA
 	return foundAdmission, nil
 
 }
+
+func (as AdmissionsService) GetAllAdmissions() ([]*models.DormitoryAdmissions, *errors.ErrorStruct) {
+	getAllAdmissions, err := as.admissionsRepository.FindAdmissions()
+	if err != nil {
+		return nil, err
+	}
+	return getAllAdmissions, nil
+}
+
+func (as AdmissionsService) UpdateAdmission(admission models.DormitoryAdmissions) (*models.DormitoryAdmissions, *errors.ErrorStruct) {
+	updatedAdmission, err := as.admissionsRepository.UpdateAdmission(admission)
+	if err != nil {
+		return nil, err
+	}
+	return updatedAdmission, nil
+}

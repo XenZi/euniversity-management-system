@@ -23,3 +23,8 @@ type BirthData struct {
 	MunicipalityOfBirth string `json:"municapilityOfBirth" bson:"municapilityOfBirth"`
 	CountryOfBirth      string `json:"countryOfBirth" bson:"countryOfBirth"`
 }
+
+type AppendStudentToDorm struct {
+	RoomID  string  `json:"roomID"`
+	Student Student `json:"student"`
+}

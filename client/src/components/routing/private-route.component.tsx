@@ -7,10 +7,7 @@ interface PrivateRouteProps {
 }
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ Component, ...rest }) => {
-  const [userFromLocalStorage, setUserInLocalStorage] = useLocalStorage(
-    "user",
-    null
-  );
+  const [userFromLocalStorage] = useLocalStorage("user", null);
   const user = userFromLocalStorage
     ? (userFromLocalStorage as unknown as User)
     : null;

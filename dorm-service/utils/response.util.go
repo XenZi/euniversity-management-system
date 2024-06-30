@@ -40,7 +40,6 @@ func WriteResp(resp any, statusCode int, w http.ResponseWriter) {
 
 func DecodeJSONFromRequest(r *http.Request, rw http.ResponseWriter, v interface{}) bool {
 	decoder := json.NewDecoder(r.Body)
-	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(&v); err != nil {
 		WriteErrorResp(err.Error(), 500, r.URL.Path, rw)
 		return false

@@ -59,6 +59,7 @@ export default {
         900: "#200907",
       },
       white: "#fff",
+      black: "#000",
     },
   },
   plugins: [],

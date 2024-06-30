@@ -81,5 +81,27 @@ func (ah AdmissionsHandler) GetAdmissionByDormId(rw http.ResponseWriter, h *http
 		return
 	}
 	utils.WriteResp(data, 201, rw)
+}
 
+func (ah AdmissionsHandler) GetAllAdmissions(rw http.ResponseWriter, h *http.Request) {
+	data, err := ah.admissionsService.GetAllAdmissions()
+	if err != nil {
+		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "path", rw)
+		return
+	}
+	utils.WriteResp(data, 200, rw)
+}
+
+func (ah AdmissionsHandler) UpdateAdmission(rw http.ResponseWriter, h *http.Request) {
+	var admission models.DormitoryAdmissions
+	if !utils.DecodeJSONFromRequest(h, rw, &admission) {
+		utils.WriteErrorResp("Error neki", 500, "path", rw)
+		return
+	}
+	createdAdmission, err := ah.admissionsService.UpdateAdmission(admission)
+	if err != nil {
+		utils.WriteErrorResp("Error neki", 500, "path", rw)
+		return
+	}
+	utils.WriteResp(createdAdmission, 201, rw)
 }

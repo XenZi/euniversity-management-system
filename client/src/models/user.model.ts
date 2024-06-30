@@ -5,7 +5,6 @@ export interface User {
   citizenship: string;
   personalIdentificationNumber: string;
   residence: string;
-  email: string;
   roles: string[];
 }
 

@@ -4,6 +4,7 @@ import (
 	"dorm-service/models"
 	"dorm-service/services"
 	"dorm-service/utils"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -81,7 +82,17 @@ func (ah DormHandler) UpdateDormById(rw http.ResponseWriter, h *http.Request) {
 		utils.WriteErrorResp("Bad request", 400, "api/confirm-account", rw)
 		return
 	}
-	dorm, err := ah.dormService.UpdateDormById(id, dormDTO.Name, dormDTO.Location)
+	log.Println(dormDTO)
+	dorm, err := ah.dormService.UpdateDormById(dormDTO)
+	if err != nil {
+		utils.WriteResp(err.GetErrorMessage(), err.GetErrorStatus(), rw)
+		return
+	}
+	utils.WriteResp(dorm, 200, rw)
+}
+
+func (ah DormHandler) GetAllDorms(rw http.ResponseWriter, h *http.Request) {
+	dorm, err := ah.dormService.GetAllDorms()
 	if err != nil {
 		utils.WriteResp(err.GetErrorMessage(), err.GetErrorStatus(), rw)
 		return

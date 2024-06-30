@@ -5,10 +5,10 @@ import "fmt"
 type ApplicationType int
 
 const (
-	Budget ApplicationType = iota
-	SelfFinancing
-	Disability
-	SensitiveGroups
+	Budget          ApplicationType = 1
+	SelfFinancing                   = 2
+	Disability                      = 3
+	SensitiveGroups                 = 4
 )
 
 func (t ApplicationType) String() string {
@@ -31,6 +31,7 @@ type ToaletType int
 const (
 	RoomShared ToaletType = iota
 	FloorShared
+	RoomBased
 )
 
 func (t ToaletType) String() string {
@@ -39,6 +40,8 @@ func (t ToaletType) String() string {
 		return "RoomShared"
 	case FloorShared:
 		return "FloorShared"
+	case RoomBased:
+		return "RoomBased"
 	default:
 		return "Unkown"
 	}
