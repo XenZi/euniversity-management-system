@@ -6,6 +6,7 @@ import (
 	"healthcare/errors"
 	"healthcare/models"
 	"healthcare/repository"
+	"log"
 
 	"time"
 )
@@ -48,19 +49,22 @@ func (d DepartmentService) GetDepartmentByName(name string) (*models.DepartmentD
 }
 
 func (d DepartmentService) AddDoctorToSlot(name, id, date, resTime string) (*models.DepartmentDTO, *errors.ErrorStruct) {
+	log.Println(name, id, date, resTime)
 	foundDept, err := d.DepartmentRepository.GetDepartmentByName(name)
 	if err != nil {
 		return nil, err
 	}
-	for _, slot := range foundDept.Schedule.Date[date] {
-		if slot.Time == resTime {
-			slot.DoctorID = id
+	for i := range foundDept.Schedule.Date[date] {
+		if foundDept.Schedule.Date[date][i].Time == resTime {
+			foundDept.Schedule.Date[date][i].DoctorID = id
 		}
 	}
+	log.Println(foundDept)
 	updated, err := d.DepartmentRepository.UpdateDepartment(*foundDept)
 	if err != nil {
 		return nil, err
 	}
+	log.Println(updated)
 	return d.DTOService.DeptToDeptDTO(*updated), nil
 }
 
@@ -74,12 +78,12 @@ func (d DepartmentService) AddPatientToSlot(name, id, date, resTime, appType str
 		return nil, err
 	}
 	var doctorId string
-	for _, slot := range foundDept.Schedule.Date[date] {
-		if slot.Time == resTime {
-			if slot.PatientID == "" {
-				slot.PatientID = id
-				doctorId = slot.DoctorID
-			}
+	for i := range foundDept.Schedule.Date[date] {
+		slot := &foundDept.Schedule.Date[date][i]
+
+		if slot.Time == resTime && slot.PatientID == "" {
+			slot.PatientID = id
+			doctorId = slot.DoctorID
 		}
 	}
 

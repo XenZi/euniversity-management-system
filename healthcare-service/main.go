@@ -25,7 +25,7 @@ func main() {
 	// env
 	port := os.Getenv("PORT")
 	universityHost := "university-service"
-	universityPort := "8000"
+	universityPort := "8080"
 	authServiceURL := fmt.Sprintf("http://%s:%s", os.Getenv("AUTH_SERVICE_URL"), os.Getenv("AUTH_SERVICE_PORT"))
 	// client
 	customClient := http.DefaultClient

@@ -98,17 +98,18 @@ func (h HealthcareRepository) GetRecordByPatientID(patientID string) (*models.Re
 func (h HealthcareRepository) GetAllRecords() ([]*models.Record, *errors.ErrorStruct) {
 	recordCollection := h.cli.Database(h1).Collection(rec)
 	var recs []*models.Record
-	cursor, err := recordCollection.Find(context.TODO(), nil)
+	filter := bson.M{}
+	cursor, err := recordCollection.Find(context.TODO(), filter)
 	if err != nil {
 		return nil, errors.NewError(err.Error(), 500)
 	}
 	defer cursor.Close(context.TODO())
 	for cursor.Next(context.TODO()) {
-		var reco models.Record
+		var reco *models.Record
 		if err := cursor.Decode(&reco); err != nil {
 			return nil, errors.NewError(err.Error(), 500)
 		}
-		recs = append(recs, &reco)
+		recs = append(recs, reco)
 	}
 	if err := cursor.Err(); err != nil {
 		return nil, errors.NewError(err.Error(), 500)
@@ -342,21 +343,25 @@ func (h HealthcareRepository) updateByDepth(id string, pres *models.Prescription
 	}
 	counter := 0
 	if pres != nil {
-		for _, prescription := range record.Prescriptions {
-			if prescription.ID == pres.ID {
-				prescription = *pres
+		for i := range record.Prescriptions {
+			if record.Prescriptions[i].ID == pres.ID {
+				record.Prescriptions[i] = *pres
+				counter += 1
+				break
 			}
 		}
 		counter += 1
 	}
 	if appo != nil {
-		for _, appointment := range record.Appointments {
-			if appointment.ID == appo.ID {
-				appointment = *appo
+		for i := range record.Appointments {
+			if record.Appointments[i].ID == appo.ID {
+				record.Appointments[i] = *appo
+				counter += 1
+				break
 			}
 		}
-		counter += 1
 	}
+
 	if counter > 0 {
 		_, err = h.UpdateRecord(*record)
 	}
@@ -371,15 +376,21 @@ func (h HealthcareRepository) updateRecordSideEffect(id string, cert *models.Cer
 		return err
 	}
 	if ref != nil {
-		_ = append(record.Referrals, *ref)
+		temp := record.Referrals
+		temp = append(temp, *ref)
+		record.Referrals = temp
 		counter += 1
 	}
 	if pres != nil {
-		_ = append(record.Prescriptions, *pres)
+		temp := record.Prescriptions
+		temp = append(temp, *pres)
+		record.Prescriptions = temp
 		counter += 1
 	}
 	if appo != nil {
-		_ = append(record.Appointments, *appo)
+		temp := record.Appointments
+		temp = append(temp, *appo)
+		record.Appointments = temp
 		counter += 1
 	}
 	if cert != nil {

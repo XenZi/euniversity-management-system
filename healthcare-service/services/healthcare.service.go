@@ -1,7 +1,6 @@
 package services
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"healthcare/clients"
 	"healthcare/errors"
 	"healthcare/models"
@@ -124,16 +123,15 @@ func (h HealthcareService) UpdateAppointment(r models.CompletionReport) (*models
 	if err != nil {
 		return nil, err
 	}
-	foundId, erro := primitive.ObjectIDFromHex(r.AppointmentID)
-	if erro != nil {
-		return nil, errors.NewError(erro.Error(), 500)
+	appointment, err := h.HealthcareRepository.GetAppointmentByID(r.AppointmentID)
+	if err != nil {
+		return nil, err
 	}
-	appointment := models.Appointment{
-		ID:                foundId,
-		AppointmentStatus: models.Completed,
-		Report:            *insertedReport,
-	}
-	updatedApp, err := h.HealthcareRepository.UpdateAppointment(appointment)
+	appointment.AppointmentStatus = models.Completed
+	appointment.Report = *insertedReport
+	appointment.DoctorID = r.DoctorID
+
+	updatedApp, err := h.HealthcareRepository.UpdateAppointment(*appointment)
 	if err != nil {
 		return nil, err
 	}
