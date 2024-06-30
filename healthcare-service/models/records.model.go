@@ -48,6 +48,26 @@ type Prescription struct {
 	Status      EPrescriptionStatus `json:"prescriptionStatus" bson:"prescriptionStatus"`
 }
 
+type PrescriptionDTO struct {
+	ID          string              `json:"id"`
+	DateOfIssue string              `json:"dateOfIssue" `
+	PatientID   string              `json:"patientID"`
+	DoctorID    string              `json:"doctorID" `
+	Drug        string              `json:"drug"`
+	Form        EForm               `json:"form"`
+	Dosage      string              `json:"dosage"`
+	Status      EPrescriptionStatus `json:"prescriptionStatus"`
+}
+
+type PrescriptionInfo struct {
+	PatientID string `json:"patientID"`
+	DoctorID  string `json:"doctorID" `
+	Drug      string `json:"drug"`
+	Form      string `json:"form"`
+	Dosage    string `json:"dosage"`
+	Status    string `json:"prescriptionStatus"`
+}
+
 type Referral struct {
 	ID          primitive.ObjectID `json:"id" bson:"_id,omitempty"`
 	DateOfIssue string             `json:"dateOfIssue" bson:"dateOfIssue"`
@@ -61,6 +81,11 @@ type ReferralDTO struct {
 	DoctorID    string `json:"doctorID"`
 }
 
+type ReferralInfo struct {
+	PatientID string `json:"patientID"`
+	DoctorID  string `json:"doctorID"`
+}
+
 type Appointment struct {
 	ID                primitive.ObjectID `json:"id" bson:"_id,omitempty"`
 	DateOfIssue       string             `json:"dateOfIssue" bson:"dateOfIssue"`
@@ -70,17 +95,34 @@ type Appointment struct {
 	AppointmentStatus EAppointmentStatus `json:"appointmentStatus" bson:"appointmentStatus"`
 	Report            Report             `json:"report" bson:"report"`
 }
+type AppointmentDTO struct {
+	ID                string             `json:"id"`
+	DateOfIssue       string             `json:"dateOfIssue"`
+	PatientID         string             `json:"patientID"`
+	DoctorID          string             `json:"doctorID" `
+	AppointmentType   EAppointmentType   `json:"appointmentType"`
+	AppointmentStatus EAppointmentStatus `json:"appointmentStatus"`
+	Report            Report             `json:"report"`
+}
 
 type Report struct {
-	ID      primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-	Title   string             `json:"title" bson:"title"`
-	Content string             `json:"content" bson:"content"`
+	ID          primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Title       string             `json:"title" bson:"title"`
+	Content     string             `json:"content" bson:"content"`
+	DateOfIssue string             `json:"dateOfIssue" bson:"dateOfIssue"`
 }
 
 type CompletionReport struct {
-	Title       string `json:"title"`
-	Content     string `json:"content"`
-	DateOfIssue string `json:"dateOfIssue"`
-	PatientID   string `json:"patientID"`
-	DoctorID    string `json:"doctorID"`
+	AppointmentID string `json:"AppointmentID"`
+	Title         string `json:"title"`
+	Content       string `json:"content"`
+	PatientID     string `json:"patientID"`
+	DoctorID      string `json:"doctorID"`
+}
+
+type AppointmentSchedule struct {
+	PatientID       string           `json:"patientID"`
+	DoctorID        string           `json:"doctorID"`
+	DateOfIssue     string           `json:"dateOfIssue"`
+	AppointmentType EAppointmentType `json:"appointmentType"`
 }

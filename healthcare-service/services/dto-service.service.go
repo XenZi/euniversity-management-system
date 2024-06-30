@@ -19,8 +19,7 @@ func (d DTOService) CertToCertDTO(c models.Certificate) *models.CertificateDTO {
 		DateOfIssue: c.DateOfIssue,
 		PatientID:   c.PatientID,
 		DoctorID:    c.DoctorID,
-		//AppointmentStatus: c.AppointmentStatus,
-		Report: c.Report,
+		Report:      c.Report,
 	}
 }
 
@@ -34,8 +33,7 @@ func (d DTOService) CertDTOToCert(c models.CertificateDTO) (*models.Certificate,
 		DateOfIssue: c.DateOfIssue,
 		PatientID:   c.PatientID,
 		DoctorID:    c.DoctorID,
-		//AppointmentStatus: c.AppointmentStatus,
-		Report: c.Report,
+		Report:      c.Report,
 	}, nil
 }
 
@@ -62,5 +60,105 @@ func (d DTOService) RecDTOToRec(r models.RecordDTO) (*models.Record, error) {
 		Prescriptions: r.Prescriptions,
 		Referrals:     r.Referrals,
 		Appointments:  r.Appointments,
+	}, nil
+}
+
+func (d DTOService) RefToRefDTO(r models.Referral) *models.ReferralDTO {
+	return &models.ReferralDTO{
+		ID:          r.ID.Hex(),
+		DateOfIssue: r.DateOfIssue,
+		PatientID:   r.PatientID,
+		DoctorID:    r.DoctorID,
+	}
+}
+
+func (d DTOService) RefDTOToRef(r models.ReferralDTO) (*models.Referral, error) {
+	id, err := primitive.ObjectIDFromHex(r.ID)
+	if err != nil {
+		return nil, err
+	}
+	return &models.Referral{
+		ID:          id,
+		DateOfIssue: r.DateOfIssue,
+		PatientID:   r.PatientID,
+		DoctorID:    r.DoctorID,
+	}, nil
+}
+
+func (d DTOService) PresToPresDTO(r models.Prescription) *models.PrescriptionDTO {
+	return &models.PrescriptionDTO{
+		ID:          r.ID.Hex(),
+		DateOfIssue: r.DateOfIssue,
+		PatientID:   r.PatientID,
+		DoctorID:    r.DoctorID,
+		Drug:        r.Drug,
+		Form:        r.Form,
+		Dosage:      r.Dosage,
+		Status:      r.Status,
+	}
+}
+
+func (d DTOService) PresDTOToPres(r models.PrescriptionDTO) (*models.Prescription, error) {
+	id, err := primitive.ObjectIDFromHex(r.ID)
+	if err != nil {
+		return nil, err
+	}
+	return &models.Prescription{
+		ID:          id,
+		DateOfIssue: r.DateOfIssue,
+		PatientID:   r.PatientID,
+		DoctorID:    r.DoctorID,
+		Drug:        r.Drug,
+		Form:        r.Form,
+		Dosage:      r.Dosage,
+		Status:      r.Status,
+	}, nil
+}
+
+func (d DTOService) AppToAppDTO(r models.Appointment) *models.AppointmentDTO {
+	return &models.AppointmentDTO{
+		ID:                r.ID.Hex(),
+		DateOfIssue:       r.DateOfIssue,
+		PatientID:         r.PatientID,
+		DoctorID:          r.DoctorID,
+		AppointmentType:   r.AppointmentType,
+		AppointmentStatus: r.AppointmentStatus,
+		Report:            r.Report,
+	}
+}
+
+func (d DTOService) AppDTOToApp(r models.AppointmentDTO) (*models.Appointment, error) {
+	id, err := primitive.ObjectIDFromHex(r.ID)
+	if err != nil {
+		return nil, err
+	}
+	return &models.Appointment{
+		ID:                id,
+		DateOfIssue:       r.DateOfIssue,
+		PatientID:         r.PatientID,
+		DoctorID:          r.DoctorID,
+		AppointmentType:   r.AppointmentType,
+		AppointmentStatus: r.AppointmentStatus,
+		Report:            r.Report,
+	}, nil
+}
+
+func (d DTOService) DeptToDeptDTO(r models.Department) *models.DepartmentDTO {
+	return &models.DepartmentDTO{
+		ID:       r.ID.Hex(),
+		Name:     r.Name,
+		Schedule: r.Schedule,
+	}
+}
+
+func (d DTOService) DeptDTOToDept(r models.DepartmentDTO) (*models.Department, error) {
+	id, err := primitive.ObjectIDFromHex(r.ID)
+	if err != nil {
+		return nil, err
+	}
+	return &models.Department{
+		ID:       id,
+		Name:     r.Name,
+		Schedule: r.Schedule,
 	}, nil
 }

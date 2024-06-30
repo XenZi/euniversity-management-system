@@ -30,6 +30,8 @@ const (
 	rep  = "report"
 )
 
+// RECORDS
+
 func (h HealthcareRepository) SaveRecord(record models.Record) (*models.Record, *errors.ErrorStruct) {
 	recordCollection := h.cli.Database(h1).Collection(rec)
 	insertedRecord, err := recordCollection.InsertOne(context.TODO(), record)
@@ -42,48 +44,6 @@ func (h HealthcareRepository) SaveRecord(record models.Record) (*models.Record, 
 	}
 	record.ID = insertedRecord.InsertedID.(primitive.ObjectID)
 	return &record, nil
-}
-
-func (h HealthcareRepository) SaveReferral(referral models.Referral) (*models.Referral, *errors.ErrorStruct) {
-	referralCollection := h.cli.Database(h1).Collection(ref)
-	insertedReferral, err := referralCollection.InsertOne(context.TODO(), referral)
-	if err != nil {
-		err, status := errors.HandleReferralInsertError(err, referral)
-		if status == -1 {
-			status = 500
-		}
-		return nil, errors.NewError(err.Error(), status)
-	}
-	referral.ID = insertedReferral.InsertedID.(primitive.ObjectID)
-	erro := h.updateRecordSideEffect(referral.PatientID, nil, &referral, nil, nil)
-	if erro != nil {
-		return nil, erro
-	}
-	return &referral, nil
-}
-
-func (h HealthcareRepository) SaveCertificate(certificate models.Certificate) (*models.Certificate, *errors.ErrorStruct) {
-	certificateCollection := h.cli.Database(h1).Collection(cert)
-	insertedCertificate, err := certificateCollection.InsertOne(context.TODO(), certificate)
-	if err != nil {
-		return nil, errors.NewError(err.Error(), 500)
-	}
-	certificate.ID = insertedCertificate.InsertedID.(primitive.ObjectID)
-	erro := h.updateRecordSideEffect(certificate.PatientID, &certificate, nil, nil, nil)
-	if erro != nil {
-		return nil, erro
-	}
-	return &certificate, nil
-}
-
-func (h HealthcareRepository) SaveReport(report models.Report) (*models.Report, *errors.ErrorStruct) {
-	reportCollection := h.cli.Database(h1).Collection(rep)
-	insertedReport, err := reportCollection.InsertOne(context.TODO(), report)
-	if err != nil {
-		return nil, errors.NewError(err.Error(), 500)
-	}
-	report.ID = insertedReport.InsertedID.(primitive.ObjectID)
-	return &report, nil
 }
 
 func (h HealthcareRepository) UpdateRecord(record models.Record) (*models.Record, *errors.ErrorStruct) {
@@ -135,6 +95,42 @@ func (h HealthcareRepository) GetRecordByPatientID(patientID string) (*models.Re
 	return record, nil
 }
 
+// CERTIFICATES
+
+func (h HealthcareRepository) SaveCertificate(certificate models.Certificate) (*models.Certificate, *errors.ErrorStruct) {
+	certificateCollection := h.cli.Database(h1).Collection(cert)
+	insertedCertificate, err := certificateCollection.InsertOne(context.TODO(), certificate)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	certificate.ID = insertedCertificate.InsertedID.(primitive.ObjectID)
+	erro := h.updateRecordSideEffect(certificate.PatientID, &certificate, nil, nil, nil)
+	if erro != nil {
+		return nil, erro
+	}
+	return &certificate, nil
+}
+
+// REFERRALS
+
+func (h HealthcareRepository) SaveReferral(referral models.Referral) (*models.Referral, *errors.ErrorStruct) {
+	referralCollection := h.cli.Database(h1).Collection(ref)
+	insertedReferral, err := referralCollection.InsertOne(context.TODO(), referral)
+	if err != nil {
+		err, status := errors.HandleReferralInsertError(err, referral)
+		if status == -1 {
+			status = 500
+		}
+		return nil, errors.NewError(err.Error(), status)
+	}
+	referral.ID = insertedReferral.InsertedID.(primitive.ObjectID)
+	erro := h.updateRecordSideEffect(referral.PatientID, nil, &referral, nil, nil)
+	if erro != nil {
+		return nil, erro
+	}
+	return &referral, nil
+}
+
 func (h HealthcareRepository) GetReferralByID(id string) (*models.Referral, *errors.ErrorStruct) {
 	referralCollection := h.cli.Database(h1).Collection(ref)
 	foundId, err := primitive.ObjectIDFromHex(id)
@@ -154,7 +150,200 @@ func (h HealthcareRepository) GetReferralByID(id string) (*models.Referral, *err
 	return referral, nil
 }
 
-func (h HealthcareRepository) updateRecordSideEffect(id string, cert *models.Certificate, ref *models.Referral, pres *models.Prescription, app *models.Appointment) *errors.ErrorStruct {
+// REPORTS
+
+func (h HealthcareRepository) SaveReport(report models.Report) (*models.Report, *errors.ErrorStruct) {
+	reportCollection := h.cli.Database(h1).Collection(rep)
+	insertedReport, err := reportCollection.InsertOne(context.TODO(), report)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	report.ID = insertedReport.InsertedID.(primitive.ObjectID)
+	return &report, nil
+}
+
+func (h HealthcareRepository) GetReportByID(id string) (*models.Report, *errors.ErrorStruct) {
+	reportCollection := h.cli.Database(h1).Collection(rep)
+	foundId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	filter := bson.D{{"_id", foundId}}
+	var report *models.Report
+	erro := reportCollection.FindOne(context.TODO(), filter).Decode(&report)
+	if erro != nil {
+		err, status := errors.HandleNoDocumentsError(erro, id)
+		if status == -1 {
+			status = 500
+		}
+		return nil, errors.NewError(err.Error(), status)
+	}
+	return report, nil
+}
+
+// APPOINTMENTS
+
+func (h HealthcareRepository) SaveAppointment(appointment models.Appointment) (*models.Appointment, *errors.ErrorStruct) {
+	appointmentCollection := h.cli.Database(h1).Collection(app)
+	insertedAppointment, err := appointmentCollection.InsertOne(context.TODO(), appointment)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	appointment.ID = insertedAppointment.InsertedID.(primitive.ObjectID)
+	erro := h.updateRecordSideEffect(appointment.PatientID, nil, nil, nil, &appointment)
+	if erro != nil {
+		return nil, erro
+	}
+	return &appointment, nil
+}
+
+func (h HealthcareRepository) UpdateAppointment(appointment models.Appointment) (*models.Appointment, *errors.ErrorStruct) {
+	appointmentCollection := h.cli.Database(h1).Collection(app)
+	filter := bson.M{"_id": appointment.ID}
+	update := bson.D{
+		{"$set", bson.D{
+			{"appointmentStatus", appointment.AppointmentStatus},
+			{"report", appointment.Report},
+		}},
+	}
+	_, err := appointmentCollection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	erro := h.updateByDepth(appointment.PatientID, nil, &appointment)
+	if erro != nil {
+		return nil, erro
+	}
+	return &appointment, nil
+}
+
+func (h HealthcareRepository) GetAllAppointmentsByDoctorID(doctorID string) ([]*models.Appointment, *errors.ErrorStruct) {
+	appointmentCollection := h.cli.Database(h1).Collection(app)
+	filter := bson.M{"doctorID": doctorID}
+	var appointments []*models.Appointment
+	cursor, err := appointmentCollection.Find(context.TODO(), filter)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	defer cursor.Close(context.TODO())
+	for cursor.Next(context.TODO()) {
+		var appo models.Appointment
+		if err := cursor.Decode(&appo); err != nil {
+			return nil, errors.NewError(err.Error(), 500)
+		}
+		appointments = append(appointments, &appo)
+	}
+	if err := cursor.Err(); err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	return appointments, nil
+}
+
+func (h HealthcareRepository) GetAppointmentByID(id string) (*models.Appointment, *errors.ErrorStruct) {
+	appointmentCollection := h.cli.Database(h1).Collection(app)
+	foundId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	filter := bson.D{{"_id", foundId}}
+	var appointment *models.Appointment
+	erro := appointmentCollection.FindOne(context.TODO(), filter).Decode(&appointment)
+	if erro != nil {
+		err, status := errors.HandleNoDocumentsError(erro, id)
+		if status == -1 {
+			status = 500
+		}
+		return nil, errors.NewError(err.Error(), status)
+	}
+	return appointment, nil
+}
+
+// PRESCRIPTIONS
+
+func (h HealthcareRepository) SavePrescription(prescription models.Prescription) (*models.Prescription, *errors.ErrorStruct) {
+	prescriptionCollection := h.cli.Database(h1).Collection(pre)
+	insertedPrescription, err := prescriptionCollection.InsertOne(context.TODO(), prescription)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	prescription.ID = insertedPrescription.InsertedID.(primitive.ObjectID)
+	erro := h.updateRecordSideEffect(prescription.PatientID, nil, nil, &prescription, nil)
+	if erro != nil {
+		return nil, erro
+	}
+	return &prescription, nil
+}
+
+func (h HealthcareRepository) GetPrescriptionByID(id string) (*models.Prescription, *errors.ErrorStruct) {
+	prescriptionCollection := h.cli.Database(h1).Collection(pre)
+	foundId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	filter := bson.D{{"_id", foundId}}
+	var prescription *models.Prescription
+	erro := prescriptionCollection.FindOne(context.TODO(), filter).Decode(&prescription)
+	if erro != nil {
+		err, status := errors.HandleNoDocumentsError(erro, id)
+		if status == -1 {
+			status = 500
+		}
+		return nil, errors.NewError(err.Error(), status)
+	}
+	return prescription, nil
+}
+
+func (h HealthcareRepository) UpdatePrescription(prescription models.Prescription) (*models.Prescription, *errors.ErrorStruct) {
+	prescriptionCollection := h.cli.Database(h1).Collection(pre)
+	filter := bson.M{"_id": prescription.ID}
+	update := bson.D{
+		{"$set", bson.D{
+			{"prescriptionStatus", prescription.Status},
+		}},
+	}
+	_, err := prescriptionCollection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	erro := h.updateByDepth(prescription.PatientID, &prescription, nil)
+	if erro != nil {
+		return nil, erro
+	}
+	return &prescription, nil
+}
+
+// LOGIC UTILS
+
+func (h HealthcareRepository) updateByDepth(id string, pres *models.Prescription, appo *models.Appointment) *errors.ErrorStruct {
+	record, err := h.GetRecordByPatientID(id)
+	if err != nil {
+		return err
+	}
+	counter := 0
+	if pres != nil {
+		for _, prescription := range record.Prescriptions {
+			if prescription.ID == pres.ID {
+				prescription = *pres
+			}
+		}
+		counter += 1
+	}
+	if appo != nil {
+		for _, appointment := range record.Appointments {
+			if appointment.ID == appo.ID {
+				appointment = *appo
+			}
+		}
+		counter += 1
+	}
+	if counter > 0 {
+		_, err = h.UpdateRecord(*record)
+	}
+	return nil
+
+}
+
+func (h HealthcareRepository) updateRecordSideEffect(id string, cert *models.Certificate, ref *models.Referral, pres *models.Prescription, appo *models.Appointment) *errors.ErrorStruct {
 	record, err := h.GetRecordByPatientID(id)
 	counter := 0
 	if err != nil {
@@ -168,8 +357,8 @@ func (h HealthcareRepository) updateRecordSideEffect(id string, cert *models.Cer
 		_ = append(record.Prescriptions, *pres)
 		counter += 1
 	}
-	if app != nil {
-		_ = append(record.Appointments, *app)
+	if appo != nil {
+		_ = append(record.Appointments, *appo)
 		counter += 1
 	}
 	if cert != nil {
