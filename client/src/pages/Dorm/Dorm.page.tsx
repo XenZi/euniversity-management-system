@@ -17,6 +17,8 @@ import { axiosInstance } from "../../services/axios.service";
 import { Dorm } from "../../models/dorm.model";
 import StudentDormPanel from "../../components/student-dorm-panel/student-dorm-panel";
 import DormitoryApplication from "../../components/forms/dormitory-application/dormitory-application.form";
+import UserApplicationsTable from "../../components/user-applications-table/user-applications-table.component";
+import AdminDormitoryApplicationTable from "../../components/admin-dormitory-applications/admin-dormitory-applications.table";
 
 const DormPage = () => {
   const user = useSelector((state: RootState) => state.user.user);
@@ -70,6 +72,13 @@ const DormPage = () => {
         setContent(<AdmissionsTable adminView={true} />);
       }}
     />,
+    <PanelBox
+      panelBoxDescription="List all applications for admission"
+      onClick={() => {
+        openModal();
+        setContent(<AdminDormitoryApplicationTable />);
+      }}
+    />,
   ];
   const dormStudentComponents: React.JSX.Element[] = [
     <PanelBox
@@ -91,6 +100,13 @@ const DormPage = () => {
       onClick={() => {
         openModal();
         setContent(<DormitoryApplication />);
+      }}
+    />,
+    <PanelBox
+      panelBoxDescription="List all of my applications"
+      onClick={() => {
+        openModal();
+        setContent(<UserApplicationsTable />);
       }}
     />,
   ];

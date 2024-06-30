@@ -21,13 +21,17 @@ func NewApplicationsService(applicationsRepository *repositories.ApplicationsRep
 }
 
 func (as ApplicationsService) CreateNewApplication(application models.ApplicationForDorm) (*models.ApplicationForDorm, *errors.ErrorStruct) {
+	// todo: JANKOV SERVIS I PROVERA BOLJA IZ BORISOVOG
 	valueFromHealthCare, err := as.healthCareClient.GetUserHealthStatusConfirmation(application.Student.PersonalIdentificationNumber)
 	if err != nil {
 		log.Println(err.GetErrorMessage())
 	}
-	log.Println(valueFromHealthCare)
 	application.HealthInsurance = valueFromHealthCare
-	application.ApplicationStatus = models.Review
+	if !application.HealthInsurance || !application.VerifiedStudent {
+		application.ApplicationStatus = models.Pending
+	} else {
+		application.ApplicationStatus = models.Accepted
+	}
 
 	createdApplication, err := as.applicationsRepository.SaveNewDorm(application)
 	if err != nil {

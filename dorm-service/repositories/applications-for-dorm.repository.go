@@ -186,7 +186,6 @@ func (ar ApplicationsRepository) FindAllApplicationsByUserPIN(personalIdentifica
 	var applications []*models.ApplicationForDorm
 	filter := bson.M{
 		"student.personalIdentificationNumber": personalIdentificationNumber,
-		"applicationStatus":                    0,
 	}
 	cursor, err := applicationsCollection.Find(context.TODO(), filter)
 	if err != nil {
