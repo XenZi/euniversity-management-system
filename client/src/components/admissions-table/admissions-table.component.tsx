@@ -8,7 +8,9 @@ import { closeModal, setModalOpen } from "../../redux/slices/modal.slice";
 import Admissions from "../forms/admissions/admissions.form";
 import DeleteDialog from "../dialogs/delete-dialog/delete-dialog.component";
 
-const AdmissionsTable = () => {
+const AdmissionsTable: React.FC<{
+  adminView?: boolean;
+}> = ({ adminView }) => {
   const [loadedAdmissions, setLoadedAdmissions] = useState<Admission[]>();
   const [dormList, setDormList] = useState<Dorm[]>([]);
   const dispatch = useDispatch();
@@ -102,38 +104,44 @@ const AdmissionsTable = () => {
                     <td className="py-2 px-4 border-b border-gray-300 text-sm ">
                       {admission.end}
                     </td>
-                    <td className="py-2 px-4 border-b border-gray-300 text-sm ">
-                      <button
-                        className="border bg-auburn-500 border-auburn-500 font-semibold py-1 px-2 rounded focus:border-auburn-700 text-white"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          openDialogForEdit(admission);
-                        }}
-                      >
-                        Edit admission
-                      </button>
-                    </td>
-                    <td className="py-2 px-4 border-b border-gray-300 text-sm ">
-                      <button
-                        className="border bg-auburn-500 border-auburn-500 font-semibold py-1 px-2 rounded focus:border-auburn-700 text-white"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          openDialogForDelete(admission.id);
-                        }}
-                      >
-                        Delete admission
-                      </button>
-                    </td>
-                    <td className="py-2 px-4 border-b border-gray-300 text-sm ">
-                      <button
-                        className="border bg-auburn-500 border-auburn-500 font-semibold py-1 px-2 rounded focus:border-auburn-700 text-white"
-                        onClick={(e) => {
-                          e.preventDefault();
-                        }}
-                      >
-                        End this admission
-                      </button>
-                    </td>
+                    {adminView ? (
+                      <>
+                        <td className="py-2 px-4 border-b border-gray-300 text-sm ">
+                          <button
+                            className="border bg-auburn-500 border-auburn-500 font-semibold py-1 px-2 rounded focus:border-auburn-700 text-white"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              openDialogForEdit(admission);
+                            }}
+                          >
+                            Edit admission
+                          </button>
+                        </td>
+                        <td className="py-2 px-4 border-b border-gray-300 text-sm ">
+                          <button
+                            className="border bg-auburn-500 border-auburn-500 font-semibold py-1 px-2 rounded focus:border-auburn-700 text-white"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              openDialogForDelete(admission.id);
+                            }}
+                          >
+                            Delete admission
+                          </button>
+                        </td>
+                        <td className="py-2 px-4 border-b border-gray-300 text-sm ">
+                          <button
+                            className="border bg-auburn-500 border-auburn-500 font-semibold py-1 px-2 rounded focus:border-auburn-700 text-white"
+                            onClick={(e) => {
+                              e.preventDefault();
+                            }}
+                          >
+                            End this admission
+                          </button>
+                        </td>
+                      </>
+                    ) : (
+                      ""
+                    )}
                   </tr>
                 );
               })

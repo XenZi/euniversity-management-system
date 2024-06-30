@@ -12,7 +12,7 @@ const PanelBox: FC<PanelBoxProps> = ({
 }) => {
   return (
     <div
-      className="bg-battleship-400 text-white p-5 cursor-pointer"
+      className="bg-battleship-400 mx-2 text-white p-5 cursor-pointer"
       onClick={onClick}
     >
       {panelBoxDescription}

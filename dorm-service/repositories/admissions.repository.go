@@ -43,7 +43,7 @@ func (ar AdmissionsRepository) FindAdmissionById(id string) (*models.DormitoryAd
 	if err != nil {
 		return nil, errors.NewError(
 			"Not found with following ID",
-			401)
+			404)
 	}
 	return &dorm, nil
 }

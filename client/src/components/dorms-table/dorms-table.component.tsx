@@ -7,7 +7,9 @@ import DeleteDialog from "../dialogs/delete-dialog/delete-dialog.component";
 import { useModalContext } from "../../context/modal.context";
 import EditDorm from "../forms/edit-dorm/edit-dorm.form";
 
-const DormTable = () => {
+const DormTable: React.FC<{
+  adminView?: boolean;
+}> = ({ adminView }) => {
   const [dorms, setDorms] = useState<Dorm[]>([]);
   const dispatch = useDispatch();
   const { setContent } = useModalContext();
@@ -45,6 +47,7 @@ const DormTable = () => {
         console.log(data);
       })
       .catch((err) => {
+        setDorms([]);
         console.log(err);
       });
     dispatch(closeModal());
@@ -77,46 +80,56 @@ const DormTable = () => {
             </tr>
           </thead>
           <tbody>
-            {dorms.map((dorm, index) => (
-              <tr key={index}>
-                <td className="py-2 px-4 border-b border-gray-300 text-sm text-center">
-                  {dorm.name}
-                </td>
-                <td className="py-2 px-4 border-b border-gray-300 text-sm text-center">
-                  {dorm.location}
-                </td>
-                {dorm.prices.map((price, idx) => (
-                  <td
-                    className="py-2 px-4 border-b border-gray-300 text-sm text-center"
-                    key={idx}
-                  >
-                    {price.price}
+            {dorms && dorms.length > 0 ? (
+              dorms.map((dorm, index) => (
+                <tr key={index}>
+                  <td className="py-2 px-4 border-b border-gray-300 text-sm text-center">
+                    {dorm.name}
                   </td>
-                ))}
-                <td className="py-2 px-4 border-b border-gray-300 text-sm text-center">
-                  <button
-                    className="border bg-auburn-500 border-auburn-500 font-semibold py-1 px-2 rounded focus:border-auburn-700 text-white"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      openDialogForEdit(dorm);
-                    }}
-                  >
-                    Edit dorm
-                  </button>
-                </td>
-                <td className="py-2 px-4 border-b border-gray-300 text-sm text-center">
-                  <button
-                    className="border bg-auburn-500 border-auburn-500 font-semibold py-1 px-2 rounded focus:border-auburn-700 text-white"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      openDialogForDelete(dorm.id);
-                    }}
-                  >
-                    Delete dorm
-                  </button>
-                </td>
-              </tr>
-            ))}
+                  <td className="py-2 px-4 border-b border-gray-300 text-sm text-center">
+                    {dorm.location}
+                  </td>
+                  {dorm.prices.map((price, idx) => (
+                    <td
+                      className="py-2 px-4 border-b border-gray-300 text-sm text-center"
+                      key={idx}
+                    >
+                      {price.price}
+                    </td>
+                  ))}
+                  {adminView == true ? (
+                    <>
+                      <td className="py-2 px-4 border-b border-gray-300 text-sm text-center">
+                        <button
+                          className="border bg-auburn-500 border-auburn-500 font-semibold py-1 px-2 rounded focus:border-auburn-700 text-white"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            openDialogForEdit(dorm);
+                          }}
+                        >
+                          Edit dorm
+                        </button>
+                      </td>
+                      <td className="py-2 px-4 border-b border-gray-300 text-sm text-center">
+                        <button
+                          className="border bg-auburn-500 border-auburn-500 font-semibold py-1 px-2 rounded focus:border-auburn-700 text-white"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            openDialogForDelete(dorm.id);
+                          }}
+                        >
+                          Delete dorm
+                        </button>
+                      </td>
+                    </>
+                  ) : (
+                    ""
+                  )}
+                </tr>
+              ))
+            ) : (
+              <p className="my-2">Dorms are not available..</p>
+            )}
           </tbody>
         </table>
       </div>

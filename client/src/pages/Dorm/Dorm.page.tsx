@@ -16,6 +16,7 @@ import { Room } from "../../models/room.model";
 import { axiosInstance } from "../../services/axios.service";
 import { Dorm } from "../../models/dorm.model";
 import StudentDormPanel from "../../components/student-dorm-panel/student-dorm-panel";
+import DormitoryApplication from "../../components/forms/dormitory-application/dormitory-application.form";
 
 const DormPage = () => {
   const user = useSelector((state: RootState) => state.user.user);
@@ -45,7 +46,7 @@ const DormPage = () => {
       panelBoxDescription="View all dorms"
       onClick={() => {
         openModal();
-        setContent(<DormTable />);
+        setContent(<DormTable adminView={true} />);
       }}
     />,
     <PanelBox
@@ -66,7 +67,30 @@ const DormPage = () => {
       panelBoxDescription="List all admissions"
       onClick={() => {
         openModal();
+        setContent(<AdmissionsTable adminView={true} />);
+      }}
+    />,
+  ];
+  const dormStudentComponents: React.JSX.Element[] = [
+    <PanelBox
+      panelBoxTitle="List all dorms"
+      onClick={() => {
+        openModal();
+        setContent(<DormTable />);
+      }}
+    />,
+    <PanelBox
+      panelBoxTitle="List all active admissions"
+      onClick={() => {
+        openModal();
         setContent(<AdmissionsTable />);
+      }}
+    />,
+    <PanelBox
+      panelBoxDescription="Create application"
+      onClick={() => {
+        openModal();
+        setContent(<DormitoryApplication />);
       }}
     />,
   ];
@@ -115,7 +139,7 @@ const DormPage = () => {
                 dorm={dormDetails as Dorm}
               />
             ) : (
-              <p>Loading...</p>
+              dormStudentComponents.map((el) => el)
             )}
           </>
         )}
@@ -125,3 +149,7 @@ const DormPage = () => {
 };
 
 export default DormPage;
+
+// student can see all the dorms
+// student can see all the currently open admissions
+// student can see all of his applications
