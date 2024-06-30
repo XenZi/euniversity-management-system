@@ -70,9 +70,16 @@ const AdminDormitoryApplicationTable = () => {
 
   return (
     <>
+      <h3 className="text-center font-bold text-3xl mb-2">
+        All applications for one admission
+      </h3>
       <form className="flex flex-col">
-        <label htmlFor="options">Choose an dorm:</label>
-        <select id="options" onChange={handleSelectChange}>
+        <label htmlFor="options">Select a dorm:</label>
+        <select
+          id="options"
+          className="mb-3 p-3 border-2 border-battleship-500 w-full"
+          onChange={handleSelectChange}
+        >
           <option value="" disabled selected>
             Select an option
           </option>

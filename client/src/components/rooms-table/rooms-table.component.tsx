@@ -7,6 +7,7 @@ import { useModalContext } from "../../context/modal.context";
 import { closeModal, setModalOpen } from "../../redux/slices/modal.slice";
 import DeleteDialog from "../dialogs/delete-dialog/delete-dialog.component";
 import EditRoomForm from "../forms/edit-room/edit-room.form";
+import { castFromToaletTypeNumberToActualString } from "../../utils/converter.utils";
 
 const RoomsTable = () => {
   const [loadedRooms, setLoadedRooms] = useState<Room[]>([]);
@@ -75,9 +76,10 @@ const RoomsTable = () => {
   return (
     <>
       <form className="flex flex-col">
-        <label htmlFor="options">Choose an dorm:</label>
+        <label htmlFor="options">Select a dorm:</label>
         <select
           id="options"
+          className="mb-3 p-3 border-2 border-battleship-500 w-full"
           value={selectedDorm?.id}
           onChange={handleSelectChange}
         >
@@ -114,7 +116,7 @@ const RoomsTable = () => {
                     {room.squareFoot}
                   </td>
                   <td className="py-2 px-4 border-b border-gray-300 text-sm ">
-                    {room.toalet}
+                    {castFromToaletTypeNumberToActualString(room.toalet)}
                   </td>
                   <td className="py-2 px-4 border-b border-gray-300 text-sm ">
                     {room.numberOfBeds}

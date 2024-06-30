@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { axiosInstance } from "../../../services/axios.service";
+import { castFromApplicationTypeNumberToActualString } from "../../../utils/converter.utils";
 
 interface CreateFormData {
   name: string;
@@ -90,7 +91,9 @@ const CreateDormForm = () => {
           name={`price-${index}`}
           id={`price-${index}`}
           className="mb-3 p-3 border-2 border-battleship-500"
-          placeholder={`Price for application type ${price.applicationType}`}
+          placeholder={`Price for application ${castFromApplicationTypeNumberToActualString(
+            price.applicationType
+          )}`}
           onChange={(e) => onInputChange(e, "prices", index)}
         />
       ))}

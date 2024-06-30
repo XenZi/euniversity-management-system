@@ -21,8 +21,8 @@ func NewUniversityClient(host, port string, client *http.Client) *UniversityClie
 	}
 }
 
-func (uc UniversityClient) VerifyUserIntegrityWithUniversity(userID string) (bool, *errors.ErrorStruct) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/getCertificate/%s", uc.address, userID), nil)
+func (uc UniversityClient) VerifyUserIntegrityWithUniversity(personalIdentificationNumber string) (bool, *errors.ErrorStruct) {
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/student/%s", uc.address, personalIdentificationNumber), nil)
 	if err != nil {
 		log.Fatalln(err.Error())
 		return false, errors.NewError(err.Error(), 500)
