@@ -122,6 +122,25 @@ func (uh UniversityHandler) CreateEntranceExam(rw http.ResponseWriter, h *http.R
 
 }
 
+func (uh UniversityHandler) FindAllUniversities(rw http.ResponseWriter, h *http.Request) {
+	data, err := uh.UniversityService.FindAllUniversities()
+	if err != nil {
+		utils.WriteResp(err.GetErrorMessage(), err.GetErrorStatus(), rw)
+		return
+	}
+	utils.WriteResp(data, 200, rw)
+
+}
+
+func (uh UniversityHandler) FindAllEntranceExams(rw http.ResponseWriter, h *http.Request) {
+	data, err := uh.UniversityService.FindAllExams()
+	if err != nil {
+		utils.WriteResp(err.GetErrorMessage(), err.GetErrorStatus(), rw)
+		return
+	}
+	utils.WriteResp(data, 200, rw)
+}
+
 func (uh UniversityHandler) FindStudentById(rw http.ResponseWriter, h *http.Request) {
 	vars := mux.Vars(h)
 	id := vars["id"]

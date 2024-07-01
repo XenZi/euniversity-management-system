@@ -31,6 +31,9 @@ func (u UniversityService) CreateUniversity(university models.University) (*mode
 
 func (u UniversityService) CreateStudent(student models.Student) (*models.Student, *errors.ErrorStruct) {
 	student.Espb = 0
+	student.Semester = 1
+	student.Roles = append(student.Roles, "Citizen", "Student")
+	student.Status = 0
 	addedStud, err := u.UniversityRepository.SaveStudent(student)
 	if err != nil {
 		return nil, err
@@ -85,6 +88,30 @@ func (u UniversityService) FindProfessorById(personalIdentificationNumber string
 	}
 	return professor, nil
 }
+func (u UniversityService) FindUniversityById(id primitive.ObjectID) (*models.University, *errors.ErrorStruct) {
+	university, err := u.UniversityRepository.FindUniversityById(id)
+	if err != nil {
+		return nil, err
+	}
+	return university, nil
+}
+
+func (u UniversityService) FindAllUniversities() ([]*models.University, *errors.ErrorStruct) {
+	getAllUniversities, err := u.UniversityRepository.FindAllUniversities()
+	if err != nil {
+		return nil, err
+	}
+	return getAllUniversities, nil
+}
+
+func (u UniversityService) FindAllExams() ([]*models.EntranceExam, *errors.ErrorStruct) {
+	getAllEntranceExams, err := u.UniversityRepository.FindAllEntranceExams()
+	if err != nil {
+		return nil, err
+	}
+	return getAllEntranceExams, nil
+}
+
 func (u UniversityService) CheckBudget(personalIdentificationNumber string) (bool, *errors.ErrorStruct) {
 	student, err := u.UniversityRepository.FindStudentById(personalIdentificationNumber)
 	if err != nil {
