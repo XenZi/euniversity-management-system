@@ -1,6 +1,8 @@
 package models
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type University struct {
 	ID      primitive.ObjectID `json:"id" bson:"_id,omitempty"`
@@ -80,24 +82,31 @@ type Professor struct {
 	Password                     string             `json:"password" bson:"password"`
 	Roles                        []string           `json:"roles" bson:"roles"`
 	Status                       ProfessorStatus    `json:"status" bson:"status"`
+	University                   University         `json:"university" bson:"university"`
 }
 
 type Scholarship struct {
-	Student    Student    `json:"student" bson:"student"`
-	University University `json:"university" bson:"university"`
+	ID         primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Student    Student            `json:"student" bson:"student"`
+	University University         `json:"university" bson:"university"`
 }
 
 type StudyingConfirmation struct {
-	University University `json:"university" bson:"university"`
-	Student    Student    `json:"student" bson:"student"`
+	ID           primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	University   University         `json:"university" bson:"university"`
+	Student      Student            `json:"student" bson:"student"`
+	BudgetStatus bool               `json:"budgetStatus" bson:"budgetStatus"`
+	Semester     int64              `json:"semester" bson:"semester"`
 }
 
 type StateExamApplication struct {
-	University University `json:"university" bson:"university"`
-	Student    Student    `json:"student" bson:"student"`
+	ID         primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	University University         `json:"university" bson:"university"`
+	Student    Student            `json:"student" bson:"student"`
 }
 
 type EntranceExam struct {
-	DateAndTime string `json:"dateAndTime" bson:"dateAndTime"`
-	Address     string `json:"address" bson:"address"`
+	ID          primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	DateAndTime string             `json:"dateAndTime" bson:"dateAndTime"`
+	Address     string             `json:"address" bson:"address"`
 }

@@ -15,13 +15,13 @@ func ValidateJWT(next http.HandlerFunc, authServiceAdress string) http.HandlerFu
 		client := http.DefaultClient
 		req, err := http.NewRequest("POST", fmt.Sprintf("%s/validate-jwt", authServiceAdress), nil)
 		if err != nil {
-			utils.WriteErrorResp(err.Error(), 500, "/api/dorm", w)
+			utils.WriteErrorResp(err.Error(), 500, "/api/healthcare", w)
 			return
 		}
 		req.Header.Set("Authorization", r.Header.Get("Authorization"))
 		resp, err := client.Do(req)
 		if err != nil {
-			utils.WriteErrorResp(err.Error(), 500, "/api/dorm", w)
+			utils.WriteErrorResp(err.Error(), 500, "/api/healthcare", w)
 			return
 		}
 		defer resp.Body.Close()

@@ -25,11 +25,11 @@ func main() {
 	// env
 	port := os.Getenv("PORT")
 	universityHost := "university-service"
-	universityPort := "8000"
+	universityPort := "8080"
 	authServiceURL := fmt.Sprintf("http://%s:%s", os.Getenv("AUTH_SERVICE_URL"), os.Getenv("AUTH_SERVICE_PORT"))
 	// client
 	customClient := http.DefaultClient
-	universityClient := clients.NewUnivesityClient(universityHost, universityPort, customClient)
+	universityClient := clients.NewUniversityClient(universityHost, universityPort, customClient)
 	// MongoService initialization
 	mongoService, err := services.NewMongoService(context.Background())
 	if err != nil {
@@ -43,19 +43,49 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	healthcareHandler, err := handlers.NewHealthcareHandler(healthcareService)
+	departmentRepository, err := repository.NewDepartmentRepository(mongoService.GetCLI())
+	if err != nil {
+		log.Fatalln(err)
+	}
+	departmentService, err := services.NewDepartmentService(departmentRepository, universityClient, healthcareService)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	healthcareHandler, err := handlers.NewHealthcareHandler(healthcareService, departmentService)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
 	// ROUTING
 	router := mux.NewRouter()
+
 	router.HandleFunc("/ping", healthcareHandler.Ping).Methods("GET")
 	router.HandleFunc("/createRecord/{id}", middleware.ValidateJWT(middleware.ValidateRole(healthcareHandler.CreateRecordForUser, "Doctor"), authServiceURL)).Methods("POST")
 	router.HandleFunc("/createRecords/{id}", healthcareHandler.CreateRecordForUser).Methods("POST")
-	router.HandleFunc("/getRecord/{id}", healthcareHandler.GetRecordForUser).Methods("GET")
-	router.HandleFunc("/createCertificate", healthcareHandler.CreateCertificateForUser).Methods("POST")
 	router.HandleFunc("/getCertificate/{id}", healthcareHandler.GetCertificateForUser).Methods("GET")
+
+	//
+	router.HandleFunc("/appointments/{id}", healthcareHandler.GetAppointmentsByDoctorID).Methods("GET")
+	router.HandleFunc("/department/create/{name}", healthcareHandler.CreateDepartment).Methods("POST")
+	router.HandleFunc("/department/{name}", healthcareHandler.GetDepartmentByName).Methods("GET")
+	router.HandleFunc("/department/{name}/docSchedule/{date}/free", healthcareHandler.GetFreeDoctorSlots).Methods("GET")
+	router.HandleFunc("/department/{name}/docSchedule/{date}/add", healthcareHandler.AddDoctorToSchedule).Methods("POST")
+	router.HandleFunc("/department/{name}/schedule/{date}/free", healthcareHandler.GetFreeSlots).Methods("GET")
+	router.HandleFunc("/department/{name}/schedule/{date}/add", healthcareHandler.AddPatientToSchedule).Methods("POST")
+	router.HandleFunc("/records", healthcareHandler.GetAllRecords).Methods("GET")
+	router.HandleFunc("/records/{id}", healthcareHandler.GetRecordForUser).Methods("GET")
+	router.HandleFunc("/records/{id}/createCertificate", healthcareHandler.CreateCertificateForUser).Methods("POST")
+	router.HandleFunc("/records/{id}/certificate", healthcareHandler.GetCertificateForUser).Methods("GET")
+	router.HandleFunc("/records/{id}/appointments", healthcareHandler.GetAppointmentsByPatientID).Methods("GET")
+	router.HandleFunc("/records/{id}/appointments/{appId}/get", healthcareHandler.GetAppointmentById).Methods("GET")
+	router.HandleFunc("/records/{id}/appointments/{appId}/update", healthcareHandler.UpdateAppointment).Methods("POST")
+	router.HandleFunc("/records/{id}/referrals", healthcareHandler.GetReferralsByPatientID).Methods("GET")
+	router.HandleFunc("/records/{id}/referrals/createReferral", healthcareHandler.CreateReferral).Methods("POST")
+	router.HandleFunc("/records/{id}/referrals/{refId}", healthcareHandler.GetReferralById).Methods("GET")
+	router.HandleFunc("/records/{id}/prescriptions", healthcareHandler.GetPrescriptionsByPatientID).Methods("GET")
+	router.HandleFunc("/records/{id}/prescriptions/createPrescription", healthcareHandler.CreatePrescription).Methods("POST")
+	router.HandleFunc("/records/{id}/prescriptions/{presId}", healthcareHandler.GetPrescriptionById).Methods("GET")
+	router.HandleFunc("/records/{id}/prescriptions/{presId}/{status}", healthcareHandler.UpdatePrescription).Methods("POST")
 
 	// CORS
 	headersOk := gorillaHandlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})

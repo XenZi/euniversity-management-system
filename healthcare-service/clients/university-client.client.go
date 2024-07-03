@@ -14,7 +14,7 @@ type UniversityClient struct {
 	client  *http.Client
 }
 
-func NewUnivesityClient(host, port string, client *http.Client) *UniversityClient {
+func NewUniversityClient(host, port string, client *http.Client) *UniversityClient {
 	return &UniversityClient{
 		address: fmt.Sprintf("http://%s:%s", host, port),
 		client:  client,
