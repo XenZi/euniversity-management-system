@@ -8,6 +8,8 @@ import PrivateRoute from "./components/routing/private-route.component";
 import useLocalStorage from "./hooks/local-storage.hook";
 import { setUser } from "./redux/slices/user.slice";
 import { User } from "./models/user.model";
+import UniPage from "./pages/University/University.page";
+import AllUniversities from "./components/universities-table/all-universities.table";
 
 function App() {
   const [userFromLocalStorage] = useLocalStorage("user", null);
@@ -24,6 +26,11 @@ function App() {
       path: "/home",
       element: <PrivateRoute Component={HomePage} />,
     },
+    {
+      path: "/university",
+      element: <PrivateRoute Component={UniPage}></PrivateRoute>
+    },
+  
   ]);
   const dispatch = useDispatch();
   useEffect(() => {
