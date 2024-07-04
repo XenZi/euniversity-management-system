@@ -24,10 +24,12 @@ func main() {
 	port := os.Getenv("PORT")
 	healthCareServiceURL := os.Getenv("HEALTHCARE_SERVICE_URL")
 	healthCareServicePort := os.Getenv("HEALTHCARE_SERVICE_PORT")
+	universityServiceAddress := "http://" + os.Getenv("UNIVERSITY_SERVICE_URL") + ":" + os.Getenv("UNIVERSITY_SERVICE_PORT")
 	// authServiceURL := fmt.Sprintf("http://%s:%s", os.Getenv("AUTH_SERVICE_URL"), os.Getenv("AUTH_SERVICE_PORT"))
 	// client
 	customHttpClient := http.DefaultClient
 	healthCareClient := client.NewHealthCareClient(healthCareServiceURL, healthCareServicePort, customHttpClient)
+	universityClient := client.NewUniversityClient(universityServiceAddress, http.DefaultClient)
 	// services
 	mongoService, err := services.NewMongoService(timeoutContext)
 	if err != nil {
@@ -49,19 +51,12 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	admissionsService, err := services.NewAdmissionsServices(admissionsRepository)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	admissionsHandler, err := handlers.NewAdmissionsHandler(admissionsService)
-	if err != nil {
-		log.Fatalln(err)
-	}
+
 	applicationsRepository, err := repositories.NewApplicationsRepository(mongoService.GetCLI())
 	if err != nil {
 		log.Fatalln(err)
 	}
-	applicationsServices, err := services.NewApplicationsService(applicationsRepository, healthCareClient)
+	applicationsServices, err := services.NewApplicationsService(applicationsRepository, healthCareClient, universityClient)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -69,9 +64,18 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+
 	roomRepository := repositories.NewRoomRepository(mongoService.GetCLI())
 	roomService := services.NewRoomService(roomRepository)
-	roomHandler, err := handlers.NewRoomHandler(roomService)
+	roomHandler, _ := handlers.NewRoomHandler(roomService)
+	admissionsService, err := services.NewAdmissionsServices(admissionsRepository, applicationsServices, roomService)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	admissionsHandler, err := handlers.NewAdmissionsHandler(admissionsService)
+	if err != nil {
+		log.Fatalln(err)
+	}
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -89,6 +93,7 @@ func main() {
 	router.HandleFunc("/admissions/{id}", admissionsHandler.GetAdmissionsByID).Methods("GET")
 	router.HandleFunc("/admissions/{id}", admissionsHandler.DeleteAdmissionById).Methods("DELETE")
 	router.HandleFunc("/admissions/{id}", admissionsHandler.UpdateAdmission).Methods("PUT")
+	router.HandleFunc("/admissions/end/{id}", admissionsHandler.EndAdmission).Methods("PUT")
 	router.HandleFunc("/admissions/dorm/{id}", admissionsHandler.GetAdmissionByDormId).Methods("GET")
 	router.HandleFunc("/room", roomHandler.CreateRoom).Methods("POST")
 	router.HandleFunc("/{id}/rooms", roomHandler.GetAllRoomsByDormID).Methods("GET")

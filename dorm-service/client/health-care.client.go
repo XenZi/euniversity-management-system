@@ -40,7 +40,7 @@ func (hc HealthCareClient) GetUserHealthStatusConfirmation(userID string) (bool,
 			return false, errors.NewError(err.Error(), 500)
 		}
 		log.Println(baseErrorResp)
-		return false, nil
+		return false, errors.NewError("Causing error cause there is no tracking document", 400)
 	}
 	baseHttpResponse := models.BaseHttpResponse{}
 	err = json.NewDecoder(resp.Body).Decode(&baseHttpResponse)

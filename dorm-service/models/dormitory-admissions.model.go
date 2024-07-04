@@ -7,4 +7,5 @@ type DormitoryAdmissions struct {
 	DormID string             `json:"dormID" bson:"dormID"`
 	Start  string             `json:"start" bson:"start"`
 	End    string             `json:"end" bson:"end"`
+	Active bool               `json:"active" bson:"active"`
 }

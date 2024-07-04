@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type ApplicationsRepository struct {
@@ -102,15 +103,25 @@ func (ar ApplicationsRepository) FindAllUnderReviewApplicationsForSpecifiedAdmis
 func (ar ApplicationsRepository) FindAllAcceptedApplicationsForSpecifiedAdmission(admissionID string) ([]*models.ApplicationForDorm, *errors.ErrorStruct) {
 	applicationsCollection := ar.cli.Database("dorm").Collection("applications")
 	var applications []*models.ApplicationForDorm
+
 	filter := bson.M{
 		"dormitoryAdmissionsID": admissionID,
 		"applicationStatus":     1,
 	}
-	cursor, err := applicationsCollection.Find(context.TODO(), filter)
+
+	// Define the sorting criteria
+	sort := bson.D{
+		{Key: "student.studentUniversityData.budgetStatus", Value: -1},
+		{Key: "student.studentUniversityData.espb", Value: -1},
+		{Key: "student.studentUniversityData.semester", Value: -1},
+	}
+
+	cursor, err := applicationsCollection.Find(context.TODO(), filter, options.Find().SetSort(sort))
 	if err != nil {
 		return nil, errors.NewError(err.Error(), 500)
 	}
 	defer cursor.Close(context.TODO())
+
 	for cursor.Next(context.TODO()) {
 		var application models.ApplicationForDorm
 		if err := cursor.Decode(&application); err != nil {
