@@ -135,6 +135,7 @@ func (u UniversityService) ExtendStatus(personalIdentificationNumber string) (*m
 		return nil, errors.NewError("Health status confirmation failed", 400)
 	}
 	student.Semester += 1
+	student.Espb += 20
 	updatedStudent, err := u.UniversityRepository.UpdateStudent(*student)
 	if err != nil {
 		return nil, err

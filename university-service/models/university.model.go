@@ -109,5 +109,5 @@ type EntranceExam struct {
 	ID          primitive.ObjectID `json:"id" bson:"_id,omitempty"`
 	Citizen     CitizenDTO         `json:"citizen" bson:"citizen"`
 	DateAndTime string             `json:"dateAndTime" bson:"dateAndTime"`
-	Address     string             `json:"address" bson:"address"`
+	University  University         `json:"university" bson:"university"`
 }
