@@ -73,6 +73,14 @@ func (u UniversityService) CreateRandomEntranceExam(exam models.EntranceExam) (*
 	return addedExam, nil
 }
 
+func (u UniversityService) CreateExtendStatusApplication(application models.ExtendStatusApplication) (*models.ExtendStatusApplication, *errors.ErrorStruct) {
+	addedApplication, err := u.UniversityRepository.SaveExtendStatusApplication(application)
+	if err != nil {
+		return nil, err
+	}
+	return addedApplication, nil
+}
+
 func (u UniversityService) FindStudentById(personalIdentificationNumber string) (*models.Student, *errors.ErrorStruct) {
 	student, err := u.UniversityRepository.FindStudentById(personalIdentificationNumber)
 	if err != nil {
@@ -110,6 +118,14 @@ func (u UniversityService) FindAllExams() ([]*models.EntranceExam, *errors.Error
 		return nil, err
 	}
 	return getAllEntranceExams, nil
+}
+
+func (u UniversityService) FindAllExtendStatusApplications() ([]*models.ExtendStatusApplication, *errors.ErrorStruct) {
+	getAllExtendStatusApplications, err := u.UniversityRepository.FindAllExtendStatusApplications()
+	if err != nil {
+		return nil, err
+	}
+	return getAllExtendStatusApplications, nil
 }
 
 func (u UniversityService) CheckBudget(personalIdentificationNumber string) (bool, *errors.ErrorStruct) {

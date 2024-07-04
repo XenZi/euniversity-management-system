@@ -61,7 +61,15 @@ func (u UniversityRepository) SaveScholarship(scholarship models.Scholarship) (*
 	scholarship.ID = insertResult.InsertedID.(primitive.ObjectID)
 	return &scholarship, nil
 }
-
+func (u UniversityRepository) SaveExtendStatusApplication(application models.ExtendStatusApplication) (*models.ExtendStatusApplication, *errors.ErrorStruct) {
+	applicationCollection := u.cli.Database("university").Collection("application")
+	insertResult, err := applicationCollection.InsertOne(context.TODO(), application)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	application.ID = insertResult.InsertedID.(primitive.ObjectID)
+	return &application, nil
+}
 func (u UniversityRepository) SaveStateExamApplication(application models.StateExamApplication) (*models.StateExamApplication, *errors.ErrorStruct) {
 	applicationCollection := u.cli.Database("university").Collection("state_exam_application")
 	insertResult, err := applicationCollection.InsertOne(context.TODO(), application)
@@ -170,6 +178,28 @@ func (u UniversityRepository) FindAllEntranceExams() ([]*models.EntranceExam, *e
 		return nil, errors.NewError(err.Error(), 500)
 	}
 	return exams, nil
+}
+
+func (u UniversityRepository) FindAllExtendStatusApplications() ([]*models.ExtendStatusApplication, *errors.ErrorStruct) {
+	applicationCollection := u.cli.Database("university").Collection("application")
+	var applications []*models.ExtendStatusApplication
+	cursor, err := applicationCollection.Find(context.TODO(), bson.M{})
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	defer cursor.Close(context.TODO())
+	for cursor.Next(context.TODO()) {
+		var application models.ExtendStatusApplication
+		if err := cursor.Decode(&application); err != nil {
+			return nil, errors.NewError(err.Error(), 500)
+		}
+		applications = append(applications, &application)
+
+	}
+	if err := cursor.Err(); err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	return applications, nil
 }
 
 func (u UniversityRepository) UpdateStudent(student models.Student) (*models.Student, *errors.ErrorStruct) {

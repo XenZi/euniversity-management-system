@@ -111,3 +111,7 @@ type EntranceExam struct {
 	DateAndTime string             `json:"dateAndTime" bson:"dateAndTime"`
 	University  University         `json:"university" bson:"university"`
 }
+type ExtendStatusApplication struct {
+	ID      primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Student Student            `json:"student" bson:"student"`
+}
