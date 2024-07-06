@@ -4,14 +4,20 @@ import { axiosInstance } from "../../../services/axios.service";
 import { Room } from "../../../models/room.model";
 import { Dorm } from "../../../models/dorm.model";
 import { ToaletType } from "../../../models/enum";
+import { useDispatch } from "react-redux";
+import { closeModal } from "../../../redux/slices/modal.slice";
 
 const CreateRoomForm = () => {
   const { register, handleSubmit } = useForm<Room>();
+  const dispatch = useDispatch();
   const [dormData, setDormData] = useState<Dorm[]>();
   const onSubmit: SubmitHandler<Room> = (data) => {
     axiosInstance
       .post("/dorm/room", { ...data })
-      .then((data) => console.log(data.data.data))
+      .then((data) => {
+        dispatch(closeModal());
+        console.log(data.data.data);
+      })
       .catch((err) => console.log(err.response.data));
   };
 

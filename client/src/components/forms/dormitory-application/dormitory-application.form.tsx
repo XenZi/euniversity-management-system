@@ -6,13 +6,15 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { axiosInstance } from "../../../services/axios.service";
 import { ApplicationType } from "../../../models/enum";
 import { RootState } from "../../../redux/store/store";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { User } from "../../../models/user.model";
+import { closeModal } from "../../../redux/slices/modal.slice";
 
 const DormitoryApplication = () => {
   const [dorms, setDorms] = useState<Dorm[]>([]);
   const [admissions, setAdmissions] = useState<Admission[]>([]);
   const { register, handleSubmit } = useForm<Application>();
+  const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user.user);
   useEffect(() => {
     axiosInstance
@@ -38,6 +40,7 @@ const DormitoryApplication = () => {
     data.student = user as User;
     axiosInstance.post("/dorm/applications", { ...data }).then((data) => {
       console.log(data.data.data);
+      dispatch(closeModal());
     });
   };
 
