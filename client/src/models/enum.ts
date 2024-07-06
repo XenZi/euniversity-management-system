@@ -25,7 +25,7 @@ export enum EDrugForm {
   CAPSULE = 3,
 }
 
-export enum EPrescriptionType {
+export enum EPrescriptionStatus {
   ISSUED = 0,
   CLAIMED = 1,
   ISSUED_REPEAT = 2,
