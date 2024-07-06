@@ -5,7 +5,8 @@ import { UniversityAdmission } from '../../../models/university-admission.model'
 import { axiosInstance } from '../../../services/axios.service';
 import { User } from '../../../models/user.model';
 import { University } from '../../../models/university.model';
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const CreateStudentForm = () => {
   const [loadedEntranceExams, setLoadedEntranceExams] = useState<UniversityAdmission[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -44,11 +45,13 @@ const CreateStudentForm = () => {
         
         .then((res) => {
           console.log("Submission successful", res);
+          toast.success('Sucessfuly created student!');
           setFormVisible(false);
           setError(null);
         })
         .catch((err) => {
           console.log("Submission error", err);
+          toast.error('Something went wrong!');
           setError(err.response?.data?.message || "An error occurred during submission. Please try again.");
         });
     }

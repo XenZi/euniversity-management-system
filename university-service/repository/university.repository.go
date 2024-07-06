@@ -70,6 +70,17 @@ func (u UniversityRepository) SaveExtendStatusApplication(application models.Ext
 	application.ID = insertResult.InsertedID.(primitive.ObjectID)
 	return &application, nil
 }
+
+func (u UniversityRepository) SaveScholarshipApplication(application models.ApplyForScholarship) (*models.ApplyForScholarship, *errors.ErrorStruct) {
+	applicationCollection := u.cli.Database("university").Collection("application")
+	insertResult, err := applicationCollection.InsertOne(context.TODO(), application)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	application.ID = insertResult.InsertedID.(primitive.ObjectID)
+	return &application, nil
+}
+
 func (u UniversityRepository) SaveStateExamApplication(application models.StateExamApplication) (*models.StateExamApplication, *errors.ErrorStruct) {
 	applicationCollection := u.cli.Database("university").Collection("state_exam_application")
 	insertResult, err := applicationCollection.InsertOne(context.TODO(), application)
@@ -195,6 +206,27 @@ func (u UniversityRepository) FindAllExtendStatusApplications() ([]*models.Exten
 		}
 		applications = append(applications, &application)
 
+	}
+	if err := cursor.Err(); err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	return applications, nil
+}
+
+func (u UniversityRepository) FindAllScholarshipApplications() ([]*models.ApplyForScholarship, *errors.ErrorStruct) {
+	applicationCollection := u.cli.Database("university").Collection("application")
+	var applications []*models.ApplyForScholarship
+	cursor, err := applicationCollection.Find(context.TODO(), bson.M{})
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	defer cursor.Close(context.TODO())
+	for cursor.Next(context.TODO()) {
+		var application models.ApplyForScholarship
+		if err := cursor.Decode(&application); err != nil {
+			return nil, errors.NewError(err.Error(), 500)
+		}
+		applications = append(applications, &application)
 	}
 	if err := cursor.Err(); err != nil {
 		return nil, errors.NewError(err.Error(), 500)

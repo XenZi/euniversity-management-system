@@ -4,10 +4,12 @@ import { University } from "../../../models/university.model";
 
 import { useSelector } from "react-redux";
 import { RootState } from "../../../redux/store/store";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CreateEntranceForm = () => {
   const user = useSelector((state: RootState) => state.user.user);
-
+  const [formVisible, setFormVisible] = useState(true);
   const [loadedUniversities, setLoadedUniversities] = useState<University[]>([]);
   const [selectedUniversity, setSelectedUniversity] = useState<University | null>(null);
 
@@ -34,9 +36,14 @@ const CreateEntranceForm = () => {
         })
         .then((res) => {
           console.log("Submission successful", res);
+          toast.success('Successfuly applied for entrance exam!');
+          setFormVisible(false);
+
         })
         .catch((err) => {
           console.log("Submission error", err);
+          toast.error('Something went wrong!');
+
         });
     }
   };
@@ -47,6 +54,9 @@ const CreateEntranceForm = () => {
     setSelectedUniversity(university || null);
     
   };
+  if (!formVisible) {
+    return <div>Form submitted successfully!</div>;
+  }
 
   return (
     <>

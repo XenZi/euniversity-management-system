@@ -81,6 +81,14 @@ func (u UniversityService) CreateExtendStatusApplication(application models.Exte
 	return addedApplication, nil
 }
 
+func (u UniversityService) CreateScholarshipApplication(application models.ApplyForScholarship) (*models.ApplyForScholarship, *errors.ErrorStruct) {
+	addedApplication, err := u.UniversityRepository.SaveScholarshipApplication(application)
+	if err != nil {
+		return nil, err
+	}
+	return addedApplication, nil
+}
+
 func (u UniversityService) FindStudentById(personalIdentificationNumber string) (*models.Student, *errors.ErrorStruct) {
 	student, err := u.UniversityRepository.FindStudentById(personalIdentificationNumber)
 	if err != nil {
@@ -126,6 +134,14 @@ func (u UniversityService) FindAllExtendStatusApplications() ([]*models.ExtendSt
 		return nil, err
 	}
 	return getAllExtendStatusApplications, nil
+}
+
+func (u UniversityService) FindAllScholarshipApplications() ([]*models.ApplyForScholarship, *errors.ErrorStruct) {
+	getAllScholarshipApplications, err := u.UniversityRepository.FindAllScholarshipApplications()
+	if err != nil {
+		return nil, err
+	}
+	return getAllScholarshipApplications, nil
 }
 
 func (u UniversityService) CheckBudget(personalIdentificationNumber string) (bool, *errors.ErrorStruct) {

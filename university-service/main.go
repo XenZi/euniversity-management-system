@@ -71,8 +71,10 @@ func main() {
 	router.HandleFunc("/stateApplication", universityHandler.CreateStateExamApplication).Methods("POST")
 	router.HandleFunc("/entranceExam", universityHandler.CreateEntranceExam).Methods("POST")
 	router.HandleFunc("/entranceExam", universityHandler.FindAllEntranceExams).Methods("GET")
-	router.HandleFunc("/student/extendStatusApplication", universityHandler.CreateExtendStatusApplication).Methods("POST")
-	router.HandleFunc("extendStatusApplication", universityHandler.FindAllExtendStatusApplications).Methods("GET")
+	router.HandleFunc("/extendStatusApplication", universityHandler.CreateExtendStatusApplication).Methods("POST")
+	router.HandleFunc("/extendStatusApplication", universityHandler.FindAllExtendStatusApplications).Methods("GET")
+	router.HandleFunc("/scholarshipApplication", universityHandler.CreateScholarshipApplication).Methods("POST")
+	router.HandleFunc("/scholarshipApplication", universityHandler.FindAllScholarshipApplications).Methods("GET")
 	// CORS
 	headersOk := gorillaHandlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
 	methodsOk := gorillaHandlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
