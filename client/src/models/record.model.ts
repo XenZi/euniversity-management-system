@@ -1,4 +1,4 @@
-import { EAppointmentStatus, EAppointmentType, EDrugForm, EPrescriptionStatus } from "./enum";
+import { EAppointmentStatus, EAppointmentType } from "./enum";
 
 export interface UserRecord {
     id?: string,
@@ -30,9 +30,9 @@ export interface Prescription{
     patientID?: string,
     doctorID?: string,
     drug?: string,
-    form?: EDrugForm,
+    form: string,
     dosage?: string,
-    status?: EPrescriptionStatus,
+    prescriptionStatus: string,
 }
 
 export interface Referral {
