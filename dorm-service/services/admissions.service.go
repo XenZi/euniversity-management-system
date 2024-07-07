@@ -88,6 +88,7 @@ func (as AdmissionsService) EndAdmission(admissionID string) (*models.DormitoryA
 	for _, room := range rooms {
 		totalAvailablePlaces += int(room.NumberOfBeds)
 	}
+	// petlja
 	for i := range applications {
 		placed := false
 		for j := range rooms {
