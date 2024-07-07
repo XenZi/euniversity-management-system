@@ -14,6 +14,10 @@ import { EAppointmentStatus, EAppointmentType, EDrugForm, EPrescriptionStatus } 
 import ExtendPrescriptionDialog from "../dialogs/healthcare-dialogs/extend-prescription";
 import CreateAppointmentForm from "../forms/healthcare-forms/create-appointment";
 import FinishAppointmentForm from "../forms/healthcare-forms/finish-appointment";
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+
+
 
 
 
@@ -142,6 +146,56 @@ const PatientPanel: React.FC<{
         });
     };
 
+    const generatePDF = () => {
+        const divToPrint = document.createElement('div');
+        divToPrint.className = 'hidden-certificate';
+    
+        divToPrint.innerHTML = `
+            <div class="bg-white w-full p-4 rounded-lg shadow-md mb-4">
+                <div class="flex justify-center mb-4">
+                    <h3 class="text-3xl font-bold">Medical Certificate</h3>
+                </div>
+                <div class="border-t border-b border-gray-300 py-2 mb-4">
+                    <p class="text-center text-xl font-bold">${userRecord?.certificate?.report?.title}</p>
+                </div>
+                <div class="px-4 mb-4">
+                    <p class="text-sm">
+                        This certifies that <span class="font-bold">${user?.fullName}</span> has been examined and issued:
+                    </p>
+                    <p class="text-lg font-bold mb-2">${userRecord?.certificate?.report?.content}</p>
+                </div>
+                <div class="flex justify-between">
+                    <div class="text-sm">
+                        <p>Date of Issue: <span class="font-bold">${userRecord?.certificate?.dateOfIssue}</span></p>
+                    </div>
+                    <div class="text-right text-sm">
+                        <p>Issued by: <span class="font-bold">${doctors.find(doc => doc.personalIdentificationNumber === userRecord?.certificate?.doctorID)?.fullName}</span></p>
+                    </div>
+                </div>
+            </div>
+        `;
+    
+        document.body.appendChild(divToPrint);
+    
+        html2canvas(divToPrint).then(canvas => {
+            document.body.removeChild(divToPrint);
+    
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4',
+            });
+    
+            const imgWidth = 210; 
+            const imgHeight = canvas.height * imgWidth / canvas.width;
+    
+            const imgData = canvas.toDataURL('image/png');
+            pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+    
+            pdf.save('certif.pdf');
+        });
+    };
+
 
 
     return (
@@ -161,7 +215,7 @@ const PatientPanel: React.FC<{
         </ul>
     </div>
 
-    <div className="bg-white w-full p-4 rounded-lg shadow-md mb-4">
+    <div className="bg-white w-full p-4 rounded-lg shadow-md mb-4" id="cert-panel">
         <h3 className="text-3xl text-center mb-4">Certificate Details</h3>
         <ul className="list-none pl-3">
             <li className="mb-2">
@@ -413,7 +467,14 @@ const PatientPanel: React.FC<{
         >
             Update
         </button>
+            <button
+            className="border bg-auburn-500 border-auburn-500 font-semibold py-2 px-4 rounded focus:border-auburn-700 text-white m-2"
+            onClick={generatePDF}
+            >
+                Generate PDF
+            </button>
     </div>
+    
 )}
 
 </div>
@@ -422,3 +483,5 @@ const PatientPanel: React.FC<{
 };
 
 export default PatientPanel;
+
+
