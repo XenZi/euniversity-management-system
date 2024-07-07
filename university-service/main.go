@@ -28,11 +28,13 @@ func main() {
 
 	healthCareServiceURL := os.Getenv("HEALTHCARE_SERVICE_URL")
 	healthCareServicePort := os.Getenv("HEALTHCARE_SERVICE_PORT")
+	//	authServicePort := os.Getenv("AUTH_SERVICE_PORT")
 	authServiceURL := fmt.Sprintf("http://%s:%s", os.Getenv("AUTH_SERVICE_URL"), os.Getenv("AUTH_SERVICE_PORT"))
 
 	// client
 	customHttpClient := http.DefaultClient
 	healthCareClient := client.NewHealthCareClient(healthCareServiceURL, healthCareServicePort, customHttpClient)
+	authServiceClient := client.NewAuthServiceClient(authServiceURL, customHttpClient)
 	// MongoService initialization
 	mongoService, err := services.NewMongoService(context.Background())
 	if err != nil {
@@ -42,7 +44,7 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	universityService, err := services.NewUniversityService(universityRepository, healthCareClient)
+	universityService, err := services.NewUniversityService(universityRepository, healthCareClient, authServiceClient)
 	if err != nil {
 		log.Fatalln(err)
 	}
