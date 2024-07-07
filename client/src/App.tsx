@@ -31,10 +31,10 @@ function App() {
       path: "/healthcare",
       element: <PrivateRoute Component={HealthcarePage} />,
     },
+    {
       path: "/university",
-      element: <PrivateRoute Component={UniPage}></PrivateRoute>
-    }
-  
+      element: <PrivateRoute Component={UniPage}></PrivateRoute>,
+    },
   ]);
   const dispatch = useDispatch();
   useEffect(() => {

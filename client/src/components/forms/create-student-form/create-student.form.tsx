@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../redux/store/store';
-import { UniversityAdmission } from '../../../models/university-admission.model';
-import { axiosInstance } from '../../../services/axios.service';
-import { User } from '../../../models/user.model';
-import { University } from '../../../models/university.model';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../redux/store/store";
+import { UniversityAdmission } from "../../../models/university-admission.model";
+import { axiosInstance } from "../../../services/axios.service";
+import { User } from "../../../models/user.model";
+import { University } from "../../../models/university.model";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const CreateStudentForm = () => {
-  const [loadedEntranceExams, setLoadedEntranceExams] = useState<UniversityAdmission[]>([]);
+  const [loadedEntranceExams, setLoadedEntranceExams] = useState<
+    UniversityAdmission[]
+  >([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [formVisible, setFormVisible] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedUni, setSelectedUni] = useState<University| null>(null);
-
-  
+  const [selectedUni, setSelectedUni] = useState<University | null>(null);
 
   useEffect(() => {
     axiosInstance
@@ -34,25 +34,22 @@ const CreateStudentForm = () => {
     if (selectedUser) {
       axiosInstance
         .post("/university/student", {
-          personalIdentificationNumber: selectedUser.personalIdentificationNumber,
-          citizenship: selectedUser.citizenship,
-          fullName: selectedUser.fullName,
-          gender: selectedUser.gender,
-          identityCardNumber: selectedUser.identityCardNumber,
-          residence: selectedUser.residence,
-          university: selectedUni
+          ...selectedUser,
+          university: selectedUni,
         })
-        
         .then((res) => {
           console.log("Submission successful", res);
-          toast.success('Sucessfuly created student!');
+          toast.success("Sucessfuly created student!");
           setFormVisible(false);
           setError(null);
         })
         .catch((err) => {
           console.log("Submission error", err);
-          toast.error('Something went wrong!');
-          setError(err.response?.data?.message || "An error occurred during submission. Please try again.");
+          toast.error("Something went wrong!");
+          setError(
+            err.response?.data?.message ||
+              "An error occurred during submission. Please try again."
+          );
         });
     }
   };
@@ -61,7 +58,7 @@ const CreateStudentForm = () => {
     const selectedId = e.target.value;
     const exam = loadedEntranceExams.find((exam) => exam.id === selectedId);
     setSelectedUser(exam?.citizen || null);
-    setSelectedUni(exam?.university || null)
+    setSelectedUni(exam?.university || null);
   };
 
   if (!formVisible) {
@@ -79,7 +76,7 @@ const CreateStudentForm = () => {
           className="mb-3 p-3 border-2 border-battleship-500 w-full"
           onChange={handleUserChange}
         >
-          <option value="" disabled>
+          <option value="" disabled selected>
             Select a student
           </option>
           {loadedEntranceExams?.map((exam) => (

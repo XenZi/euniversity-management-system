@@ -27,8 +27,7 @@ func (as ApplicationsService) CreateNewApplication(application models.Applicatio
 	if err != nil {
 		log.Println("VARIJACIJA 2")
 		log.Println(err.GetErrorMessage())
-		valueFromHealthCare = true
-		application.HealthInsurance = true
+		application.HealthInsurance = false
 	} else {
 		application.HealthInsurance = valueFromHealthCare
 	}

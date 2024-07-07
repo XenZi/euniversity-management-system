@@ -33,7 +33,7 @@ func (u UniversityService) CreateUniversity(university models.University) (*mode
 func (u UniversityService) CreateStudent(student models.Student) (*models.Student, *errors.ErrorStruct) {
 	student.Espb = 0
 	student.Semester = 1
-	student.Roles = append(student.Roles, "Citizen", "Student")
+	// student.Roles = append(student.Roles, "Citizen", "Student")
 	student.Status = 0
 	addedStud, err := u.UniversityRepository.SaveStudent(student)
 	if err != nil {
