@@ -6,6 +6,7 @@ import (
 	"fakultet-service/models"
 	"fakultet-service/repository"
 	"fmt"
+	"log"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -13,12 +14,14 @@ import (
 type UniversityService struct {
 	UniversityRepository *repository.UniversityRepository
 	HealthCareClient     *client.HealthCareClient
+	AuthServiceClient    *client.AuthServiceClient
 }
 
-func NewUniversityService(universityRepository *repository.UniversityRepository, client *client.HealthCareClient) (*UniversityService, error) {
+func NewUniversityService(universityRepository *repository.UniversityRepository, client *client.HealthCareClient, authClient *client.AuthServiceClient) (*UniversityService, error) {
 	return &UniversityService{
 		UniversityRepository: universityRepository,
 		HealthCareClient:     client,
+		AuthServiceClient:    authClient,
 	}, nil
 }
 
@@ -33,16 +36,26 @@ func (u UniversityService) CreateUniversity(university models.University) (*mode
 func (u UniversityService) CreateStudent(student models.Student) (*models.Student, *errors.ErrorStruct) {
 	student.Espb = 0
 	student.Semester = 1
-	// student.Roles = append(student.Roles, "Citizen", "Student")
 	student.Status = 0
-	addedStud, err := u.UniversityRepository.SaveStudent(student)
+	var roles []string
+	roles = append(roles, "Student")
+	roles = append(roles, "Patient")
+	log.Println(student.PersonalIdentificationNumber, "PIN")
+	err := u.AuthServiceClient.AddRoles(student.PersonalIdentificationNumber, roles)
 	if err != nil {
-		return nil, err
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	student.Roles = roles
+
+	addedStud, erro := u.UniversityRepository.SaveStudent(student)
+	if erro != nil {
+		return nil, erro
 	}
 	return addedStud, nil
 }
 
 func (u UniversityService) CreateProfessor(professor models.Professor) (*models.Professor, *errors.ErrorStruct) {
+
 	addedProf, err := u.UniversityRepository.SaveProfessor(professor)
 	if err != nil {
 		return nil, err
