@@ -25,7 +25,7 @@ func NewApplicationsService(applicationsRepository *repositories.ApplicationsRep
 func (as ApplicationsService) CreateNewApplication(application models.ApplicationForDorm) (*models.ApplicationForDorm, *errors.ErrorStruct) {
 	valueFromHealthCare, err := as.healthCareClient.GetUserHealthStatusConfirmation(application.Student.PersonalIdentificationNumber)
 	if err != nil {
-		log.Println("VARIJACIJA 2")
+		log.Println("VARIJACIJA 3")
 		log.Println(err.GetErrorMessage())
 		application.HealthInsurance = false
 	} else {
