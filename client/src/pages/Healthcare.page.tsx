@@ -18,15 +18,8 @@ const HealthcarePage = () => {
   const openModal = () => {
     dispatch(setModalOpen());
   };
-  const patientComponents: React.JSX.Element[] = [
-    <PanelBox
-    panelBoxTitle="Show Record"
-    onClick={() => {
-      openModal();
-      setContent("Show Record")
-    }}
-    />,
-  ];
+
+
 
   useEffect(() => {
     if (user?.roles[0] == "Patient"){
@@ -60,16 +53,17 @@ const HealthcarePage = () => {
             <PatientPanel
             userID = {user?.personalIdentificationNumber}
             />
-            <div className="my-10"></div> {/* Space between panels */}
-            <PatientPanel
-            userID = {user?.personalIdentificationNumber}
-            />
-            
+                       
             </>
             
             
           ) : (
-            patientComponents.map((el) => el)
+            <div className="flex flex-col items-center justify-center w-full">
+            <div className="bg-white w-full p-4 rounded-lg shadow-md mb-4">
+                <h3 className="text-3xl text-center mb-4">You must chose a healtcare role</h3>
+
+                </div>
+                </div>
           )}
         </>)}
       

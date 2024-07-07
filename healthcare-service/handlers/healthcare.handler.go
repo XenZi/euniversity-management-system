@@ -285,3 +285,12 @@ func (hh HealthcareHandler) UpdatePrescription(rw http.ResponseWriter, h *http.R
 	}
 	utils.WriteResp(resp, 200, rw)
 }
+
+func (hh HealthcareHandler) GetAllDepartments(rw http.ResponseWriter, h *http.Request) {
+	resp, err := hh.DepartmentService.GetAllDepartments()
+	if err != nil {
+		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "api/healthcare/records", rw)
+		return
+	}
+	utils.WriteResp(resp, 200, rw)
+}

@@ -59,3 +59,25 @@ func (d DepartmentRepository) GetDepartmentByName(name string) (*models.Departme
 	}
 	return dept, nil
 }
+
+func (d DepartmentRepository) GetAllDepartments() ([]*models.Department, *errors.ErrorStruct) {
+	departmentCollection := d.cli.Database(h2).Collection(dep)
+	filter := bson.M{}
+	var depts []*models.Department
+	cursor, err := departmentCollection.Find(context.TODO(), filter)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	defer cursor.Close(context.TODO())
+	for cursor.Next(context.TODO()) {
+		var dept *models.Department
+		if err := cursor.Decode(&dept); err != nil {
+			return nil, errors.NewError(err.Error(), 500)
+		}
+		depts = append(depts, dept)
+	}
+	if err := cursor.Err(); err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	return depts, nil
+}

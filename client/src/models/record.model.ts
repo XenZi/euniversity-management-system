@@ -1,5 +1,3 @@
-import { EAppointmentStatus, EAppointmentType } from "./enum";
-
 export interface UserRecord {
     id?: string,
     patientID?: string,
@@ -46,10 +44,25 @@ export interface Appointment {
     id?: string,
     dateOfIssue?: string,
     patientID?: string,
-    doctorID?: string,
-    appointmentType?: EAppointmentType,
-    appointmentStatus?: EAppointmentStatus,
+    doctorID: string,
+    appointmentType: string,
+    appointmentStatus: string,
     report?: UserReport,
 }
 
+export interface Department{
+    id?: string,
+    name: string,
+    schedule: Schedule
+}
+
+export interface Schedule {
+    date: { [date: string]: Slot[] };
+}
+
+export interface Slot {
+    time: string,
+    doctorID?: string,
+    patientID?: string,
+}
 
