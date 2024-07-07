@@ -86,9 +86,12 @@ type Professor struct {
 }
 
 type Scholarship struct {
-	ID         primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-	Student    Student            `json:"student" bson:"student"`
-	University University         `json:"university" bson:"university"`
+	ID      primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Student Student            `json:"student" bson:"student"`
+}
+type ApplyForScholarship struct {
+	ID      primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Student Student            `json:"student" bson:"student"`
 }
 
 type StudyingConfirmation struct {
@@ -107,6 +110,11 @@ type StateExamApplication struct {
 
 type EntranceExam struct {
 	ID          primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Citizen     CitizenDTO         `json:"citizen" bson:"citizen"`
 	DateAndTime string             `json:"dateAndTime" bson:"dateAndTime"`
-	Address     string             `json:"address" bson:"address"`
+	University  University         `json:"university" bson:"university"`
+}
+type ExtendStatusApplication struct {
+	ID      primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Citizen CitizenDTO         `json:"citizen" bson:"citizen"`
 }

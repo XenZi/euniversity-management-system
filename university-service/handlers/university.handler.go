@@ -105,6 +105,38 @@ func (uh UniversityHandler) CreateStateExamApplication(rw http.ResponseWriter, h
 	utils.WriteResp(newApplication, 200, rw)
 }
 
+func (uh UniversityHandler) CreateExtendStatusApplication(rw http.ResponseWriter, h *http.Request) {
+	decoder := json.NewDecoder(h.Body)
+	decoder.DisallowUnknownFields()
+	var extendStatusApplication models.ExtendStatusApplication
+	if err := decoder.Decode(&extendStatusApplication); err != nil {
+		utils.WriteResp(err.Error(), http.StatusBadRequest, rw)
+		return
+	}
+	newApplication, err := uh.UniversityService.CreateExtendStatusApplication(extendStatusApplication)
+	if err != nil {
+		utils.WriteResp(err.GetErrorMessage(), err.GetErrorStatus(), rw)
+		return
+	}
+	utils.WriteResp(newApplication, 200, rw)
+}
+
+func (uh UniversityHandler) CreateScholarshipApplication(rw http.ResponseWriter, h *http.Request) {
+	decoder := json.NewDecoder(h.Body)
+	decoder.DisallowUnknownFields()
+	var scholarshipApplication models.ApplyForScholarship
+	if err := decoder.Decode(&scholarshipApplication); err != nil {
+		utils.WriteResp(err.Error(), http.StatusBadRequest, rw)
+		return
+	}
+	newApplication, err := uh.UniversityService.CreateScholarshipApplication(scholarshipApplication)
+	if err != nil {
+		utils.WriteResp(err.GetErrorMessage(), err.GetErrorStatus(), rw)
+		return
+	}
+	utils.WriteResp(newApplication, 200, rw)
+}
+
 func (uh UniversityHandler) CreateEntranceExam(rw http.ResponseWriter, h *http.Request) {
 	decoder := json.NewDecoder(h.Body)
 	decoder.DisallowUnknownFields()
@@ -120,6 +152,43 @@ func (uh UniversityHandler) CreateEntranceExam(rw http.ResponseWriter, h *http.R
 	}
 	utils.WriteResp(newApplication, 200, rw)
 
+}
+
+func (uh UniversityHandler) FindAllUniversities(rw http.ResponseWriter, h *http.Request) {
+	data, err := uh.UniversityService.FindAllUniversities()
+	if err != nil {
+		utils.WriteResp(err.GetErrorMessage(), err.GetErrorStatus(), rw)
+		return
+	}
+	utils.WriteResp(data, 200, rw)
+
+}
+
+func (uh UniversityHandler) FindAllEntranceExams(rw http.ResponseWriter, h *http.Request) {
+	data, err := uh.UniversityService.FindAllExams()
+	if err != nil {
+		utils.WriteResp(err.GetErrorMessage(), err.GetErrorStatus(), rw)
+		return
+	}
+	utils.WriteResp(data, 200, rw)
+}
+
+func (uh UniversityHandler) FindAllExtendStatusApplications(rw http.ResponseWriter, h *http.Request) {
+	data, err := uh.UniversityService.FindAllExtendStatusApplications()
+	if err != nil {
+		utils.WriteResp(err.GetErrorMessage(), err.GetErrorStatus(), rw)
+		return
+	}
+	utils.WriteResp(data, 200, rw)
+}
+
+func (uh UniversityHandler) FindAllScholarshipApplications(rw http.ResponseWriter, h *http.Request) {
+	data, err := uh.UniversityService.FindAllScholarshipApplications()
+	if err != nil {
+		utils.WriteResp(err.GetErrorMessage(), err.GetErrorStatus(), rw)
+		return
+	}
+	utils.WriteResp(data, 200, rw)
 }
 
 func (uh UniversityHandler) FindStudentById(rw http.ResponseWriter, h *http.Request) {
