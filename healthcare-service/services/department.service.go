@@ -45,7 +45,18 @@ func (d DepartmentService) GetDepartmentByName(name string) (*models.DepartmentD
 		return nil, err
 	}
 	return d.DTOService.DeptToDeptDTO(*foundDept), nil
+}
 
+func (d DepartmentService) GetAllDepartments() ([]*models.DepartmentDTO, *errors.ErrorStruct) {
+	foundDepts, err := d.DepartmentRepository.GetAllDepartments()
+	if err != nil {
+		return nil, err
+	}
+	var ret []*models.DepartmentDTO
+	for _, dep := range foundDepts {
+		ret = append(ret, d.DTOService.DeptToDeptDTO(*dep))
+	}
+	return ret, nil
 }
 
 func (d DepartmentService) AddDoctorToSlot(name, id, date, resTime string) (*models.DepartmentDTO, *errors.ErrorStruct) {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Dorm } from "../../../models/dorm.model";
 import { Admission } from "../../../models/admission.model";
 import { Application } from "../../../models/application.model";

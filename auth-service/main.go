@@ -51,6 +51,7 @@ func main() {
 	router.HandleFunc("/validate-jwt", authHandler.ValidateJWT).Methods("POST")
 	router.HandleFunc("/addRoles", authHandler.AddRoles).Methods("POST")
 	router.HandleFunc("/getUser/{id}", authHandler.GetUserByPIN).Methods("GET")
+	router.HandleFunc("/getUsers/{role}", authHandler.GetUsersByRole).Methods("GET")
 
 	// CORS
 	headersOk := gorillaHandlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
