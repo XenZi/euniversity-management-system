@@ -13,18 +13,16 @@ import { University } from "../../models/university.model";
 import CreateEntranceForm from "../../components/forms/create-entrance-exam/create-entrance-exam.form";
 import CreateStudentForm from "../../components/forms/create-student-form/create-student.form";
 import AllUniversities from "../../components/universities-table/all-universities.table";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import ConfirmExtendStatus from "../../components/forms/confirm-extend-status/confirm-extend-status.form";
 import CreateScholarship from "../../components/forms/create-scholarship/create-scholarship.form";
-import jsPDF from 'jspdf';
+import jsPDF from "jspdf";
 import ProfilePage from "../../components/forms/profile/profile-page.form";
-
-
 
 const UniPage = () => {
   const user = useSelector((state: RootState) => state.user.user);
-  
+
   const dispatch = useDispatch();
 
   const { setContent } = useModalContext();
@@ -32,18 +30,17 @@ const UniPage = () => {
     dispatch(setModalOpen());
   };
 
- 
-    const handleDownloadPDF = () => {
-        // Create a new jsPDF instance
-        const doc = new jsPDF();
+  const handleDownloadPDF = () => {
+    // Create a new jsPDF instance
+    const doc = new jsPDF();
 
-        // Add text to the PDF document
-        doc.text(`Student Confirmation for ${user?.fullName}`, 10, 10);
+    // Add text to the PDF document
+    doc.text(`Student Confirmation for ${user?.fullName}`, 10, 10);
 
-        // Save the PDF
-        doc.save(`student-confirmation-${user?.fullName}.pdf`);
-    };
- 
+    // Save the PDF
+    doc.save(`student-confirmation-${user?.fullName}.pdf`);
+  };
+
   const uniAdminComponents: React.JSX.Element[] = [
     <PanelBox
       key="create-uni"
@@ -52,55 +49,51 @@ const UniPage = () => {
         openModal();
         setContent(<CreateUniForm />);
       }}
-    />,  
+    />,
     <PanelBox
       key="create-student"
       panelBoxTitle="Create New Student"
       onClick={() => {
         openModal();
-        setContent(<CreateStudentForm></CreateStudentForm>)
+        setContent(<CreateStudentForm></CreateStudentForm>);
       }}
-    >  
-    </PanelBox>,
+    ></PanelBox>,
     <PanelBox
       key="all-unies"
       panelBoxTitle="All Universities"
       onClick={() => {
         openModal();
-        setContent(<AllUniversities></AllUniversities>)
+        setContent(<AllUniversities></AllUniversities>);
       }}
     ></PanelBox>,
     <PanelBox
       key="confirm-application"
       panelBoxTitle="Confirm Extend Status"
-     onClick={() => {
-      openModal();
-      setContent(<ConfirmExtendStatus></ConfirmExtendStatus>)
-     }}
-    >
-    </PanelBox>,
-    <PanelBox key="confirm-scholarship-application" panelBoxTitle="Confirm Scholarship" onClick={() =>{
-      openModal();
-      setContent(<CreateScholarship></CreateScholarship>)
-    }}>
-
-    </PanelBox>
-
-  
-
+      onClick={() => {
+        openModal();
+        setContent(<ConfirmExtendStatus></ConfirmExtendStatus>);
+      }}
+    ></PanelBox>,
+    <PanelBox
+      key="confirm-scholarship-application"
+      panelBoxTitle="Confirm Scholarship"
+      onClick={() => {
+        openModal();
+        setContent(<CreateScholarship></CreateScholarship>);
+      }}
+    ></PanelBox>,
   ];
 
   const citizenComponents: React.JSX.Element[] = [
-    
-    <PanelBox 
+    <PanelBox
       key="create-entrance-exam"
       panelBoxDescription="Apply for entranece exam"
       onClick={() => {
         openModal();
-        setContent(<CreateEntranceForm></CreateEntranceForm>)
-      }}        
-      ></PanelBox>
-  ]
+        setContent(<CreateEntranceForm></CreateEntranceForm>);
+      }}
+    ></PanelBox>,
+  ];
 
   const studentComponents: React.JSX.Element[] = [
     <PanelBox
@@ -116,50 +109,43 @@ const UniPage = () => {
       panelBoxTitle="Extend Status"
       onClick={() => {
         axiosInstance
-          .post("/university/extendStatusApplication",{
-            citizen: user
-          
+          .post("/university/extendStatusApplication", {
+            citizen: user,
           })
           .then((resp) => {
-            console.log(resp)
-            toast.success('Successfuly applied for extending student status!');
+            console.log(resp);
+            toast.success("Successfuly applied for extending student status!");
           })
           .catch((error) => {
             console.error(error);
-            toast.error('Something went wrong!');
+            toast.error("Something went wrong!");
           });
-          
       }}
-      >
+    ></PanelBox>,
+    <PanelBox
+      key="scholarship-application"
+      panelBoxTitle="Apply for scholarship"
+      onClick={() => {
+        axiosInstance
+          .post("/university/scholarshipApplication", {
+            student: user,
+          })
+          .then((resp) => {
+            console.log(resp);
+            toast("Scholarship application successful!");
+          })
+          .catch((err) => {
+            console.error(err);
+            toast.error("Something went wrong!");
+          });
+      }}
+    ></PanelBox>,
 
-    </PanelBox>,
-    <PanelBox key="scholarship-application" panelBoxTitle="Apply for scholarship" onClick={()=>{
-      axiosInstance
-      .post("/university/scholarshipApplication",{
-        student: user
-      })
-      .then((resp) =>{
-        console.log(resp)
-        toast('Scholarship application successful!')
-      })
-      .catch((err) =>{
-        console.error(err);
-        toast.error('Something went wrong!')
-      })
-    }}>
-
-    </PanelBox>,
-
-        <PanelBox
-        key="student-confirmation"
-        panelBoxTitle="Download Student Confirmation"
-        onClick={handleDownloadPDF}
-        >
-        
-        </PanelBox>
-
-    
-    
+    <PanelBox
+      key="student-confirmation"
+      panelBoxTitle="Download Student Confirmation"
+      onClick={handleDownloadPDF}
+    ></PanelBox>,
   ];
 
   return (
@@ -169,21 +155,21 @@ const UniPage = () => {
         {user?.roles[0] === "Admin" ? (
           <AdminComponent>{uniAdminComponents}</AdminComponent>
         ) : (
-          <div>No admin access</div>
+          ""
         )}
       </div>
       <div className="max-w-7xl mx-auto w-100 flex">
         {user?.roles[0] === "Student" ? (
           <AdminComponent>{studentComponents}</AdminComponent>
         ) : (
-          <div>No admin access</div>
+          ""
         )}
       </div>
       <div className="max-w-7xl mx-auto w-100 flex">
         {user?.roles[0] === "Citizen" ? (
           <AdminComponent>{citizenComponents}</AdminComponent>
         ) : (
-          <div>No admin access</div>
+          ""
         )}
       </div>
       <ToastContainer />
