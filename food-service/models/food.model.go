@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -41,12 +42,17 @@ type MessRoom struct {
 	SupplierID    string             `json:"supplier_id" bson:"supplier_id"`
 	MessRoomUsers []string           `json:"mess_room_users" bson:"mess_room_users"`
 }
+type MessRoomUpdate struct {
+	ID       string `json:"id" bson:"id"`
+	Name     string `json:"name" bson:"name"`
+	Location string `json:"location" bson:"location"`
+	Capacity int    `json:"capacity" bson:"capacity"`
+}
 type Supplier struct {
 	ID          primitive.ObjectID `json:"id" bson:"_id,omitempty"`
 	Name        string             `json:"name" bson:"name"`
 	Location    string             `json:"location" bson:"location"`
 	PhoneNumber string             `json:"phone_number" bson:"phone_number"`
-	MassRoomID  string             `json:"mass_room_id" bson:"mass_room_id"`
 }
 
 type UsageStatistics struct {

@@ -4,6 +4,8 @@ import (
 	"context"
 	"food/errors"
 	"food/models"
+	"log"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -18,6 +20,107 @@ func NewFoodRepository(cli *mongo.Client) (*FoodRepository, error) {
 		cli: cli,
 	}, nil
 }
+
+// MESS ROOM CRUD
+func (f FoodRepository) CreateMessRoom(messRoom models.MessRoom) (*models.MessRoom, *errors.ErrorStruct) {
+
+	messCollection := f.cli.Database("food-service").Collection("messes")
+	insertedMess, err := messCollection.InsertOne(context.TODO(), messRoom)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	messRoom.ID = insertedMess.InsertedID.(primitive.ObjectID)
+
+	return &messRoom, nil
+
+}
+
+func (f FoodRepository) GetAllMessRooms() ([]models.MessRoom, *errors.ErrorStruct) {
+	messCollection := f.cli.Database("food-service").Collection("messes")
+	filter := bson.M{}
+
+	cursor, err := messCollection.Find(context.TODO(), filter)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	defer cursor.Close(context.TODO())
+
+	var messRooms []models.MessRoom
+
+	for cursor.Next(context.TODO()) {
+		var messRoom models.MessRoom
+		if err := cursor.Decode(&messRoom); err != nil {
+			return nil, errors.NewError(err.Error(), 500)
+		}
+		messRooms = append(messRooms, messRoom)
+	}
+	if err := cursor.Err(); err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	return messRooms, nil
+
+}
+
+func (f FoodRepository) RemoveMessRoom(id string) (bool, *errors.ErrorStruct) {
+	messCollection := f.cli.Database("food-service").Collection("messes")
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return false, errors.NewError("Invalid id format", 400)
+	}
+	filter := bson.M{"_id": objID}
+
+	_, err = messCollection.DeleteOne(context.TODO(), filter)
+	if err != nil {
+		return false, errors.NewError(err.Error(), 500)
+	}
+	return true, nil
+}
+
+func (f FoodRepository) FindMessById(id string) (*models.MessRoom, *errors.ErrorStruct) {
+
+	messCollection := f.cli.Database("food-service").Collection("messes")
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, errors.NewError("Invalid id format", 400)
+	}
+
+	var mess models.MessRoom
+	err = messCollection.FindOne(context.TODO(), bson.M{"_id": objID}).Decode(&mess)
+	if err != nil {
+		return nil, errors.NewError("For this id mess not found", 401)
+	}
+	return &mess, nil
+
+}
+
+func (f FoodRepository) UpdateMessRoom(updatedMess models.MessRoomUpdate) (*models.MessRoom, *errors.ErrorStruct) {
+	messCollection := f.cli.Database("food-service").Collection("messes")
+	log.Println("Vrijednosti koje su stigle do repoa", updatedMess)
+	objID, err := primitive.ObjectIDFromHex(updatedMess.ID)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	filter := bson.D{{Key: "_id", Value: objID}}
+	update := bson.D{
+		{Key: "$set", Value: bson.D{
+			{Key: "name", Value: updatedMess.Name},
+			{Key: "location", Value: updatedMess.Location},
+			{Key: "capacity", Value: updatedMess.Capacity},
+		}},
+	}
+	_, err = messCollection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	mess, err1 := f.FindMessById(updatedMess.ID)
+	if err1 != nil {
+		return nil, err1
+	}
+	return mess, nil
+
+}
+
+// FOOD CARD CRUD
 
 func (f FoodRepository) SaveFoodCard(card models.FoodCard) (*models.FoodCard, *errors.ErrorStruct) {
 	cardCollection := f.cli.Database("food-service").Collection("cards")
@@ -62,6 +165,25 @@ func (f FoodRepository) GetAllFoodCards() ([]models.FoodCard, *errors.ErrorStruc
 
 	return foodCards, nil
 }
+
+func (f FoodRepository) RemoveFoodCard(id string) (bool, *errors.ErrorStruct) {
+
+	cardCollection := f.cli.Database("food-service").Collection("cards")
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return false, errors.NewError("Invalid id format", 400)
+	}
+	filter := bson.M{"_id": objID}
+
+	_, err = cardCollection.DeleteOne(context.TODO(), filter)
+	if err != nil {
+		return false, errors.NewError(err.Error(), 500)
+	}
+	return true, nil
+
+}
+
+// PAYMENT CRUD
 
 func (f FoodRepository) SavePayment(payment models.Payment) (*models.Payment, *errors.ErrorStruct) {
 	paymentCollection := f.cli.Database("food-service").Collection("payment")

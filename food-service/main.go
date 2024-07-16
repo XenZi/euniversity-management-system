@@ -6,13 +6,14 @@ import (
 	"food/handlers"
 	"food/repository"
 	"food/services"
-	gorillaHandlers "github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
+
+	gorillaHandlers "github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
 )
 
 func main() {
@@ -51,6 +52,11 @@ func main() {
 	// ROUTING
 	router := mux.NewRouter()
 	router.HandleFunc("/ping", foodHandler.Ping).Methods("GET")
+	router.HandleFunc("/updateMess/{id}", foodHandler.UpdateMessRoom).Methods("POST")
+	router.HandleFunc("/deleteFoodCard/{id}", foodHandler.DeleteFoodCard).Methods("POST")
+	router.HandleFunc("/deleteMessRoom/{id}", foodHandler.DeleteMessRoom).Methods("POST")
+	router.HandleFunc("/allMessRooms", foodHandler.GetAllMessRooms).Methods("GET")
+	router.HandleFunc("/createMessRoom", foodHandler.CreateMessRoom).Methods("POST")
 	router.HandleFunc("/createFoodCard", foodHandler.CreateFoodCard).Methods("POST")
 	router.HandleFunc("/allFoodCards", foodHandler.GetAllFoodCards).Methods("GET")
 	router.HandleFunc("/createPayment", foodHandler.CreatePayment).Methods("POST")

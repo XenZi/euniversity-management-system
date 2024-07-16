@@ -20,11 +20,51 @@ func NewFoodCardService(foodRepository *repository.FoodRepository, client *clien
 	}, nil
 }
 
+// MESS ROOM CRUD
+func (fs FoodService) CreateMessRoom(messRoom models.MessRoom) (*models.MessRoom, *errors.ErrorStruct) {
+
+	addedRecord, err := fs.FoodRepository.CreateMessRoom(messRoom)
+	if err != nil {
+		return nil, err
+	}
+	return addedRecord, nil
+
+}
+
+func (fs FoodService) GetAllMessRooms() ([]models.MessRoom, *errors.ErrorStruct) {
+	messRooms, err := fs.FoodRepository.GetAllMessRooms()
+	if err != nil {
+		return nil, err
+	}
+	return messRooms, nil
+}
+
+func (fs FoodService) DeleteMessRoom(id string) (bool, *errors.ErrorStruct) {
+	removedMass, err := fs.FoodRepository.RemoveMessRoom(id)
+	if err != nil {
+		return false, err
+	}
+	return removedMass, nil
+}
+func (fs FoodService) FindMessById(id string) (*models.MessRoom, *errors.ErrorStruct) {
+	mess, err := fs.FoodRepository.FindMessById(id)
+	if err != nil {
+		return nil, err
+	}
+	return mess, nil
+}
+func (fs FoodService) UpdateMessRoom(updatedMess models.MessRoomUpdate) (*models.MessRoom, *errors.ErrorStruct) {
+	mess, err := fs.FoodRepository.UpdateMessRoom(updatedMess)
+	if err != nil {
+		return nil, err
+	}
+	return mess, nil
+
+}
+
+// FOOD CARD CRUD
+
 func (fs FoodService) CreateFoodCardForUser(foodCard models.FoodCard) (*models.FoodCard, *errors.ErrorStruct) {
-	//	clientBool := true // needs student services communication
-	//	if !clientBool {
-	//		return nil, errors.NewError("patient is not a student", 405)
-	//	}
 
 	addedRecord, err := fs.FoodRepository.SaveFoodCard(foodCard)
 	if err != nil {
@@ -43,6 +83,16 @@ func (fs FoodService) GetAllFoodCards() ([]models.FoodCard, *errors.ErrorStruct)
 	// Return the retrieved food cards
 	return foodCards, nil
 }
+
+func (fs FoodService) DeleteFoodCard(id string) (bool, *errors.ErrorStruct) {
+	removedFoodCard, err := fs.FoodRepository.RemoveFoodCard(id)
+	if err != nil {
+		return false, err
+	}
+	return removedFoodCard, nil
+}
+
+// PAYMENT CRUD
 
 func (fs FoodService) CreatePayment(payment models.Payment) (*models.Payment, *errors.ErrorStruct) {
 	//	clientBool := true // needs student services communication
@@ -68,7 +118,7 @@ func (fs FoodService) PayForMeal(studentPIN string) (*models.FoodCard, *errors.E
 	}
 	price := 4
 	log.Println("Dal je dobro pokupilo", isBudget)
-	if isBudget == true {
+	if isBudget {
 		price = 2
 	}
 	log.Println("Podaci koje proslijedjujemo", studentPIN, price)
