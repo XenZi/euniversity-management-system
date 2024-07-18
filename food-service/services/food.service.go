@@ -128,3 +128,39 @@ func (fs FoodService) PayForMeal(studentPIN string) (*models.FoodCard, *errors.E
 	}
 	return updatedCard, nil
 }
+
+// SUPPLIER CRUD
+
+func (fs FoodService) CreateSupplier(supplier models.Supplier) (*models.Supplier, *errors.ErrorStruct) {
+
+	addedSupplier, err := fs.FoodRepository.SaveSupplier(supplier)
+	if err != nil {
+		return nil, err
+	}
+	return addedSupplier, nil
+}
+
+func (fs FoodService) GetAllSuppliers() ([]models.Supplier, *errors.ErrorStruct) {
+	suppliers, err := fs.FoodRepository.GetAllSuppliers()
+	if err != nil {
+		return nil, err
+	}
+	return suppliers, nil
+}
+
+func (fs FoodService) DeleteSupllier(id string) (bool, *errors.ErrorStruct) {
+	deletedSupplier, err := fs.FoodRepository.DeleteSupplier(id)
+	if err != nil {
+		return false, err
+	}
+	return deletedSupplier, nil
+}
+
+func (fs FoodService) GetSupplierById(id string) (*models.Supplier, *errors.ErrorStruct) {
+	returnedSupplier, err := fs.FoodRepository.GetSupplierById(id)
+	if err != nil {
+		return nil, err
+	}
+	return returnedSupplier, nil
+
+}

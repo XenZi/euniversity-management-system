@@ -236,3 +236,82 @@ func (f FoodRepository) PayForMeal(studentPIN string, price int) (*models.FoodCa
 
 	return &updatedCard, nil
 }
+
+func (f FoodRepository) SaveUsageStatistics(stats models.UsageStatistics) (*models.UsageStatistics, *errors.ErrorStruct) {
+	statsCollection := f.cli.Database("food-service").Collection("statistics")
+	insertedStats, err := statsCollection.InsertOne(context.TODO(), stats)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	stats.ID = insertedStats.InsertedID.(primitive.ObjectID)
+	return &stats, nil
+}
+
+// SUPPLIER CRUD
+
+func (f FoodRepository) SaveSupplier(supplier models.Supplier) (*models.Supplier, *errors.ErrorStruct) {
+	supplierCollection := f.cli.Database("food-service").Collection("suppliers")
+	insertedSupplier, err := supplierCollection.InsertOne(context.TODO(), supplier)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	supplier.ID = insertedSupplier.InsertedID.(primitive.ObjectID)
+	return &supplier, nil
+}
+
+func (f FoodRepository) GetAllSuppliers() ([]models.Supplier, *errors.ErrorStruct) {
+	supplierCollection := f.cli.Database("food-service").Collection("suppliers")
+
+	filter := bson.M{}
+
+	cursor, err := supplierCollection.Find(context.TODO(), filter)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	defer cursor.Close(context.TODO())
+
+	var suppliers []models.Supplier
+
+	for cursor.Next(context.TODO()) {
+		var supplier models.Supplier
+		if err := cursor.Decode(&supplier); err != nil {
+			return nil, errors.NewError(err.Error(), 500)
+		}
+		suppliers = append(suppliers, supplier)
+	}
+	if err := cursor.Err(); err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+
+	return suppliers, nil
+}
+
+func (f FoodRepository) DeleteSupplier(id string) (bool, *errors.ErrorStruct) {
+	supplierCollection := f.cli.Database("food-service").Collection("suppliers")
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return false, errors.NewError("Invalid id format", 400)
+	}
+	filter := bson.M{"_id": objID}
+
+	_, err = supplierCollection.DeleteOne(context.TODO(), filter)
+	if err != nil {
+		return false, errors.NewError(err.Error(), 500)
+	}
+	return true, nil
+}
+
+func (f FoodRepository) GetSupplierById(id string) (*models.Supplier, *errors.ErrorStruct) {
+	supplierCollection := f.cli.Database("food-service").Collection("suppliers")
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, errors.NewError("Invalid id format", 400)
+	}
+
+	var supplier models.Supplier
+	err = supplierCollection.FindOne(context.TODO(), bson.M{"_id": objID}).Decode(&supplier)
+	if err != nil {
+		return nil, errors.NewError("Supplier with this id does not exist", 401)
+	}
+	return &supplier, nil
+}

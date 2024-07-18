@@ -154,3 +154,55 @@ func (f FoodHandler) PayForMeal(rw http.ResponseWriter, h *http.Request) {
 	}
 	utils.WriteResp(card, 200, rw)
 }
+
+// SUPPLIER CRUD
+
+func (f FoodHandler) CreateSupplier(rw http.ResponseWriter, h *http.Request) {
+	var supplier models.Supplier
+
+	if !utils.DecodeJSONFromRequest(h, rw, &supplier) {
+		utils.WriteErrorResp("Error while casting into structure", 500, "/api/food/createSupplier", rw)
+		return
+	}
+	response, err := f.FoodService.CreateSupplier(supplier)
+	if err != nil {
+		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "api/food/createSupplier", rw)
+		return
+	}
+	utils.WriteResp(response, 200, rw)
+
+}
+
+func (f FoodHandler) GetAllSuppliers(rw http.ResponseWriter, h *http.Request) {
+	allSuppliers, err := f.FoodService.GetAllSuppliers()
+
+	if err != nil {
+		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "/api/food/getAllSuppliers", rw)
+		return
+	}
+
+	utils.WriteResp(allSuppliers, 201, rw)
+
+}
+
+func (f FoodHandler) GetSupplierById(rw http.ResponseWriter, h *http.Request) {
+	vars := mux.Vars(h)
+	id := vars["id"]
+	supplier, err := f.FoodService.GetSupplierById(id)
+	if err != nil {
+		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "/api/food/getSupplierById", rw)
+		return
+	}
+	utils.WriteResp(supplier, 201, rw)
+}
+
+func (f FoodHandler) DeleteSupplierById(rw http.ResponseWriter, h *http.Request) {
+	vars := mux.Vars(h)
+	id := vars["id"]
+	supplier, err := f.FoodService.DeleteSupllier(id)
+	if err != nil {
+		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "/api/food/getSupplierById", rw)
+		return
+	}
+	utils.WriteResp(supplier, 201, rw)
+}
