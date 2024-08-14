@@ -52,6 +52,9 @@ func main() {
 	// ROUTING
 	router := mux.NewRouter()
 	router.HandleFunc("/ping", foodHandler.Ping).Methods("GET")
+	router.HandleFunc("/createStudent", foodHandler.CreateStudent).Methods("POST")
+	router.HandleFunc("/allStudents", foodHandler.GetAllStudents).Methods("GET")
+	router.HandleFunc("/deleteStudent/{id}", foodHandler.DeleteStudent).Methods("POST")
 	router.HandleFunc("/deleteSupplier/{id}", foodHandler.DeleteSupplierById).Methods("POST")
 	router.HandleFunc("/allSuppliers", foodHandler.GetAllSuppliers).Methods("GET")
 	router.HandleFunc("/createSupplier", foodHandler.CreateSupplier).Methods("POST")

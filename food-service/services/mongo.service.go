@@ -12,11 +12,6 @@ type MongoService struct {
 	cli *mongo.Client
 }
 
-const (
-	fs    = "food-service"
-	cards = "cards"
-)
-
 func NewMongoService(ctx context.Context) (*MongoService, error) {
 	uri := os.Getenv("FOOD_MONGO_URI")
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))

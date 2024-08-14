@@ -13,7 +13,7 @@ type Student struct {
 	IdentityCardNumber           string             `json:"identity_card_number" bson:"identity_card_number"`
 	PersonalIdentificationNumber string             `json:"personal_id_number" bson:"personal_id_number"`
 	BirthDate                    string             `json:"birth_date" bson:"birth_date"`
-	Status                       EStatus            `json:"status" bson:"status"`
+	Status                       string             `json:"status" bson:"status"`
 }
 
 type FoodCard struct {

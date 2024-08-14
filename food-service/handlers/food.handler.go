@@ -52,15 +52,16 @@ func (f FoodHandler) GetAllStudents(rw http.ResponseWriter, h *http.Request) {
 	rw.Header().Set("Content-Type", "application/json")
 	utils.WriteResp(students, 200, rw)
 }
+
 // OVO NISI PREPRAVIO
-func (f FoodHandler) DeleteMessRoom(rw http.ResponseWriter, h *http.Request) {
+func (f FoodHandler) DeleteStudent(rw http.ResponseWriter, h *http.Request) {
 	vars := mux.Vars(h)
 	id := vars["id"]
-	massDeleted, err := f.FoodService.DeleteMessRoom(id)
+	studentDeleted, err := f.FoodService.DeleteStudentById(id)
 	if err != nil {
 		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "api/food/deleteMessRoom", rw)
 	}
-	utils.WriteResp(massDeleted, 200, rw)
+	utils.WriteResp(studentDeleted, 200, rw)
 
 }
 
