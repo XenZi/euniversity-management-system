@@ -21,6 +21,75 @@ func NewFoodRepository(cli *mongo.Client) (*FoodRepository, error) {
 	}, nil
 }
 
+// STUDENT CRUD
+
+func (f FoodRepository) CreateStudent(student models.Student) (*models.Student, *errors.ErrorStruct) {
+	studentCollecton := f.cli.Database("food-service").Collection("students")
+	insertedStudent, err := studentCollecton.InsertOne(context.TODO(), student)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	student.ID = insertedStudent.InsertedID.(primitive.ObjectID)
+
+	return &student, nil
+}
+
+func (f FoodRepository) GetAllStudents() ([]models.Student, *errors.ErrorStruct) {
+	studentCollection := f.cli.Database("food-service").Collection("students")
+	filter := bson.M{}
+
+	cursor, err := studentCollection.Find(context.TODO(), filter)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	defer cursor.Close(context.TODO())
+
+	var students []models.Student
+
+	for cursor.Next(context.TODO()) {
+		var student models.Student
+		if err := cursor.Decode(&student); err != nil {
+			return nil, errors.NewError(err.Error(), 500)
+		}
+		students = append(students, student)
+	}
+	if err := cursor.Err(); err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	return students, nil
+}
+
+func (f FoodRepository) FindStudentById(id string) (*models.Student, *errors.ErrorStruct) {
+	studentCollection := f.cli.Database("food-service").Collection("students")
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, errors.NewError("Invalid id format", 400)
+	}
+
+	var student models.Student
+	err = studentCollection.FindOne(context.TODO(), bson.M{"_id": objID}).Decode(&student)
+	if err != nil {
+		return nil, errors.NewError("For this id student not found", 401)
+	}
+	return &student, nil
+
+}
+
+func (f FoodRepository) DeleteStudentById(id string) (bool, *errors.ErrorStruct) {
+	studentCollection := f.cli.Database("food-service").Collection("students")
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return false, errors.NewError("Invalid id format", 400)
+	}
+	filter := bson.M{"_id": objID}
+
+	_, err = studentCollection.DeleteOne(context.TODO(), filter)
+	if err != nil {
+		return false, errors.NewError(err.Error(), 500)
+	}
+	return true, nil
+}
+
 // MESS ROOM CRUD
 func (f FoodRepository) CreateMessRoom(messRoom models.MessRoom) (*models.MessRoom, *errors.ErrorStruct) {
 
@@ -164,6 +233,20 @@ func (f FoodRepository) GetAllFoodCards() ([]models.FoodCard, *errors.ErrorStruc
 	}
 
 	return foodCards, nil
+}
+func (f FoodRepository) FindFoodCardById(id string) (*models.FoodCard, *errors.ErrorStruct) {
+	cardCollection := f.cli.Database("food-service").Collection("cards")
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, errors.NewError("Invalid id format", 400)
+	}
+
+	var card models.FoodCard
+	err = cardCollection.FindOne(context.TODO(), bson.M{"_id": objID}).Decode(&card)
+	if err != nil {
+		return nil, errors.NewError("Id for this card not found", 401)
+	}
+	return &card, nil
 }
 
 func (f FoodRepository) RemoveFoodCard(id string) (bool, *errors.ErrorStruct) {

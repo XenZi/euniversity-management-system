@@ -20,6 +20,40 @@ func NewFoodCardService(foodRepository *repository.FoodRepository, client *clien
 	}, nil
 }
 
+// STUDENT CRUD
+
+func (fs FoodService) CreateStudent(student models.Student) (*models.Student, *errors.ErrorStruct) {
+	addedStudent, err := fs.FoodRepository.CreateStudent(student)
+	if err != nil {
+		return nil, err
+	}
+	return addedStudent, nil
+}
+
+func (fs FoodService) GetAllStudents() ([]models.Student, *errors.ErrorStruct) {
+	students, err := fs.FoodRepository.GetAllStudents()
+	if err != nil {
+		return nil, err
+	}
+	return students, nil
+}
+func (fs FoodService) FindStudentById(id string) (*models.Student, *errors.ErrorStruct) {
+	student, err := fs.FoodRepository.FindStudentById(id)
+	if err != nil {
+		return nil, err
+	}
+	return student, nil
+
+}
+
+func (fs FoodService) DeleteStudentById(id string) (bool, *errors.ErrorStruct) {
+	deletedStudent, err := fs.FoodRepository.DeleteStudentById(id)
+	if err != nil {
+		return false, err
+	}
+	return deletedStudent, nil
+}
+
 // MESS ROOM CRUD
 func (fs FoodService) CreateMessRoom(messRoom models.MessRoom) (*models.MessRoom, *errors.ErrorStruct) {
 

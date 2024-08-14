@@ -26,6 +26,44 @@ func (f FoodHandler) Ping(rw http.ResponseWriter, h *http.Request) {
 	}, 200, rw)
 }
 
+// STUDENT CRUD
+
+func (f FoodHandler) CreateStudent(rw http.ResponseWriter, h *http.Request) {
+	var student models.Student
+
+	if !utils.DecodeJSONFromRequest(h, rw, &student) {
+		utils.WriteErrorResp("Error while casting into structure", 500, "/api/food/createStudent", rw)
+		return
+	}
+	response, err := f.FoodService.CreateStudent(student)
+	if err != nil {
+		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "api/food/createStudent", rw)
+		return
+	}
+	utils.WriteResp(response, 200, rw)
+}
+
+func (f FoodHandler) GetAllStudents(rw http.ResponseWriter, h *http.Request) {
+	students, err := f.FoodService.GetAllStudents()
+	if err != nil {
+		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "api/food/getAllStudents", rw)
+		return
+	}
+	rw.Header().Set("Content-Type", "application/json")
+	utils.WriteResp(students, 200, rw)
+}
+// OVO NISI PREPRAVIO
+func (f FoodHandler) DeleteMessRoom(rw http.ResponseWriter, h *http.Request) {
+	vars := mux.Vars(h)
+	id := vars["id"]
+	massDeleted, err := f.FoodService.DeleteMessRoom(id)
+	if err != nil {
+		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "api/food/deleteMessRoom", rw)
+	}
+	utils.WriteResp(massDeleted, 200, rw)
+
+}
+
 // MESS ROOM CRUD
 func (f FoodHandler) CreateMessRoom(rw http.ResponseWriter, h *http.Request) {
 	var messRoom models.MessRoom
