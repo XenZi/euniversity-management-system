@@ -64,6 +64,15 @@ func (f FoodHandler) DeleteStudent(rw http.ResponseWriter, h *http.Request) {
 	utils.WriteResp(studentDeleted, 200, rw)
 
 }
+func (f FoodHandler) GetStudentById(rw http.ResponseWriter, h *http.Request) {
+	vars := mux.Vars(h)
+	id := vars["id"]
+	studentFound, err := f.FoodService.FindStudentById(id)
+	if err != nil {
+		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "api/food/findStudentById", rw)
+	}
+	utils.WriteResp(studentFound, 200, rw)
+}
 
 // MESS ROOM CRUD
 func (f FoodHandler) CreateMessRoom(rw http.ResponseWriter, h *http.Request) {
