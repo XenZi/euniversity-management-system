@@ -31,3 +31,20 @@ export const castFromToaletTypeNumberToActualString = (num: number): string => {
       return "Unkown";
   }
 };
+
+export const castFromApplicationStatusToActualString = (
+  num: number
+): string => {
+  switch (num) {
+    case 0:
+      return "Review";
+    case 1:
+      return "Accepted";
+    case 2:
+      return "Denied";
+    case 3:
+      return "Pending";
+    default:
+      return "Unkown";
+  }
+};

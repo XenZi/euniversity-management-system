@@ -24,7 +24,7 @@ const Modal = () => {
       }`}
     >
       <div
-        className="relative bg-white p-10 rounded-lg shadow-lg max-w-5xl w-full"
+        className="relative bg-white p-10 rounded-lg shadow-lg max-w-7xl w-full"
         ref={modalRef}
       >
         <button

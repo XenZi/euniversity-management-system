@@ -7,6 +7,7 @@ import { Admission } from "../../models/admission.model";
 import { closeModal, setModalOpen } from "../../redux/slices/modal.slice";
 import Admissions from "../forms/admissions/admissions.form";
 import DeleteDialog from "../dialogs/delete-dialog/delete-dialog.component";
+import ConfirmEndingAdmissionDialog from "../dialogs/confirm-ending-admission/confirm-ending-admission.dialog";
 
 const AdmissionsTable: React.FC<{
   adminView?: boolean;
@@ -22,6 +23,18 @@ const AdmissionsTable: React.FC<{
     setContent(<Admissions admission={admission} />);
   };
 
+  const openEndingAdmission = (admissionID: string) => {
+    dispatch(closeModal());
+    dispatch(setModalOpen());
+    setContent(
+      <ConfirmEndingAdmissionDialog
+        functionToProceedOnEnding={() => {
+          endAdmission(admissionID);
+        }}
+      />
+    );
+  };
+
   const openDialogForDelete = (admissionID: string) => {
     dispatch(closeModal());
     dispatch(setModalOpen());
@@ -32,6 +45,17 @@ const AdmissionsTable: React.FC<{
         }}
       />
     );
+  };
+
+  const endAdmission = (admissionID: string) => {
+    axiosInstance
+      .put(`/dorm/admissions/end/${admissionID}`)
+      .then((data) => {
+        console.log(data.data.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
   const deleteAdmission = (admissionID: string) => {
     axiosInstance
@@ -133,6 +157,7 @@ const AdmissionsTable: React.FC<{
                             className="border bg-auburn-500 border-auburn-500 font-semibold py-1 px-2 rounded focus:border-auburn-700 text-white"
                             onClick={(e) => {
                               e.preventDefault();
+                              openEndingAdmission(admission.id);
                             }}
                           >
                             End this admission

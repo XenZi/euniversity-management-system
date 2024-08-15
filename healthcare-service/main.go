@@ -66,6 +66,7 @@ func main() {
 
 	//
 	router.HandleFunc("/appointments/{id}", healthcareHandler.GetAppointmentsByDoctorID).Methods("GET")
+	router.HandleFunc("/departments", healthcareHandler.GetAllDepartments).Methods("GET")
 	router.HandleFunc("/department/create/{name}", healthcareHandler.CreateDepartment).Methods("POST")
 	router.HandleFunc("/department/{name}", healthcareHandler.GetDepartmentByName).Methods("GET")
 	router.HandleFunc("/department/{name}/docSchedule/{date}/free", healthcareHandler.GetFreeDoctorSlots).Methods("GET")

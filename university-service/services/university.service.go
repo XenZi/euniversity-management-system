@@ -6,18 +6,22 @@ import (
 	"fakultet-service/models"
 	"fakultet-service/repository"
 	"fmt"
+	"log"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type UniversityService struct {
 	UniversityRepository *repository.UniversityRepository
 	HealthCareClient     *client.HealthCareClient
+	AuthServiceClient    *client.AuthServiceClient
 }
 
-func NewUniversityService(universityRepository *repository.UniversityRepository, client *client.HealthCareClient) (*UniversityService, error) {
+func NewUniversityService(universityRepository *repository.UniversityRepository, client *client.HealthCareClient, authClient *client.AuthServiceClient) (*UniversityService, error) {
 	return &UniversityService{
 		UniversityRepository: universityRepository,
 		HealthCareClient:     client,
+		AuthServiceClient:    authClient,
 	}, nil
 }
 
@@ -31,14 +35,27 @@ func (u UniversityService) CreateUniversity(university models.University) (*mode
 
 func (u UniversityService) CreateStudent(student models.Student) (*models.Student, *errors.ErrorStruct) {
 	student.Espb = 0
-	addedStud, err := u.UniversityRepository.SaveStudent(student)
+	student.Semester = 1
+	student.Status = 0
+	var roles []string
+	roles = append(roles, "Student")
+	roles = append(roles, "Patient")
+	log.Println(student.PersonalIdentificationNumber, "PIN")
+	err := u.AuthServiceClient.AddRoles(student.PersonalIdentificationNumber, roles)
 	if err != nil {
-		return nil, err
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	student.Roles = roles
+
+	addedStud, erro := u.UniversityRepository.SaveStudent(student)
+	if erro != nil {
+		return nil, erro
 	}
 	return addedStud, nil
 }
 
 func (u UniversityService) CreateProfessor(professor models.Professor) (*models.Professor, *errors.ErrorStruct) {
+
 	addedProf, err := u.UniversityRepository.SaveProfessor(professor)
 	if err != nil {
 		return nil, err
@@ -70,6 +87,22 @@ func (u UniversityService) CreateRandomEntranceExam(exam models.EntranceExam) (*
 	return addedExam, nil
 }
 
+func (u UniversityService) CreateExtendStatusApplication(application models.ExtendStatusApplication) (*models.ExtendStatusApplication, *errors.ErrorStruct) {
+	addedApplication, err := u.UniversityRepository.SaveExtendStatusApplication(application)
+	if err != nil {
+		return nil, err
+	}
+	return addedApplication, nil
+}
+
+func (u UniversityService) CreateScholarshipApplication(application models.ApplyForScholarship) (*models.ApplyForScholarship, *errors.ErrorStruct) {
+	addedApplication, err := u.UniversityRepository.SaveScholarshipApplication(application)
+	if err != nil {
+		return nil, err
+	}
+	return addedApplication, nil
+}
+
 func (u UniversityService) FindStudentById(personalIdentificationNumber string) (*models.Student, *errors.ErrorStruct) {
 	student, err := u.UniversityRepository.FindStudentById(personalIdentificationNumber)
 	if err != nil {
@@ -85,6 +118,46 @@ func (u UniversityService) FindProfessorById(personalIdentificationNumber string
 	}
 	return professor, nil
 }
+func (u UniversityService) FindUniversityById(id primitive.ObjectID) (*models.University, *errors.ErrorStruct) {
+	university, err := u.UniversityRepository.FindUniversityById(id)
+	if err != nil {
+		return nil, err
+	}
+	return university, nil
+}
+
+func (u UniversityService) FindAllUniversities() ([]*models.University, *errors.ErrorStruct) {
+	getAllUniversities, err := u.UniversityRepository.FindAllUniversities()
+	if err != nil {
+		return nil, err
+	}
+	return getAllUniversities, nil
+}
+
+func (u UniversityService) FindAllExams() ([]*models.EntranceExam, *errors.ErrorStruct) {
+	getAllEntranceExams, err := u.UniversityRepository.FindAllEntranceExams()
+	if err != nil {
+		return nil, err
+	}
+	return getAllEntranceExams, nil
+}
+
+func (u UniversityService) FindAllExtendStatusApplications() ([]*models.ExtendStatusApplication, *errors.ErrorStruct) {
+	getAllExtendStatusApplications, err := u.UniversityRepository.FindAllExtendStatusApplications()
+	if err != nil {
+		return nil, err
+	}
+	return getAllExtendStatusApplications, nil
+}
+
+func (u UniversityService) FindAllScholarshipApplications() ([]*models.ApplyForScholarship, *errors.ErrorStruct) {
+	getAllScholarshipApplications, err := u.UniversityRepository.FindAllScholarshipApplications()
+	if err != nil {
+		return nil, err
+	}
+	return getAllScholarshipApplications, nil
+}
+
 func (u UniversityService) CheckBudget(personalIdentificationNumber string) (bool, *errors.ErrorStruct) {
 	student, err := u.UniversityRepository.FindStudentById(personalIdentificationNumber)
 	if err != nil {
@@ -108,6 +181,7 @@ func (u UniversityService) ExtendStatus(personalIdentificationNumber string) (*m
 		return nil, errors.NewError("Health status confirmation failed", 400)
 	}
 	student.Semester += 1
+	student.Espb += 20
 	updatedStudent, err := u.UniversityRepository.UpdateStudent(*student)
 	if err != nil {
 		return nil, err

@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { axiosInstance } from "../../../services/axios.service";
+import { castFromApplicationTypeNumberToActualString } from "../../../utils/converter.utils";
+import { useDispatch } from "react-redux";
+import { closeModal } from "../../../redux/slices/modal.slice";
 
 interface CreateFormData {
   name: string;
@@ -22,7 +25,7 @@ const CreateDormForm = () => {
       { applicationType: 4, price: 0 },
     ],
   });
-
+  const dispatch = useDispatch();
   const onInputChange = (
     e: React.FormEvent<HTMLInputElement>,
     key: keyof CreateFormData,
@@ -53,6 +56,7 @@ const CreateDormForm = () => {
       .post("/dorm/", createFormData)
       .then((resp) => {
         console.log(resp.data.data);
+        dispatch(closeModal());
       })
       .catch((err) => {
         console.log(err);
@@ -90,7 +94,9 @@ const CreateDormForm = () => {
           name={`price-${index}`}
           id={`price-${index}`}
           className="mb-3 p-3 border-2 border-battleship-500"
-          placeholder={`Price for application type ${price.applicationType}`}
+          placeholder={`Price for application ${castFromApplicationTypeNumberToActualString(
+            price.applicationType
+          )}`}
           onChange={(e) => onInputChange(e, "prices", index)}
         />
       ))}

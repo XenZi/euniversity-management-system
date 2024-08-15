@@ -1,9 +1,8 @@
-import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store/store";
 import Navigation from "../components/navigation/navigation.component";
 
-const HealthcarePage = () => {
+const HealthcarePag = () => {
   const user = useSelector((state: RootState) => state.user.user);
   console.log(user);
   return (
@@ -14,4 +13,4 @@ const HealthcarePage = () => {
   );
 };
 
-export default HealthcarePage;
+export default HealthcarePag;

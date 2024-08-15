@@ -28,11 +28,13 @@ func main() {
 
 	healthCareServiceURL := os.Getenv("HEALTHCARE_SERVICE_URL")
 	healthCareServicePort := os.Getenv("HEALTHCARE_SERVICE_PORT")
+	//	authServicePort := os.Getenv("AUTH_SERVICE_PORT")
 	authServiceURL := fmt.Sprintf("http://%s:%s", os.Getenv("AUTH_SERVICE_URL"), os.Getenv("AUTH_SERVICE_PORT"))
 
 	// client
 	customHttpClient := http.DefaultClient
 	healthCareClient := client.NewHealthCareClient(healthCareServiceURL, healthCareServicePort, customHttpClient)
+	authServiceClient := client.NewAuthServiceClient(authServiceURL, customHttpClient)
 	// MongoService initialization
 	mongoService, err := services.NewMongoService(context.Background())
 	if err != nil {
@@ -42,7 +44,7 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	universityService, err := services.NewUniversityService(universityRepository, healthCareClient)
+	universityService, err := services.NewUniversityService(universityRepository, healthCareClient, authServiceClient)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -56,6 +58,7 @@ func main() {
 
 	router.HandleFunc("/ping", universityHandler.Ping).Methods("GET")
 	router.HandleFunc("/", universityHandler.CreateUniversity).Methods("POST")
+	router.HandleFunc("/", universityHandler.FindAllUniversities).Methods("GET")
 	router.HandleFunc("/student", universityHandler.CreateStudent).Methods("POST")
 	router.HandleFunc("/student/{id}", universityHandler.FindStudentById).Methods("GET")
 	router.HandleFunc("/student/budget/{id}", universityHandler.CheckBudget).Methods("GET")
@@ -69,6 +72,11 @@ func main() {
 	router.HandleFunc("/scholarship/{id}", universityHandler.DeleteScholarship).Methods("DELETE")
 	router.HandleFunc("/stateApplication", universityHandler.CreateStateExamApplication).Methods("POST")
 	router.HandleFunc("/entranceExam", universityHandler.CreateEntranceExam).Methods("POST")
+	router.HandleFunc("/entranceExam", universityHandler.FindAllEntranceExams).Methods("GET")
+	router.HandleFunc("/extendStatusApplication", universityHandler.CreateExtendStatusApplication).Methods("POST")
+	router.HandleFunc("/extendStatusApplication", universityHandler.FindAllExtendStatusApplications).Methods("GET")
+	router.HandleFunc("/scholarshipApplication", universityHandler.CreateScholarshipApplication).Methods("POST")
+	router.HandleFunc("/scholarshipApplication", universityHandler.FindAllScholarshipApplications).Methods("GET")
 	// CORS
 	headersOk := gorillaHandlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
 	methodsOk := gorillaHandlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})

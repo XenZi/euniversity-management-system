@@ -105,3 +105,19 @@ func (ah AdmissionsHandler) UpdateAdmission(rw http.ResponseWriter, h *http.Requ
 	}
 	utils.WriteResp(createdAdmission, 201, rw)
 }
+
+func (ah AdmissionsHandler) EndAdmission(rw http.ResponseWriter, h *http.Request) {
+	vars := mux.Vars(h)
+	id := vars["id"]
+	if id == "" {
+		utils.WriteErrorResp("Bad request", 400, "api/confirm-account", rw)
+		return
+	}
+	data, err := ah.admissionsService.EndAdmission(id)
+	if err != nil {
+		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "path", rw)
+		return
+	}
+	utils.WriteResp(data, 201, rw)
+
+}

@@ -61,6 +61,25 @@ func (u UniversityRepository) SaveScholarship(scholarship models.Scholarship) (*
 	scholarship.ID = insertResult.InsertedID.(primitive.ObjectID)
 	return &scholarship, nil
 }
+func (u UniversityRepository) SaveExtendStatusApplication(application models.ExtendStatusApplication) (*models.ExtendStatusApplication, *errors.ErrorStruct) {
+	applicationCollection := u.cli.Database("university").Collection("application")
+	insertResult, err := applicationCollection.InsertOne(context.TODO(), application)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	application.ID = insertResult.InsertedID.(primitive.ObjectID)
+	return &application, nil
+}
+
+func (u UniversityRepository) SaveScholarshipApplication(application models.ApplyForScholarship) (*models.ApplyForScholarship, *errors.ErrorStruct) {
+	applicationCollection := u.cli.Database("university").Collection("application")
+	insertResult, err := applicationCollection.InsertOne(context.TODO(), application)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	application.ID = insertResult.InsertedID.(primitive.ObjectID)
+	return &application, nil
+}
 
 func (u UniversityRepository) SaveStateExamApplication(application models.StateExamApplication) (*models.StateExamApplication, *errors.ErrorStruct) {
 	applicationCollection := u.cli.Database("university").Collection("state_exam_application")
@@ -94,6 +113,17 @@ func (u UniversityRepository) FindStudentById(personalIdentificationNumber strin
 	return &student, nil
 }
 
+func (u UniversityRepository) FindUniversityById(id primitive.ObjectID) (*models.University, *errors.ErrorStruct) {
+	universityCollection := u.cli.Database("university").Collection("university_collection")
+	var university models.University
+	err := universityCollection.FindOne(context.TODO(), bson.M{"_id": id}).Decode(&university)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	fmt.Println(university)
+	return &university, nil
+}
+
 func (u UniversityRepository) FindProfessor(personalIdentificationNumber string) (*models.Professor, *errors.ErrorStruct) {
 	professorCollection := u.cli.Database("university").Collection("professor")
 	var professor models.Professor
@@ -115,6 +145,93 @@ func (u UniversityRepository) FindScholarship(id primitive.ObjectID) (*models.Sc
 	}
 	fmt.Println(scholarship)
 	return &scholarship, nil
+}
+func (u UniversityRepository) FindAllUniversities() ([]*models.University, *errors.ErrorStruct) {
+	universitiesCollection := u.cli.Database("university").Collection("university_collection")
+	var universities []*models.University
+
+	cursor, err := universitiesCollection.Find(context.TODO(), bson.M{})
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	defer cursor.Close(context.TODO())
+
+	for cursor.Next(context.TODO()) {
+		var university models.University
+		if err := cursor.Decode(&university); err != nil {
+			return nil, errors.NewError(err.Error(), 500)
+		}
+		universities = append(universities, &university)
+	}
+
+	if err := cursor.Err(); err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+
+	return universities, nil
+}
+func (u UniversityRepository) FindAllEntranceExams() ([]*models.EntranceExam, *errors.ErrorStruct) {
+	examsCollection := u.cli.Database("university").Collection("exam")
+	var exams []*models.EntranceExam
+	cursor, err := examsCollection.Find(context.TODO(), bson.M{})
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	defer cursor.Close(context.TODO())
+	for cursor.Next(context.TODO()) {
+		var exam models.EntranceExam
+		if err := cursor.Decode(&exam); err != nil {
+			return nil, errors.NewError(err.Error(), 500)
+		}
+		exams = append(exams, &exam)
+	}
+	if err := cursor.Err(); err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	return exams, nil
+}
+
+func (u UniversityRepository) FindAllExtendStatusApplications() ([]*models.ExtendStatusApplication, *errors.ErrorStruct) {
+	applicationCollection := u.cli.Database("university").Collection("application")
+	var applications []*models.ExtendStatusApplication
+	cursor, err := applicationCollection.Find(context.TODO(), bson.M{})
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	defer cursor.Close(context.TODO())
+	for cursor.Next(context.TODO()) {
+		var application models.ExtendStatusApplication
+		if err := cursor.Decode(&application); err != nil {
+			return nil, errors.NewError(err.Error(), 500)
+		}
+		applications = append(applications, &application)
+
+	}
+	if err := cursor.Err(); err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	return applications, nil
+}
+
+func (u UniversityRepository) FindAllScholarshipApplications() ([]*models.ApplyForScholarship, *errors.ErrorStruct) {
+	applicationCollection := u.cli.Database("university").Collection("application")
+	var applications []*models.ApplyForScholarship
+	cursor, err := applicationCollection.Find(context.TODO(), bson.M{})
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	defer cursor.Close(context.TODO())
+	for cursor.Next(context.TODO()) {
+		var application models.ApplyForScholarship
+		if err := cursor.Decode(&application); err != nil {
+			return nil, errors.NewError(err.Error(), 500)
+		}
+		applications = append(applications, &application)
+	}
+	if err := cursor.Err(); err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	return applications, nil
 }
 
 func (u UniversityRepository) UpdateStudent(student models.Student) (*models.Student, *errors.ErrorStruct) {

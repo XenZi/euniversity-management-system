@@ -69,6 +69,18 @@ func (ah AuthHandler) GetUserByPIN(rw http.ResponseWriter, h *http.Request) {
 	utils.WriteResp(resp, 200, rw)
 }
 
+func (ah AuthHandler) GetUsersByRole(rw http.ResponseWriter, h *http.Request) {
+	vars := mux.Vars(h)
+	role := vars["role"]
+	resp, err := ah.AuthService.GetUsersByExistingRole(role)
+	if err != nil {
+		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "api/auth/getUsers/{role}", rw)
+		return
+	}
+	utils.WriteResp(resp, 200, rw)
+
+}
+
 func (ah AuthHandler) AddRoles(rw http.ResponseWriter, h *http.Request) {
 	var addingRoles models.AddingRoles
 	decoder := json.NewDecoder(h.Body)

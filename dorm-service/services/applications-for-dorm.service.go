@@ -11,24 +11,39 @@ import (
 type ApplicationsService struct {
 	applicationsRepository *repositories.ApplicationsRepository
 	healthCareClient       *client.HealthCareClient
+	universityClient       *client.UniversityClient
 }
 
-func NewApplicationsService(applicationsRepository *repositories.ApplicationsRepository, client *client.HealthCareClient) (*ApplicationsService, error) {
+func NewApplicationsService(applicationsRepository *repositories.ApplicationsRepository, client *client.HealthCareClient, universityClient *client.UniversityClient) (*ApplicationsService, error) {
 	return &ApplicationsService{
 		applicationsRepository: applicationsRepository,
 		healthCareClient:       client,
+		universityClient:       universityClient,
 	}, nil
 }
 
 func (as ApplicationsService) CreateNewApplication(application models.ApplicationForDorm) (*models.ApplicationForDorm, *errors.ErrorStruct) {
 	valueFromHealthCare, err := as.healthCareClient.GetUserHealthStatusConfirmation(application.Student.PersonalIdentificationNumber)
 	if err != nil {
+		log.Println("VARIJACIJA 2")
 		log.Println(err.GetErrorMessage())
+		application.HealthInsurance = false
+	} else {
+		application.HealthInsurance = valueFromHealthCare
 	}
-	log.Println(valueFromHealthCare)
-	application.HealthInsurance = valueFromHealthCare
-	application.ApplicationStatus = models.Review
-
+	valueFromUniversity, err := as.universityClient.VerifyUserIntegrityWithUniversity(application.Student.PersonalIdentificationNumber)
+	if err != nil {
+		application.VerifiedStudent = false
+		application.Student.StudentUniversityData = models.StudentUniversityData{}
+	} else {
+		application.Student.StudentUniversityData = *valueFromUniversity
+		application.VerifiedStudent = true
+	}
+	if !application.HealthInsurance || !application.VerifiedStudent {
+		application.ApplicationStatus = models.Pending
+	} else {
+		application.ApplicationStatus = models.Accepted
+	}
 	createdApplication, err := as.applicationsRepository.SaveNewDorm(application)
 	if err != nil {
 		return nil, err
@@ -84,7 +99,16 @@ func (as ApplicationsService) UpdateApplication(app models.ApplicationForDorm) (
 		}
 		app.HealthInsurance = isHealthStatusConfirmed
 	}
-	// todo app.verifiedStudent = provera.
+	if !app.VerifiedStudent {
+		valueFromUniversity, err := as.universityClient.VerifyUserIntegrityWithUniversity(app.Student.PersonalIdentificationNumber)
+		if err != nil {
+			app.VerifiedStudent = false
+			app.Student.StudentUniversityData = models.StudentUniversityData{}
+		} else {
+			app.Student.StudentUniversityData = *valueFromUniversity
+			app.VerifiedStudent = true
+		}
+	}
 	if app.HealthInsurance && app.VerifiedStudent {
 		app.ApplicationStatus = models.Accepted
 	} else {

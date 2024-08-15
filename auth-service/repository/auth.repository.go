@@ -49,6 +49,28 @@ func (a AuthRepository) FindUserByEmail(email string) (*models.Citizen, *errors.
 	return &user, nil
 }
 
+func (a AuthRepository) GetAllUsers() ([]*models.Citizen, *errors.ErrorStruct) {
+	userCollection := a.cli.Database("auth").Collection("user")
+	var users []*models.Citizen
+	filter := bson.M{}
+	cursor, err := userCollection.Find(context.TODO(), filter)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	defer cursor.Close(context.TODO())
+	for cursor.Next(context.TODO()) {
+		var reco *models.Citizen
+		if err := cursor.Decode(&reco); err != nil {
+			return nil, errors.NewError(err.Error(), 500)
+		}
+		users = append(users, reco)
+	}
+	if err := cursor.Err(); err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	return users, nil
+}
+
 func (a AuthRepository) FindUserByPIN(pin string) (*models.Citizen, *errors.ErrorStruct) {
 	userCollection := a.cli.Database("auth").Collection("user")
 	var user models.Citizen

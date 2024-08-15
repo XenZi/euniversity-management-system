@@ -3,6 +3,8 @@ import { Admission } from "../../../models/admission.model";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Dorm } from "../../../models/dorm.model";
 import { axiosInstance } from "../../../services/axios.service";
+import { useDispatch } from "react-redux";
+import { closeModal } from "../../../redux/slices/modal.slice";
 
 const Admissions: React.FC<{ admission?: Admission }> = ({ admission }) => {
   const [loadedDorms, setLoadedDorms] = useState<Dorm[]>([]);
@@ -21,7 +23,7 @@ const Admissions: React.FC<{ admission?: Admission }> = ({ admission }) => {
     },
   });
   const startDate = watch("start");
-
+  const dispatch = useDispatch();
   const onSubmit: SubmitHandler<Admission> = (data) => {
     if (admission == null || admission == undefined) {
       axiosInstance
@@ -30,6 +32,7 @@ const Admissions: React.FC<{ admission?: Admission }> = ({ admission }) => {
         })
         .then((data) => {
           console.log(data.data.data);
+          dispatch(closeModal());
         })
         .catch((err) => {
           console.log(err);
@@ -42,6 +45,7 @@ const Admissions: React.FC<{ admission?: Admission }> = ({ admission }) => {
         ...data,
       })
       .then((data) => {
+        dispatch(closeModal());
         console.log(data.data.data);
       })
       .catch((err) => {

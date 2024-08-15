@@ -76,6 +76,24 @@ func (a AuthService) SwitchRoles(pin, desiredRole string) (*models.SuccessfullyL
 	}, nil
 }
 
+func (a AuthService) GetUsersByExistingRole(role string) ([]*models.CitizenDTO, *errors.ErrorStruct) {
+	userSlice, err := a.AuthRepository.GetAllUsers()
+	if err != nil {
+		return nil, err
+	}
+	var ret []*models.CitizenDTO
+	for _, u := range userSlice {
+		for _, r := range u.Roles {
+			if r == role {
+				retU := a.convertCitizenToDTO(*u)
+				ret = append(ret, &retU)
+				break
+			}
+		}
+	}
+	return ret, nil
+}
+
 func (a AuthService) GetUserByPIN(pin string) (*models.CitizenDTO, *errors.ErrorStruct) {
 	user, err := a.AuthRepository.FindUserByPIN(pin)
 	if err != nil {

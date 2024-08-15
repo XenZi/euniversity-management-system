@@ -29,12 +29,12 @@ func (ah DormHandler) Ping(rw http.ResponseWriter, h *http.Request) {
 func (ah DormHandler) CreateNewDorm(rw http.ResponseWriter, h *http.Request) {
 	var dorm models.Dorm
 	if !utils.DecodeJSONFromRequest(h, rw, &dorm) {
-		utils.WriteErrorResp("Error neki", 500, "path", rw)
+		utils.WriteErrorResp("Error while casting", 500, "/dorm", rw)
 		return
 	}
 	createdDorm, err := ah.dormService.CreateNewDorm(dorm)
 	if err != nil {
-		utils.WriteErrorResp("Error neki", 500, "path", rw)
+		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "path", rw)
 		return
 	}
 	utils.WriteResp(createdDorm, 201, rw)
