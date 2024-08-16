@@ -11,6 +11,7 @@ import { User } from "./models/user.model";
 import HealthcarePage from "./pages/Healthcare.page";
 import UniPage from "./pages/University/University.page";
 import AllUniversities from "./components/universities-table/all-universities.table";
+import FoodPage from "./pages/Food/Food.page";
 
 function App() {
   const [userFromLocalStorage] = useLocalStorage("user", null);
@@ -34,6 +35,10 @@ function App() {
     {
       path: "/university",
       element: <PrivateRoute Component={UniPage}></PrivateRoute>,
+    },
+    {
+      path:"/food",
+      element:<PrivateRoute Component={FoodPage}></PrivateRoute>
     },
   ]);
   const dispatch = useDispatch();
