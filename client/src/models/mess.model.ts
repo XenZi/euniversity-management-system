@@ -1,6 +1,7 @@
-export interface Mess{
-    id: string;
-    name: string;
-    location: string;
-    capacity:number;
+export interface Mess {
+  id: string;
+  name: string;
+  location: string;
+  capacity: number;
+  rating: number;
 }
