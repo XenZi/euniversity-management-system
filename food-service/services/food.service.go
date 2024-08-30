@@ -95,6 +95,14 @@ func (fs FoodService) UpdateMessRoom(updatedMess models.MessRoomUpdate) (*models
 	return mess, nil
 
 }
+func (fs FoodService) UpdateMessRoomSupplier(messId,supplierId string) (*models.MessRoom, *errors.ErrorStruct) {
+	mess, err := fs.FoodRepository.UpdateMessRoomsSupplier(messId,supplierId)
+	if err != nil {
+		return nil, err
+	}
+	return mess, nil
+
+}
 
 // FOOD CARD CRUD
 

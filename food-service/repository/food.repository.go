@@ -175,6 +175,7 @@ func (f FoodRepository) UpdateMessRoom(updatedMess models.MessRoomUpdate) (*mode
 			{Key: "name", Value: updatedMess.Name},
 			{Key: "location", Value: updatedMess.Location},
 			{Key: "capacity", Value: updatedMess.Capacity},
+			
 		}},
 	}
 	_, err = messCollection.UpdateOne(context.Background(), filter, update)
@@ -182,6 +183,33 @@ func (f FoodRepository) UpdateMessRoom(updatedMess models.MessRoomUpdate) (*mode
 		return nil, errors.NewError(err.Error(), 500)
 	}
 	mess, err1 := f.FindMessById(updatedMess.ID)
+	if err1 != nil {
+		return nil, err1
+	}
+	return mess, nil
+
+}
+
+
+func (f FoodRepository) UpdateMessRoomsSupplier(messId,supplierId string) (*models.MessRoom, *errors.ErrorStruct) {
+	messCollection := f.cli.Database("food-service").Collection("messes")
+	log.Println("Vrijednosti koje su stigle do repoa", supplierId)
+	objID, err := primitive.ObjectIDFromHex(messId)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	filter := bson.D{{Key: "_id", Value: objID}}
+	update := bson.D{
+		{Key: "$set", Value: bson.D{
+			{Key: "supplier_id", Value: supplierId},
+			
+		}},
+	}
+	_, err = messCollection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	mess, err1 := f.FindMessById(messId)
 	if err1 != nil {
 		return nil, err1
 	}

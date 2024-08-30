@@ -53,7 +53,7 @@ func (f FoodHandler) GetAllStudents(rw http.ResponseWriter, h *http.Request) {
 	utils.WriteResp(students, 200, rw)
 }
 
-// OVO NISI PREPRAVIO
+
 func (f FoodHandler) DeleteStudent(rw http.ResponseWriter, h *http.Request) {
 	vars := mux.Vars(h)
 	id := vars["id"]
@@ -128,6 +128,20 @@ func (f FoodHandler) UpdateMessRoom(rw http.ResponseWriter, h *http.Request) {
 	utils.WriteResp(mess, 200, rw)
 }
 
+func (f FoodHandler) UpdateMessRoomSupplier(rw http.ResponseWriter, h *http.Request) {
+    vars := mux.Vars(h)
+    id := vars["id"]
+	supplier_id:=vars["supplierId"]
+    
+
+    mess, err := f.FoodService.UpdateMessRoomSupplier(id, supplier_id)
+    if err != nil {
+        utils.WriteErrorResp(err.GetErrorMessage(),err.GetErrorStatus(),"api/food/updateMess", rw)
+        return
+    }
+
+    utils.WriteResp(mess, 200, rw)
+}
 // FOOD CARD CRUD
 
 func (f FoodHandler) CreateFoodCard(rw http.ResponseWriter, h *http.Request) {

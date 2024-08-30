@@ -17,6 +17,7 @@ import DormitoryApplication from "../../components/forms/dormitory-application/d
 import CreateMessForm from "../../components/forms/create-mess/create-mess.form";
 import MessTable from "../../components/forms/messes-table/mess-table.component";
 import StudentTable from "../../components/forms/mess-users-table/students-table.component";
+import CreateSupplierForm from "../../components/forms/create-supplier-form/create-supplier.component";
 
 const FoodPage = () => {
   const user = useSelector((state: RootState) => state.user.user);
@@ -54,21 +55,7 @@ const FoodPage = () => {
       panelBoxDescription="Create new supplier admission"
       onClick={() => {
         openModal();
-        setContent(<Admissions />);
-      }}
-    />,
-    <PanelBox
-      panelBoxDescription="List all supplier requests"
-      onClick={() => {
-        openModal();
-        setContent(<AdmissionsTable adminView={true} />);
-      }}
-    />,
-    <PanelBox
-      panelBoxDescription="List all applications for admission"
-      onClick={() => {
-        openModal();
-        setContent(<AdminDormitoryApplicationTable />);
+        setContent(<CreateSupplierForm />);
       }}
     />,
   ];
@@ -90,6 +77,20 @@ const FoodPage = () => {
     />,
     <PanelBox
       panelBoxDescription="Rate a mess"
+      onClick={() => {
+        openModal();
+        setContent(<DormitoryApplication />);
+      }}
+    />,
+    <PanelBox
+      panelBoxDescription="Create new supplier admission"
+      onClick={() => {
+        openModal();
+        setContent(<DormitoryApplication />);
+      }}
+    />,
+    <PanelBox
+      panelBoxDescription="My card"
       onClick={() => {
         openModal();
         setContent(<DormitoryApplication />);
