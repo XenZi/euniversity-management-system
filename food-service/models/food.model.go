@@ -18,7 +18,6 @@ type Student struct {
 
 type FoodCard struct {
 	ID         primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-	StudentID  string             `json:"student_id" bson:"student_id"`
 	StudentPIN string             `json:"student_pin" bson:"student_pin"`
 	Expires    string             `json:"expires" bson:"expires"`
 	UsedPoint  []string           `json:"used_point" bson:"used_point"`

@@ -41,7 +41,7 @@ const MessTable: React.FC<{ adminView?: boolean }> = ({ adminView }) => {
 
   const deleteMess = (messID: string) => {
     axiosInstance
-      .delete(`/food/deleteStudent/${messID}`)
+      .delete(`/food/deleteMessRoom/${messID}`)
       .then((data) => {
         console.log(data);
         setMesses(messes.filter((mess) => mess.id !== messID));

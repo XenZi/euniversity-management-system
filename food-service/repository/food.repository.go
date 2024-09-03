@@ -217,12 +217,41 @@ func (f FoodRepository) UpdateMessRoomsSupplier(messId,supplierId string) (*mode
 
 }
 
+func (f FoodRepository) UpdateMessRoomUsers(messId,studentPin string) (*models.MessRoom, *errors.ErrorStruct) {
+	messCollection := f.cli.Database("food-service").Collection("messes")
+	log.Println("Vrijednosti koje su stigle do repoa", studentPin)
+	
+	objID, err := primitive.ObjectIDFromHex(messId)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	
+	filter := bson.D{{Key: "_id", Value: objID}}
+	update := bson.D{
+		
+		{Key: "$addToSet", Value: bson.D{
+			{Key: "mess_room_users", Value: studentPin},
+		}},
+	}
+
+	_, err = messCollection.UpdateOne(context.Background(), filter, update)
+	if err != nil {
+		return nil, errors.NewError(err.Error(), 500)
+	}
+	
+	mess, err1 := f.FindMessById(messId)
+	if err1 != nil {
+		return nil, err1
+	}
+	
+	return mess, nil
+}
+
+
 // FOOD CARD CRUD
 
 func (f FoodRepository) SaveFoodCard(card models.FoodCard) (*models.FoodCard, *errors.ErrorStruct) {
 	cardCollection := f.cli.Database("food-service").Collection("cards")
-	card.StudentID = "Mock-User"
-	card.MassRoomID = "Mock-Mass"
 	insertedCard, err := cardCollection.InsertOne(context.TODO(), card)
 	if err != nil {
 		return nil, errors.NewError(err.Error(), 500)

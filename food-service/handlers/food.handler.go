@@ -77,19 +77,21 @@ func (f FoodHandler) GetStudentById(rw http.ResponseWriter, h *http.Request) {
 // MESS ROOM CRUD
 func (f FoodHandler) CreateMessRoom(rw http.ResponseWriter, h *http.Request) {
 	var messRoom models.MessRoom
+	messRoom.MessRoomUsers = []string{} // Initialize as an empty slice
 
 	if !utils.DecodeJSONFromRequest(h, rw, &messRoom) {
 		utils.WriteErrorResp("Error while casting into structure", 500, "/api/food/createMessRoom", rw)
 		return
 	}
+	
 	response, err := f.FoodService.CreateMessRoom(messRoom)
 	if err != nil {
 		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "api/food/createMessRoom", rw)
 		return
 	}
+	
 	utils.WriteResp(response, 200, rw)
 }
-
 func (f FoodHandler) GetAllMessRooms(rw http.ResponseWriter, h *http.Request) {
 	messRooms, err := f.FoodService.GetAllMessRooms()
 	if err != nil {
@@ -135,6 +137,21 @@ func (f FoodHandler) UpdateMessRoomSupplier(rw http.ResponseWriter, h *http.Requ
     
 
     mess, err := f.FoodService.UpdateMessRoomSupplier(id, supplier_id)
+    if err != nil {
+        utils.WriteErrorResp(err.GetErrorMessage(),err.GetErrorStatus(),"api/food/updateMess", rw)
+        return
+    }
+
+    utils.WriteResp(mess, 200, rw)
+}
+
+func (f FoodHandler) UpdateMessRoomUsers(rw http.ResponseWriter, h *http.Request) {
+    vars := mux.Vars(h)
+    id := vars["id"]
+	studentPIN:=vars["studentPIN"]
+    
+
+    mess, err := f.FoodService.UpdateMessRoomUsers(id,studentPIN)
     if err != nil {
         utils.WriteErrorResp(err.GetErrorMessage(),err.GetErrorStatus(),"api/food/updateMess", rw)
         return

@@ -104,6 +104,15 @@ func (fs FoodService) UpdateMessRoomSupplier(messId,supplierId string) (*models.
 
 }
 
+func (fs FoodService) UpdateMessRoomUsers(messId,studentPin string) (*models.MessRoom, *errors.ErrorStruct) {
+	mess, err := fs.FoodRepository.UpdateMessRoomUsers(messId,studentPin)
+	if err != nil {
+		return nil, err
+	}
+	return mess, nil
+
+}
+
 // FOOD CARD CRUD
 
 func (fs FoodService) CreateFoodCardForUser(foodCard models.FoodCard) (*models.FoodCard, *errors.ErrorStruct) {

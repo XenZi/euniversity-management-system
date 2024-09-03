@@ -18,6 +18,7 @@ import CreateMessForm from "../../components/forms/create-mess/create-mess.form"
 import MessTable from "../../components/forms/messes-table/mess-table.component";
 import StudentTable from "../../components/forms/mess-users-table/students-table.component";
 import CreateSupplierForm from "../../components/forms/create-supplier-form/create-supplier.component";
+import ApplyForMess from "../../components/forms/apply-mess-card/apply-for-mess-card.component";
 
 const FoodPage = () => {
   const user = useSelector((state: RootState) => state.user.user);
@@ -58,6 +59,13 @@ const FoodPage = () => {
         setContent(<CreateSupplierForm />);
       }}
     />,
+    <PanelBox
+      panelBoxDescription="View all meal uses"
+      onClick={() => {
+        openModal();
+        setContent(<CreateSupplierForm />);
+      }}
+    />,
   ];
 
   const foodStudentComponents: React.JSX.Element[] = [
@@ -66,6 +74,13 @@ const FoodPage = () => {
       onClick={() => {
         openModal();
         setContent(<MessTable />);
+      }}
+    />,
+    <PanelBox
+      panelBoxDescription="Apply for a card"
+      onClick={() => {
+        openModal();
+        setContent(<ApplyForMess />);
       }}
     />,
     <PanelBox
