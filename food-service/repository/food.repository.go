@@ -327,7 +327,7 @@ func (f FoodRepository) RemoveFoodCard(id string) (bool, *errors.ErrorStruct) {
 
 func (f FoodRepository) SavePayment(payment models.Payment) (*models.Payment, *errors.ErrorStruct) {
 	paymentCollection := f.cli.Database("food-service").Collection("payment")
-	payment.FoodCardID = "Mock-FoodCard"
+	
 	insertedPayment, err := paymentCollection.InsertOne(context.TODO(), payment)
 	if err != nil {
 		return nil, errors.NewError(err.Error(), 500)
@@ -386,6 +386,28 @@ func (f FoodRepository) SaveUsageStatistics(stats models.UsageStatistics) (*mode
 	stats.ID = insertedStats.InsertedID.(primitive.ObjectID)
 	return &stats, nil
 }
+
+func (f FoodRepository) UpdateBalanceOfFoodCard(id string, amountToAdd int) (bool, *errors.ErrorStruct) {
+	cardCollection := f.cli.Database("food-service").Collection("cards")
+
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return false, errors.NewError("Invalid id format", 400)
+	}
+	log.Println("Broj koji je stigao do baze je ", amountToAdd)
+
+	// Increment the amount field by the value passed in amountToAdd
+	update := bson.M{"$inc": bson.M{"balance": amountToAdd}}
+	filter := bson.M{"_id": objID}
+
+	_, err = cardCollection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return false, errors.NewError(err.Error(), 500)
+	}
+
+	return true, nil
+}
+
 
 // SUPPLIER CRUD
 

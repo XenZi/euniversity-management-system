@@ -6,6 +6,7 @@ import (
 	"food/models"
 	"food/repository"
 	"log"
+	"strconv"
 )
 
 type FoodService struct {
@@ -155,6 +156,25 @@ func (fs FoodService) CreatePayment(payment models.Payment) (*models.Payment, *e
 	if err != nil {
 		return nil, err
 	}
+
+	amountStr := payment.Amount // Assuming payment.amount is a string
+	amountInt, err1 := strconv.Atoi(amountStr)
+	if err1 != nil {
+		log.Println("Error converting amount to int:", err1)
+	} else {
+		log.Println("Parsed amount:", amountInt)
+	}
+
+	
+
+	addedAmount, err := fs.FoodRepository.UpdateBalanceOfFoodCard(payment.FoodCardID,amountInt)
+	if err != nil {
+		return nil, err
+	}
+	log.Println("Payment model koji je stigao je ", payment)
+	log.Println(addedAmount)
+
+
 	return addedPayment, nil
 }
 

@@ -5,13 +5,7 @@ import { setModalOpen } from "../../redux/slices/modal.slice";
 import Navigation from "../../components/navigation/navigation.component";
 import { RootState } from "../../redux/store/store";
 import PanelBox from "../../components/panel-box/panel-box.component";
-import CreateDormForm from "../../components/forms/create-dorm/create-dorm.form";
 
-import DormTable from "../../components/dorms-table/dorms-table.component";
-import RoomsTable from "../../components/rooms-table/rooms-table.component";
-import Admissions from "../../components/forms/admissions/admissions.form";
-import AdmissionsTable from "../../components/admissions-table/admissions-table.component";
-import AdminDormitoryApplicationTable from "../../components/admin-dormitory-applications/admin-dormitory-applications.table";
 import AdminComponent from "../../components/admin/admin.component";
 import DormitoryApplication from "../../components/forms/dormitory-application/dormitory-application.form";
 import CreateMessForm from "../../components/forms/create-mess/create-mess.form";
@@ -19,6 +13,7 @@ import MessTable from "../../components/forms/messes-table/mess-table.component"
 import StudentTable from "../../components/forms/mess-users-table/students-table.component";
 import CreateSupplierForm from "../../components/forms/create-supplier-form/create-supplier.component";
 import ApplyForMess from "../../components/forms/apply-mess-card/apply-for-mess-card.component";
+import BuyCredits from "../../components/buy-credits/buy-credits-component";
 
 const FoodPage = () => {
   const user = useSelector((state: RootState) => state.user.user);
@@ -87,7 +82,7 @@ const FoodPage = () => {
       panelBoxTitle="Buy credits"
       onClick={() => {
         openModal();
-        setContent(<AdmissionsTable />);
+        setContent(<BuyCredits />);
       }}
     />,
     <PanelBox

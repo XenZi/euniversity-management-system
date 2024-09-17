@@ -21,6 +21,7 @@ type FoodCard struct {
 	StudentPIN string             `json:"student_pin" bson:"student_pin"`
 	Expires    string             `json:"expires" bson:"expires"`
 	UsedPoint  []string           `json:"used_point" bson:"used_point"`
+	MessRoomName string 			`json:"messroom_name" bson:"messroom_name"`
 	MassRoomID string             `json:"mass_room_id" bson:"mass_room_id"`
 	Balance    int                `json:"balance" bson:"balance"`
 }
@@ -31,7 +32,8 @@ type Payment struct {
 	CreditCardNumber string             `json:"credit_card_number" bson:"credit_card_number"`
 	Name             string             `json:"name" bson:"name"`
 	CVV              string             `json:"cvv" bson:"cvv"`
-	Amount           int                `json:"amount" bson:"amount"`
+	MessCardName string		`json:"messcard_name" bson:"messcard_name"`
+	Amount           string               `json:"amount" bson:"amount"`
 }
 type MessRoom struct {
 	ID            primitive.ObjectID `json:"id" bson:"_id,omitempty"`

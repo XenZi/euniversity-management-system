@@ -164,6 +164,8 @@ func (f FoodHandler) UpdateMessRoomUsers(rw http.ResponseWriter, h *http.Request
 func (f FoodHandler) CreateFoodCard(rw http.ResponseWriter, h *http.Request) {
 	var card models.FoodCard
 
+	card.UsedPoint = []string{}
+
 	if !utils.DecodeJSONFromRequest(h, rw, &card) {
 		utils.WriteErrorResp("Error while casting into structure", 500, "/api/food/createFoodCard", rw)
 		return
