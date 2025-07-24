@@ -6,6 +6,7 @@ import (
 	"food/utils"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -78,6 +79,7 @@ func (f FoodHandler) GetStudentById(rw http.ResponseWriter, h *http.Request) {
 func (f FoodHandler) CreateMessRoom(rw http.ResponseWriter, h *http.Request) {
 	var messRoom models.MessRoom
 	messRoom.MessRoomUsers = []string{} // Initialize as an empty slice
+	messRoom.Rating=[]int{}
 
 	if !utils.DecodeJSONFromRequest(h, rw, &messRoom) {
 		utils.WriteErrorResp("Error while casting into structure", 500, "/api/food/createMessRoom", rw)
@@ -152,6 +154,26 @@ func (f FoodHandler) UpdateMessRoomUsers(rw http.ResponseWriter, h *http.Request
     
 
     mess, err := f.FoodService.UpdateMessRoomUsers(id,studentPIN)
+    if err != nil {
+        utils.WriteErrorResp(err.GetErrorMessage(),err.GetErrorStatus(),"api/food/updateMess", rw)
+        return
+    }
+
+    utils.WriteResp(mess, 200, rw)
+}
+
+func (f FoodHandler) UpdateMessRoomRating(rw http.ResponseWriter, h *http.Request) {
+    vars := mux.Vars(h)
+    id := vars["id"]
+	ratingStr := vars["rating"]  // Assuming vars["rating"] is a string
+    rating, err1 := strconv.Atoi(ratingStr)
+    if err1 != nil {
+		utils.WriteErrorResp(err1.Error(),500,"api/food/updateMess", rw)
+    }
+
+    
+
+    mess, err := f.FoodService.UpdateMessRoomRating(id,rating)
     if err != nil {
         utils.WriteErrorResp(err.GetErrorMessage(),err.GetErrorStatus(),"api/food/updateMess", rw)
         return

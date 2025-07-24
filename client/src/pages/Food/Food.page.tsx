@@ -14,6 +14,8 @@ import StudentTable from "../../components/forms/mess-users-table/students-table
 import CreateSupplierForm from "../../components/forms/create-supplier-form/create-supplier.component";
 import ApplyForMess from "../../components/forms/apply-mess-card/apply-for-mess-card.component";
 import BuyCredits from "../../components/buy-credits/buy-credits-component";
+import MessTableRate from "../../components/rate-a-mess/rate-a-mess.component";
+import MyFoodCardTable from "../../components/my-cards-table/my-cards.component";
 
 const FoodPage = () => {
   const user = useSelector((state: RootState) => state.user.user);
@@ -89,7 +91,7 @@ const FoodPage = () => {
       panelBoxDescription="Rate a mess"
       onClick={() => {
         openModal();
-        setContent(<DormitoryApplication />);
+        setContent(<MessTableRate />);
       }}
     />,
     <PanelBox
@@ -100,10 +102,10 @@ const FoodPage = () => {
       }}
     />,
     <PanelBox
-      panelBoxDescription="My card"
+      panelBoxDescription="My cards"
       onClick={() => {
         openModal();
-        setContent(<DormitoryApplication />);
+        setContent(<MyFoodCardTable />);
       }}
     />,
   ];

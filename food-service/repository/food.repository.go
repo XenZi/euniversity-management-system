@@ -248,6 +248,42 @@ func (f FoodRepository) UpdateMessRoomUsers(messId,studentPin string) (*models.M
 }
 
 
+func (f FoodRepository) UpdateMessRoomRating(messId string, rating int) (*models.MessRoom, *errors.ErrorStruct) {
+    messCollection := f.cli.Database("food-service").Collection("messes")
+    log.Println("Rating value received:", rating)
+    
+    objID, err := primitive.ObjectIDFromHex(messId)
+    if err != nil {
+        return nil, errors.NewError(err.Error(), 500)
+    }
+
+    // Find the mess room by id
+    filter := bson.D{{Key: "_id", Value: objID}}
+
+    // Append the rating to the "rating" array using $push
+    update := bson.D{
+        {Key: "$push", Value: bson.D{
+            {Key: "rating", Value: rating},
+        }},
+    }
+
+    // Perform the update
+    _, err = messCollection.UpdateOne(context.Background(), filter, update)
+    if err != nil {
+        return nil, errors.NewError(err.Error(), 500)
+    }
+
+    // Retrieve the updated mess room
+    mess, err1 := f.FindMessById(messId)
+    if err1 != nil {
+        return nil, err1
+    }
+
+    return mess, nil
+}
+
+
+
 // FOOD CARD CRUD
 
 func (f FoodRepository) SaveFoodCard(card models.FoodCard) (*models.FoodCard, *errors.ErrorStruct) {

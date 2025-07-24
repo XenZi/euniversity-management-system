@@ -40,7 +40,7 @@ type MessRoom struct {
 	Name          string             `json:"name" bson:"name"`
 	Location      string             `json:"location" bson:"location"`
 	Capacity      int                `json:"capacity" bson:"capacity"`
-	Rating        float64            `json:"rating" bson:"rating"`
+	Rating        []int           `json:"rating" bson:"rating"`
 	SupplierID    string             `json:"supplier_id" bson:"supplier_id"`
 	MessRoomUsers []string           `json:"mess_room_users" bson:"mess_room_users"`
 }
