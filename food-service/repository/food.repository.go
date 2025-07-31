@@ -359,6 +359,32 @@ func (f FoodRepository) RemoveFoodCard(id string) (bool, *errors.ErrorStruct) {
 
 }
 
+func (f FoodRepository) RemoveUserFromMessRoom(messID string, studentPIN string) (bool, *errors.ErrorStruct) {
+	coll := f.cli.Database("food-service").Collection("messes") // adjust collection name if different
+
+	objID, err := primitive.ObjectIDFromHex(messID)
+	if err != nil {
+		return false, errors.NewError("Invalid mess room ID format", 400)
+	}
+
+	filter := bson.M{"_id": objID}
+	update := bson.M{
+		"$pull": bson.M{
+			"mess_room_users": studentPIN,
+		},
+	}
+
+	res, err := coll.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return false, errors.NewError(err.Error(), 500)
+	}
+	if res.MatchedCount == 0 {
+		return false, errors.NewError("mess room not found", 404)
+	}
+
+	return true, nil
+}
+
 // PAYMENT CRUD
 
 func (f FoodRepository) SavePayment(payment models.Payment) (*models.Payment, *errors.ErrorStruct) {
@@ -423,22 +449,21 @@ func (f FoodRepository) SaveUsageStatistics(stats models.UsageStatistics) (*mode
 	return &stats, nil
 }
 
-func (f FoodRepository) UpdateBalanceOfFoodCard(id string, amountToAdd int) (bool, *errors.ErrorStruct) {
+func (f FoodRepository) UpdateBalanceOfFoodCard(studentPIN string, amountToAdd int) (bool, *errors.ErrorStruct) {
 	cardCollection := f.cli.Database("food-service").Collection("cards")
 
-	objID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return false, errors.NewError("Invalid id format", 400)
-	}
 	log.Println("Broj koji je stigao do baze je ", amountToAdd)
 
-	// Increment the amount field by the value passed in amountToAdd
+	filter := bson.M{"student_pin": studentPIN}
 	update := bson.M{"$inc": bson.M{"balance": amountToAdd}}
-	filter := bson.M{"_id": objID}
 
-	_, err = cardCollection.UpdateOne(context.TODO(), filter, update)
+	res, err := cardCollection.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		return false, errors.NewError(err.Error(), 500)
+	}
+
+	if res.MatchedCount == 0 {
+		return false, errors.NewError("no food card found for given student PIN", 404)
 	}
 
 	return true, nil

@@ -245,6 +245,30 @@ func (f FoodHandler) CreatePayment(rw http.ResponseWriter, h *http.Request) {
 	utils.WriteResp(response, 200, rw)
 
 }
+
+
+func (f FoodHandler) RemoveUserFromMessRoom(rw http.ResponseWriter, h *http.Request) {
+	vars := mux.Vars(h) // assuming you're using gorilla/mux; adjust if another router
+	messID := vars["messID"]
+	studentPIN := vars["studentPIN"]
+
+	if messID == "" || studentPIN == "" {
+		utils.WriteErrorResp("missing messID or studentPIN", 400, "api/food/removeMessUser", rw)
+		return
+	}
+
+	result, err := f.FoodService.RemoveUserFromMessRoom(messID, studentPIN)
+	if err != nil {
+		utils.WriteErrorResp(err.GetErrorMessage(), err.GetErrorStatus(), "api/food/removeMessUser", rw)
+		return
+	}
+
+	utils.WriteResp(map[string]any{
+		"removed": *result,
+	}, 200, rw)
+}
+
+
 func (f FoodHandler) PayForMeal(rw http.ResponseWriter, h *http.Request) {
 	vars := mux.Vars(h)
 	id := vars["id"]

@@ -56,13 +56,6 @@ const FoodPage = () => {
         setContent(<CreateSupplierForm />);
       }}
     />,
-    <PanelBox
-      panelBoxDescription="View all meal uses"
-      onClick={() => {
-        openModal();
-        setContent(<CreateSupplierForm />);
-      }}
-    />,
   ];
 
   const foodStudentComponents: React.JSX.Element[] = [
@@ -92,13 +85,6 @@ const FoodPage = () => {
       onClick={() => {
         openModal();
         setContent(<MessTableRate />);
-      }}
-    />,
-    <PanelBox
-      panelBoxDescription="Create new supplier admission"
-      onClick={() => {
-        openModal();
-        setContent(<DormitoryApplication />);
       }}
     />,
     <PanelBox

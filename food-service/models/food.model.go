@@ -28,13 +28,13 @@ type FoodCard struct {
 
 type Payment struct {
 	ID               primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-	FoodCardID       string             `json:"food_card_id" bson:"food_card_id"`
+	StudentPIN       string             `json:"student_pin" bson:"student_pin"` // new: pay by PIN
 	CreditCardNumber string             `json:"credit_card_number" bson:"credit_card_number"`
 	Name             string             `json:"name" bson:"name"`
 	CVV              string             `json:"cvv" bson:"cvv"`
-	MessCardName string		`json:"messcard_name" bson:"messcard_name"`
-	Amount           string               `json:"amount" bson:"amount"`
+	Amount           string             `json:"amount" bson:"amount"`
 }
+
 type MessRoom struct {
 	ID            primitive.ObjectID `json:"id" bson:"_id,omitempty"`
 	Name          string             `json:"name" bson:"name"`

@@ -177,7 +177,7 @@ func (fs FoodService) CreatePayment(payment models.Payment) (*models.Payment, *e
 
 	
 
-	addedAmount, err := fs.FoodRepository.UpdateBalanceOfFoodCard(payment.FoodCardID,amountInt)
+	addedAmount, err := fs.FoodRepository.UpdateBalanceOfFoodCard(payment.StudentPIN,amountInt)
 	if err != nil {
 		return nil, err
 	}
@@ -187,6 +187,15 @@ func (fs FoodService) CreatePayment(payment models.Payment) (*models.Payment, *e
 
 	return addedPayment, nil
 }
+
+func (fs FoodService) RemoveUserFromMessRoom(messID string, studentPIN string) (*bool, *errors.ErrorStruct) {
+	ok, err := fs.FoodRepository.RemoveUserFromMessRoom(messID, studentPIN)
+	if err != nil {
+		return nil, err
+	}
+	return &ok, nil
+}
+
 
 func (fs FoodService) PayForMeal(studentPIN string) (*models.FoodCard, *errors.ErrorStruct) {
 	//	clientBool := true // needs student services communication
