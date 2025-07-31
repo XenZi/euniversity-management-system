@@ -4,7 +4,7 @@ import { RootState } from "../../../redux/store/store";
 import { closeModal } from "../../../redux/slices/modal.slice";
 import { axiosInstance } from "../../../services/axios.service";
 
-const ApplyForMess = () => {
+const ApplyForMess: React.FC = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user.user);
 
@@ -12,7 +12,6 @@ const ApplyForMess = () => {
     []
   );
   const [messRoomId, setMessRoomId] = useState<string>("");
-  const [messRoomName, setMessRoomName] = useState<string>("");
 
   useEffect(() => {
     const fetchMessRooms = async () => {
@@ -20,28 +19,23 @@ const ApplyForMess = () => {
         const response = await axiosInstance.get("/food/allMessRooms");
         const fetchedMessRooms = response.data.data;
 
-        // Ensure user and user.personalIdentificationNumber are available
         if (user && user.personalIdentificationNumber) {
-          // Filter mess rooms where user's personalIdentificationNumber is not in mess_room_users
+          // Filter out mess rooms where the user already exists in mess_room_users
           const filteredMessRooms = fetchedMessRooms.filter(
-            (messRoom: { mess_room_users: string | string[] }) =>
-              !messRoom.mess_room_users.includes(
-                user.personalIdentificationNumber
-              )
+            (messRoom: { mess_room_users: string[] | string }) => {
+              const users = Array.isArray(messRoom.mess_room_users)
+                ? messRoom.mess_room_users
+                : [messRoom.mess_room_users];
+              return !users.includes(user.personalIdentificationNumber);
+            }
           );
 
           setMessRooms(filteredMessRooms);
 
-          // If there's only one mess room after filtering, set the messRoomId
           if (filteredMessRooms.length === 1) {
             setMessRoomId(filteredMessRooms[0].id);
-            console.log("filterovane menze su", filteredMessRooms[0]);
-            setMessRoomName(filteredMessRooms[0].name);
           }
-
-          console.log(filteredMessRooms);
         } else {
-          // Handle case where user is null
           console.error("User information is unavailable");
         }
       } catch (error) {
@@ -53,39 +47,36 @@ const ApplyForMess = () => {
   }, [user]);
 
   const submitForm = async () => {
-    if (!user) {
+    if (!user?.personalIdentificationNumber) {
       console.log("User is not available.");
       return;
     }
+    if (!messRoomId) {
+      console.log("Mess room not selected.");
+      return;
+    }
+
+    const selected = messRooms.find((m) => m.id === messRoomId);
     const createFoodCardData = {
       student_pin: user.personalIdentificationNumber,
-      expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(), // Converts date to string in ISO format
-      messroom_name: messRoomName,
+      expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+      messroom_name: selected?.name || "",
       mass_room_id: messRoomId,
     };
 
-    console.log(createFoodCardData);
-
     try {
-      console.log(
-        axiosInstance.defaults.baseURL + "/food/createFoodCard",
-        createFoodCardData
-      );
       const resp = await axiosInstance.post(
         "/food/createFoodCard",
         createFoodCardData
       );
-      console.log(resp.data.data);
-      console.log("createFoodCardData", createFoodCardData);
-      var studentPIN = createFoodCardData.student_pin;
-      var messID = createFoodCardData.mass_room_id;
-      console.log("Mess room id je", messRoomId);
+      console.log("Created food card:", resp.data.data);
 
-      const response = await axiosInstance.put(
-        `/food/updateMessUsers/${messID}/${studentPIN}`
+      await axiosInstance.put(
+        `/food/updateMessUsers/${encodeURIComponent(
+          messRoomId
+        )}/${encodeURIComponent(createFoodCardData.student_pin)}`
       );
 
-      console.log(response);
       dispatch(closeModal());
     } catch (err) {
       console.log(err);
@@ -99,21 +90,21 @@ const ApplyForMess = () => {
           e.preventDefault();
           submitForm();
         }}
-        className="bg-light p-4 rounded shadow-sm"
+        className="bg-light p-4 rounded shadow-sm max-w-lg mx-auto"
       >
         <div className="mb-3">
-          <label htmlFor="messRoom" className="form-label">
+          <label htmlFor="messRoom" className="form-label font-medium">
             Select Mess Room:
           </label>
           <select
             id="messRoom"
-            className="mb-3 p-3 border-2 border-battleship-500"
+            className="w-full mb-3 p-3 border-2 rounded"
             value={messRoomId}
             onChange={(e) => {
-              console.log("Selected messRoomId:", e.target.value); // Debugging line
-              setMessRoomId(e.target.value); // Set the selected value
+              setMessRoomId(e.target.value);
             }}
           >
+            <option value="">-- pick a mess --</option>
             {messRooms.length > 0 ? (
               messRooms.map((mess) => (
                 <option key={mess.id} value={mess.id}>
@@ -128,7 +119,8 @@ const ApplyForMess = () => {
 
         <button
           type="submit"
-          className="border bg-auburn-500 border-auburn-500 font-semibold py-2 px-4 rounded focus:border-auburn-700 text-white"
+          disabled={!messRoomId}
+          className="w-full border bg-auburn-500 font-semibold py-2 px-4 rounded text-white hover:bg-auburn-600 disabled:opacity-50"
         >
           Submit
         </button>
